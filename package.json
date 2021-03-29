@@ -1,0 +1,34 @@
+{
+  "name": "il_ng911_tools",
+  "version": "1.0.0",
+  "description": "repo for IL NextGen 911 tools",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "standard-version",
+    "commit": "git-cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CalebM1987/IL_NG911_Tools.git"
+  },
+  "keywords": [
+    "911",
+    "nextgen911"
+  ],
+  "author": "Caleb Mackey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CalebM1987/IL_NG911_Tools/issues"
+  },
+  "homepage": "https://github.com/CalebM1987/IL_NG911_Tools#readme",
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.3.0",
+    "standard-version": "^9.1.1"
+  }
+}
