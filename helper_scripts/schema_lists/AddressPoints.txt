@@ -1,0 +1,230 @@
+DiscrpAgID
+Discrepancy Agency ID
+Text
+75
+R
+DateUpdate
+Date Updated
+Date
+-
+M
+Effective
+Effective Date
+Date
+-
+O
+Expire
+Expiration Date
+Date
+-
+O
+Site_NGUID
+Site NENA Globally Unique ID
+Text
+254
+M
+Country*
+Country
+Text
+2
+M
+State*
+State
+Text
+2
+M
+County*
+County
+Text
+40
+M
+AddCode
+Additional Code
+Text
+6
+C
+AddDataURI
+Additional Data URI
+Text
+254
+C
+Inc_Muni*
+Incorporated Municipality
+Text
+100
+M
+Uninc_Comm
+Unincorporated Community
+Text
+100
+O
+Nbrhd_Comm
+Neighborhood Community
+Text
+100
+O
+AddNum_Pre
+Address Number Prefix
+Text
+15
+C
+Add_Number
+Address Number
+Integer
+6
+C
+AddNum_Suf
+Address Number Suffix
+Text
+15
+C
+St_PreMod
+Street Name Pre Modifier
+Text
+15
+C
+St_PreDir*
+Street Name Pre Directional
+Text
+9
+C
+St_PreTyp*
+Street Name Pre Type
+Text
+50
+C
+St_PreSep*
+Street Name Pre Type Separator
+Text
+20
+C
+St_Name
+Street Name
+Text
+60
+C
+St_PosTyp*
+Street Name Post Type
+Text
+50
+C
+St_PosDir*
+Street Name Post Directional
+Text
+9
+C
+St_PosMod
+Street Name Post Modifier
+Text
+25
+C
+LSt_PreDir*
+Legacy Street Name Pre Directional
+Text
+2
+C
+LSt_Name
+Legacy Street Name
+Text
+75
+C
+LSt_Type*
+Legacy Street Name Type
+Text
+4
+C
+LSt_PosDir*
+Legacy Street Name Post Directional
+Text
+2
+C
+ESN
+ESN
+Text
+5
+C
+MSAGComm
+MSAG Community Name
+Text
+30
+C
+Post_Comm
+Postal Community Name
+Text
+40
+O
+Post_Code
+Postal Code
+Text
+7
+O
+Post_Code4
+ZIP Plus 4
+Text
+4
+O
+Building
+Building
+Text
+75
+O
+Floor
+Floor
+Text
+75
+O
+Unit
+Unit
+Text
+75
+O
+Room
+Room
+Text
+75
+O
+Seat
+Seat
+Text
+75
+O
+Addtl_Loc
+Additional Location Information
+Text
+225
+O
+LandmkName
+Complete Landmark Name
+Text
+150
+C
+Mile_Post
+Mile Post
+Text
+150
+C
+Place_Type*
+Place Type
+Text
+50
+O
+Placement*
+Placement Method
+Text
+25
+O
+Long*
+Longitude
+Double
+-
+O
+Lat*
+Latitude
+Double
+-
+O
+Elev
+Elevation
+Integer
+6
+O

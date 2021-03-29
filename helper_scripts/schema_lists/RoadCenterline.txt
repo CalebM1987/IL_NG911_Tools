@@ -1,0 +1,260 @@
+DiscrpAgID
+Discrepancy Agency ID
+Text
+75
+R
+DateUpdate
+Date Updated
+Date
+-
+M
+Effective
+Effective Date
+Date
+-
+O
+Expire
+Expiration Date
+Date
+-
+O
+RCL_NGUID
+Road Centerline NENA Globally Unique ID
+Text
+254
+M
+AdNumPre_L
+Left Address Number Prefix
+Text
+15
+C
+AdNumPre_R
+Right Address Number Prefix
+Text
+15
+C
+FromAddr_L
+Left FROM Address
+Integer
+6
+M
+ToAddr_L
+Left TO Address
+Integer
+6
+M
+FromAddr_R
+Right FROM Address
+Integer
+6
+M
+ToAddr_R
+Right TO Address
+Integer
+6
+M
+Parity_L*
+Parity Left
+Text
+1
+M
+Parity_R*
+Parity Right
+Text
+1
+M
+St_PreMod
+Street Name Pre Modifier
+Text
+15
+C
+St_PreDir*
+Street Name Pre Directional
+Text
+9
+C
+St_PreTyp*
+Street Name Pre Type
+Text
+50
+C
+St_PreSep*
+Street Name Pre Type Separator
+Text
+20
+C
+St_Name
+Street Name
+Text
+60
+M
+St_PosTyp*
+Street Name Post Type
+Text
+50
+C
+St_PosDir*
+Street Name Post Directional
+Text
+9
+C
+St_PosMod
+Street Name Post Modifier
+Text
+25
+C
+LSt_PreDir*
+Legacy Street Name Pre Directional
+Text
+2
+C
+LSt_Name
+Legacy Street Name
+Text
+75
+C
+LSt_Type*
+Legacy Street Name Type
+Text
+4
+C
+LSt_PosDir*
+Legacy Street Name Post Directional
+Text
+2
+C
+ESN_L
+ESN Left
+Text
+5
+C
+ESN_R
+ESN Right
+Text
+5
+C
+MSAGComm_L
+MSAG Community Name Left
+Text
+30
+C
+MSAGComm_R
+MSAG Community Name Right
+Text
+30
+C
+Country_L*
+Country Left
+Text
+2
+M
+Country_R*
+Country Right
+Text
+2
+M
+State_L*
+State Left
+Text
+2
+M
+State_R*
+State Right
+Text
+2
+M
+County_L*
+County Left
+Text
+40
+M
+County_R*
+County Right
+Text
+40
+M
+AddCode_L
+Additional Code Left
+Text
+6
+C
+AddCode_R
+Additional Code Right
+Text
+6
+C
+IncMuni_L*
+Incorporated Municipality Left
+Text
+100
+M
+IncMuni_R*
+Incorporated Municipality Right
+Text
+100
+M
+UnincCom_L
+Unincorporated Community Left
+Text
+100
+O
+UnincCom_R
+Unincorporated Community Right
+Text
+100
+O
+NbrhdCom_L
+Neighborhood Community Left
+Text
+100
+O
+NbrhdCom_R
+Neighborhood Community Right
+Text
+100
+O
+PostCode_L
+Postal Code Left
+Text
+7
+O
+PostCode_R
+Postal Code Right
+Text
+7
+O
+PostComm_L
+Postal Community Name Left
+Text
+40
+O
+PostComm_R
+Postal Community Name Right
+Text
+40
+O
+RoadClass*
+Road Class
+Text
+15
+O
+OneWay*
+One-Way
+Text
+2
+O
+SpeedLimit*
+Speed Limit
+Integer
+3
+O
+Valid_L*
+Validation Left
+Text
+1
+O
+Valid_R*
+Validation Right
+Text
+1
+O

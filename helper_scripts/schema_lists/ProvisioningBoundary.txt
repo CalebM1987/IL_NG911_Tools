@@ -1,0 +1,25 @@
+DiscrpAgID
+Discrepancy Agency ID
+Text
+75
+R
+DateUpdate
+Date Updated
+Date
+-
+M
+Effective
+Effective Date
+Date
+-
+O
+Expire
+Expiration Date
+Date
+-
+O
+PB_NGUID
+Provisioning Boundary NENA Globally Unique ID
+Text
+254
+M
