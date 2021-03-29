@@ -1,0 +1,50 @@
+{
+  "layer": "ProvisioningBoundary",
+  "fieldCategories": {
+    "DiscrpAgID": "R",
+    "DateUpdate": "M",
+    "Effective": "O",
+    "Expire": "O",
+    "PB_NGUID": "M"
+  },
+  "domains": {},
+  "featureSet": {
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326
+    },
+    "fields": [
+      {
+        "name": "DiscrpAgID",
+        "alias": "Discrepancy Agency ID",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "DateUpdate",
+        "alias": "Date Updated",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "Effective",
+        "alias": "Effective Date",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "Expire",
+        "alias": "Expiration Date",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "PB_NGUID",
+        "alias": "Provisioning Boundary NENA Globally Unique ID",
+        "type": "esriFieldTypeString",
+        "length": 254
+      }
+    ],
+    "features": []
+  }
+}

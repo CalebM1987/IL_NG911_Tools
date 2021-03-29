@@ -1,0 +1,379 @@
+{
+  "layer": "RoadCenterline",
+  "fieldCategories": {
+    "DiscrpAgID": "R",
+    "DateUpdate": "M",
+    "Effective": "O",
+    "Expire": "O",
+    "RCL_NGUID": "M",
+    "AdNumPre_L": "C",
+    "AdNumPre_R": "C",
+    "FromAddr_L": "M",
+    "ToAddr_L": "M",
+    "FromAddr_R": "M",
+    "ToAddr_R": "M",
+    "Parity_L": "M",
+    "Parity_R": "M",
+    "St_PreMod": "C",
+    "St_PreDir": "C",
+    "St_PreTyp": "C",
+    "St_PreSep": "C",
+    "St_Name": "M",
+    "St_PosTyp": "C",
+    "St_PosDir": "C",
+    "St_PosMod": "C",
+    "LSt_PreDir": "C",
+    "LSt_Name": "C",
+    "LSt_Type": "C",
+    "LSt_PosDir": "C",
+    "ESN_L": "C",
+    "ESN_R": "C",
+    "MSAGComm_L": "C",
+    "MSAGComm_R": "C",
+    "Country_L": "M",
+    "Country_R": "M",
+    "State_L": "M",
+    "State_R": "M",
+    "County_L": "M",
+    "County_R": "M",
+    "AddCode_L": "C",
+    "AddCode_R": "C",
+    "IncMuni_L": "M",
+    "IncMuni_R": "M",
+    "UnincCom_L": "O",
+    "UnincCom_R": "O",
+    "NbrhdCom_L": "O",
+    "NbrhdCom_R": "O",
+    "PostCode_L": "O",
+    "PostCode_R": "O",
+    "PostComm_L": "O",
+    "PostComm_R": "O",
+    "RoadClass": "O",
+    "OneWay": "O",
+    "SpeedLimit": "O",
+    "Valid_L": "O",
+    "Valid_R": "O"
+  },
+  "domains": {},
+  "featureSet": {
+    "geometryType": "esriGeometryPolyline",
+    "spatialReference": {
+      "wkid": 4326
+    },
+    "fields": [
+      {
+        "name": "DiscrpAgID",
+        "alias": "Discrepancy Agency ID",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "DateUpdate",
+        "alias": "Date Updated",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "Effective",
+        "alias": "Effective Date",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "Expire",
+        "alias": "Expiration Date",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "RCL_NGUID",
+        "alias": "Road Centerline NENA Globally Unique ID",
+        "type": "esriFieldTypeString",
+        "length": 254
+      },
+      {
+        "name": "AdNumPre_L",
+        "alias": "Left Address Number Prefix",
+        "type": "esriFieldTypeString",
+        "length": 15
+      },
+      {
+        "name": "AdNumPre_R",
+        "alias": "Right Address Number Prefix",
+        "type": "esriFieldTypeString",
+        "length": 15
+      },
+      {
+        "name": "FromAddr_L",
+        "alias": "Left FROM Address",
+        "type": "esriFieldTypeInteger",
+        "length": null
+      },
+      {
+        "name": "ToAddr_L",
+        "alias": "Left TO Address",
+        "type": "esriFieldTypeInteger",
+        "length": null
+      },
+      {
+        "name": "FromAddr_R",
+        "alias": "Right FROM Address",
+        "type": "esriFieldTypeInteger",
+        "length": null
+      },
+      {
+        "name": "ToAddr_R",
+        "alias": "Right TO Address",
+        "type": "esriFieldTypeInteger",
+        "length": null
+      },
+      {
+        "name": "Parity_L",
+        "alias": "Parity Left",
+        "type": "esriFieldTypeString",
+        "length": 1
+      },
+      {
+        "name": "Parity_R",
+        "alias": "Parity Right",
+        "type": "esriFieldTypeString",
+        "length": 1
+      },
+      {
+        "name": "St_PreMod",
+        "alias": "Street Name Pre Modifier",
+        "type": "esriFieldTypeString",
+        "length": 15
+      },
+      {
+        "name": "St_PreDir",
+        "alias": "Street Name Pre Directional",
+        "type": "esriFieldTypeString",
+        "length": 9
+      },
+      {
+        "name": "St_PreTyp",
+        "alias": "Street Name Pre Type",
+        "type": "esriFieldTypeString",
+        "length": 50
+      },
+      {
+        "name": "St_PreSep",
+        "alias": "Street Name Pre Type Separator",
+        "type": "esriFieldTypeString",
+        "length": 20
+      },
+      {
+        "name": "St_Name",
+        "alias": "Street Name",
+        "type": "esriFieldTypeString",
+        "length": 60
+      },
+      {
+        "name": "St_PosTyp",
+        "alias": "Street Name Post Type",
+        "type": "esriFieldTypeString",
+        "length": 50
+      },
+      {
+        "name": "St_PosDir",
+        "alias": "Street Name Post Directional",
+        "type": "esriFieldTypeString",
+        "length": 9
+      },
+      {
+        "name": "St_PosMod",
+        "alias": "Street Name Post Modifier",
+        "type": "esriFieldTypeString",
+        "length": 25
+      },
+      {
+        "name": "LSt_PreDir",
+        "alias": "Legacy Street Name Pre Directional",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "LSt_Name",
+        "alias": "Legacy Street Name",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "LSt_Type",
+        "alias": "Legacy Street Name Type",
+        "type": "esriFieldTypeString",
+        "length": 4
+      },
+      {
+        "name": "LSt_PosDir",
+        "alias": "Legacy Street Name Post Directional",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "ESN_L",
+        "alias": "ESN Left",
+        "type": "esriFieldTypeString",
+        "length": 5
+      },
+      {
+        "name": "ESN_R",
+        "alias": "ESN Right",
+        "type": "esriFieldTypeString",
+        "length": 5
+      },
+      {
+        "name": "MSAGComm_L",
+        "alias": "MSAG Community Name Left",
+        "type": "esriFieldTypeString",
+        "length": 30
+      },
+      {
+        "name": "MSAGComm_R",
+        "alias": "MSAG Community Name Right",
+        "type": "esriFieldTypeString",
+        "length": 30
+      },
+      {
+        "name": "Country_L",
+        "alias": "Country Left",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "Country_R",
+        "alias": "Country Right",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "State_L",
+        "alias": "State Left",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "State_R",
+        "alias": "State Right",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "County_L",
+        "alias": "County Left",
+        "type": "esriFieldTypeString",
+        "length": 40
+      },
+      {
+        "name": "County_R",
+        "alias": "County Right",
+        "type": "esriFieldTypeString",
+        "length": 40
+      },
+      {
+        "name": "AddCode_L",
+        "alias": "Additional Code Left",
+        "type": "esriFieldTypeString",
+        "length": 6
+      },
+      {
+        "name": "AddCode_R",
+        "alias": "Additional Code Right",
+        "type": "esriFieldTypeString",
+        "length": 6
+      },
+      {
+        "name": "IncMuni_L",
+        "alias": "Incorporated Municipality Left",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "IncMuni_R",
+        "alias": "Incorporated Municipality Right",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "UnincCom_L",
+        "alias": "Unincorporated Community Left",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "UnincCom_R",
+        "alias": "Unincorporated Community Right",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "NbrhdCom_L",
+        "alias": "Neighborhood Community Left",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "NbrhdCom_R",
+        "alias": "Neighborhood Community Right",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "PostCode_L",
+        "alias": "Postal Code Left",
+        "type": "esriFieldTypeString",
+        "length": 7
+      },
+      {
+        "name": "PostCode_R",
+        "alias": "Postal Code Right",
+        "type": "esriFieldTypeString",
+        "length": 7
+      },
+      {
+        "name": "PostComm_L",
+        "alias": "Postal Community Name Left",
+        "type": "esriFieldTypeString",
+        "length": 40
+      },
+      {
+        "name": "PostComm_R",
+        "alias": "Postal Community Name Right",
+        "type": "esriFieldTypeString",
+        "length": 40
+      },
+      {
+        "name": "RoadClass",
+        "alias": "Road Class",
+        "type": "esriFieldTypeString",
+        "length": 15
+      },
+      {
+        "name": "OneWay",
+        "alias": "One-Way",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "SpeedLimit",
+        "alias": "Speed Limit",
+        "type": "esriFieldTypeInteger",
+        "length": null
+      },
+      {
+        "name": "Valid_L",
+        "alias": "Validation Left",
+        "type": "esriFieldTypeString",
+        "length": 1
+      },
+      {
+        "name": "Valid_R",
+        "alias": "Validation Right",
+        "type": "esriFieldTypeString",
+        "length": 1
+      }
+    ],
+    "features": []
+  }
+}

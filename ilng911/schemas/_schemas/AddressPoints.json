@@ -1,0 +1,337 @@
+{
+  "layer": "AddressPoints",
+  "fieldCategories": {
+    "DiscrpAgID": "R",
+    "DateUpdate": "M",
+    "Effective": "O",
+    "Expire": "O",
+    "Site_NGUID": "M",
+    "Country": "M",
+    "State": "M",
+    "County": "M",
+    "AddCode": "C",
+    "AddDataURI": "C",
+    "Inc_Muni": "M",
+    "Uninc_Comm": "O",
+    "Nbrhd_Comm": "O",
+    "AddNum_Pre": "C",
+    "Add_Number": "C",
+    "AddNum_Suf": "C",
+    "St_PreMod": "C",
+    "St_PreDir": "C",
+    "St_PreTyp": "C",
+    "St_PreSep": "C",
+    "St_Name": "C",
+    "St_PosTyp": "C",
+    "St_PosDir": "C",
+    "St_PosMod": "C",
+    "LSt_PreDir": "C",
+    "LSt_Name": "C",
+    "LSt_Type": "C",
+    "LSt_PosDir": "C",
+    "ESN": "C",
+    "MSAGComm": "C",
+    "Post_Comm": "O",
+    "Post_Code": "O",
+    "Post_Code4": "O",
+    "Building": "O",
+    "Floor": "O",
+    "Unit": "O",
+    "Room": "O",
+    "Seat": "O",
+    "Addtl_Loc": "O",
+    "LandmkName": "C",
+    "Mile_Post": "C",
+    "Place_Type": "O",
+    "Placement": "O",
+    "Long": "O",
+    "Lat": "O",
+    "Elev": "O"
+  },
+  "domains": {},
+  "featureSet": {
+    "geometryType": null,
+    "spatialReference": {
+      "wkid": 4326
+    },
+    "fields": [
+      {
+        "name": "DiscrpAgID",
+        "alias": "Discrepancy Agency ID",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "DateUpdate",
+        "alias": "Date Updated",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "Effective",
+        "alias": "Effective Date",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "Expire",
+        "alias": "Expiration Date",
+        "type": "esriFieldTypeDate",
+        "length": null
+      },
+      {
+        "name": "Site_NGUID",
+        "alias": "Site NENA Globally Unique ID",
+        "type": "esriFieldTypeString",
+        "length": 254
+      },
+      {
+        "name": "Country",
+        "alias": "Country",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "State",
+        "alias": "State",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "County",
+        "alias": "County",
+        "type": "esriFieldTypeString",
+        "length": 40
+      },
+      {
+        "name": "AddCode",
+        "alias": "Additional Code",
+        "type": "esriFieldTypeString",
+        "length": 6
+      },
+      {
+        "name": "AddDataURI",
+        "alias": "Additional Data URI",
+        "type": "esriFieldTypeString",
+        "length": 254
+      },
+      {
+        "name": "Inc_Muni",
+        "alias": "Incorporated Municipality",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "Uninc_Comm",
+        "alias": "Unincorporated Community",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "Nbrhd_Comm",
+        "alias": "Neighborhood Community",
+        "type": "esriFieldTypeString",
+        "length": 100
+      },
+      {
+        "name": "AddNum_Pre",
+        "alias": "Address Number Prefix",
+        "type": "esriFieldTypeString",
+        "length": 15
+      },
+      {
+        "name": "Add_Number",
+        "alias": "Address Number",
+        "type": "esriFieldTypeInteger",
+        "length": null
+      },
+      {
+        "name": "AddNum_Suf",
+        "alias": "Address Number Suffix",
+        "type": "esriFieldTypeString",
+        "length": 15
+      },
+      {
+        "name": "St_PreMod",
+        "alias": "Street Name Pre Modifier",
+        "type": "esriFieldTypeString",
+        "length": 15
+      },
+      {
+        "name": "St_PreDir",
+        "alias": "Street Name Pre Directional",
+        "type": "esriFieldTypeString",
+        "length": 9
+      },
+      {
+        "name": "St_PreTyp",
+        "alias": "Street Name Pre Type",
+        "type": "esriFieldTypeString",
+        "length": 50
+      },
+      {
+        "name": "St_PreSep",
+        "alias": "Street Name Pre Type Separator",
+        "type": "esriFieldTypeString",
+        "length": 20
+      },
+      {
+        "name": "St_Name",
+        "alias": "Street Name",
+        "type": "esriFieldTypeString",
+        "length": 60
+      },
+      {
+        "name": "St_PosTyp",
+        "alias": "Street Name Post Type",
+        "type": "esriFieldTypeString",
+        "length": 50
+      },
+      {
+        "name": "St_PosDir",
+        "alias": "Street Name Post Directional",
+        "type": "esriFieldTypeString",
+        "length": 9
+      },
+      {
+        "name": "St_PosMod",
+        "alias": "Street Name Post Modifier",
+        "type": "esriFieldTypeString",
+        "length": 25
+      },
+      {
+        "name": "LSt_PreDir",
+        "alias": "Legacy Street Name Pre Directional",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "LSt_Name",
+        "alias": "Legacy Street Name",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "LSt_Type",
+        "alias": "Legacy Street Name Type",
+        "type": "esriFieldTypeString",
+        "length": 4
+      },
+      {
+        "name": "LSt_PosDir",
+        "alias": "Legacy Street Name Post Directional",
+        "type": "esriFieldTypeString",
+        "length": 2
+      },
+      {
+        "name": "ESN",
+        "alias": "ESN",
+        "type": "esriFieldTypeString",
+        "length": 5
+      },
+      {
+        "name": "MSAGComm",
+        "alias": "MSAG Community Name",
+        "type": "esriFieldTypeString",
+        "length": 30
+      },
+      {
+        "name": "Post_Comm",
+        "alias": "Postal Community Name",
+        "type": "esriFieldTypeString",
+        "length": 40
+      },
+      {
+        "name": "Post_Code",
+        "alias": "Postal Code",
+        "type": "esriFieldTypeString",
+        "length": 7
+      },
+      {
+        "name": "Post_Code4",
+        "alias": "ZIP Plus 4",
+        "type": "esriFieldTypeString",
+        "length": 4
+      },
+      {
+        "name": "Building",
+        "alias": "Building",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "Floor",
+        "alias": "Floor",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "Unit",
+        "alias": "Unit",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "Room",
+        "alias": "Room",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "Seat",
+        "alias": "Seat",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "Addtl_Loc",
+        "alias": "Additional Location Information",
+        "type": "esriFieldTypeString",
+        "length": 225
+      },
+      {
+        "name": "LandmkName",
+        "alias": "Complete Landmark Name",
+        "type": "esriFieldTypeString",
+        "length": 150
+      },
+      {
+        "name": "Mile_Post",
+        "alias": "Mile Post",
+        "type": "esriFieldTypeString",
+        "length": 150
+      },
+      {
+        "name": "Place_Type",
+        "alias": "Place Type",
+        "type": "esriFieldTypeString",
+        "length": 50
+      },
+      {
+        "name": "Placement",
+        "alias": "Placement Method",
+        "type": "esriFieldTypeString",
+        "length": 25
+      },
+      {
+        "name": "Long",
+        "alias": "Longitude",
+        "type": "esriFieldTypeDouble",
+        "length": null
+      },
+      {
+        "name": "Lat",
+        "alias": "Latitude",
+        "type": "esriFieldTypeDouble",
+        "length": null
+      },
+      {
+        "name": "Elev",
+        "alias": "Elevation",
+        "type": "esriFieldTypeInteger",
+        "length": null
+      }
+    ],
+    "features": []
+  }
+}
