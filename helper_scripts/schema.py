@@ -29,7 +29,7 @@ MAPPING = dict(
 get_field_type = lambda x: MAPPING.get(x, 'TEXT')
 
 def pdf_schema_to_json(text, layer, group_length=5):
-    fields, field_cats, domains = [], {}, {}
+    fields, fieldInfos = [], []
 
     parts = text.split('\n')
 
@@ -41,12 +41,16 @@ def pdf_schema_to_json(text, layer, group_length=5):
         group[2] = get_field_type(group[2])
         fields.append(dict(zip(PROPERTIES, group[:-1])))
         # assign feature category
-        field_cats[group[0]] = group[-1]
-        # TODO: assign domain
-    # print(json.dumps(fields, indent=2))
-
+        fieldInfos.append(
+            dict(
+                name=group[0],
+                category=group[-1],
+                # TODO: assign domain
+                domain=None
+            )
+        )
+    
     # form feature set
-
     fs = dict(
         geometryType=LAYERS.get(layer),
         spatialReference=dict(
@@ -59,8 +63,7 @@ def pdf_schema_to_json(text, layer, group_length=5):
     print(out_file)
     config = dict(
         layer=layer,
-        fieldCategories=field_cats,
-        domains=domains,
+        fieldInfos=fieldInfos,
         featureSet=fs
     )
     write_json_file(config, out_file)

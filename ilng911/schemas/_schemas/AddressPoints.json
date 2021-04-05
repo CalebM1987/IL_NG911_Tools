@@ -1,54 +1,237 @@
 {
   "layer": "AddressPoints",
-  "fieldCategories": {
-    "DiscrpAgID": "R",
-    "DateUpdate": "M",
-    "Effective": "O",
-    "Expire": "O",
-    "Site_NGUID": "M",
-    "Country": "M",
-    "State": "M",
-    "County": "M",
-    "AddCode": "C",
-    "AddDataURI": "C",
-    "Inc_Muni": "M",
-    "Uninc_Comm": "O",
-    "Nbrhd_Comm": "O",
-    "AddNum_Pre": "C",
-    "Add_Number": "C",
-    "AddNum_Suf": "C",
-    "St_PreMod": "C",
-    "St_PreDir": "C",
-    "St_PreTyp": "C",
-    "St_PreSep": "C",
-    "St_Name": "C",
-    "St_PosTyp": "C",
-    "St_PosDir": "C",
-    "St_PosMod": "C",
-    "LSt_PreDir": "C",
-    "LSt_Name": "C",
-    "LSt_Type": "C",
-    "LSt_PosDir": "C",
-    "ESN": "C",
-    "MSAGComm": "C",
-    "Post_Comm": "O",
-    "Post_Code": "O",
-    "Post_Code4": "O",
-    "Building": "O",
-    "Floor": "O",
-    "Unit": "O",
-    "Room": "O",
-    "Seat": "O",
-    "Addtl_Loc": "O",
-    "LandmkName": "C",
-    "Mile_Post": "C",
-    "Place_Type": "O",
-    "Placement": "O",
-    "Long": "O",
-    "Lat": "O",
-    "Elev": "O"
-  },
-  "domains": {},
+  "fieldInfos": [
+    {
+      "name": "DiscrpAgID",
+      "category": "R",
+      "domain": null
+    },
+    {
+      "name": "DateUpdate",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "Effective",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Expire",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Site_NGUID",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "Country",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "State",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "County",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "AddCode",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "AddDataURI",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "Inc_Muni",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "Uninc_Comm",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Nbrhd_Comm",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "AddNum_Pre",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "Add_Number",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "AddNum_Suf",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PreMod",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PreDir",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PreTyp",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PreSep",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_Name",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PosTyp",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PosDir",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PosMod",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "LSt_PreDir",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "LSt_Name",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "LSt_Type",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "LSt_PosDir",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "ESN",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "MSAGComm",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "Post_Comm",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Post_Code",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Post_Code4",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Building",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Floor",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Unit",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Room",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Seat",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Addtl_Loc",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "LandmkName",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "Mile_Post",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "Place_Type",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Placement",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Long",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Lat",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Elev",
+      "category": "O",
+      "domain": null
+    }
+  ],
   "featureSet": {
     "geometryType": null,
     "spatialReference": {

@@ -1,60 +1,267 @@
 {
   "layer": "RoadCenterline",
-  "fieldCategories": {
-    "DiscrpAgID": "R",
-    "DateUpdate": "M",
-    "Effective": "O",
-    "Expire": "O",
-    "RCL_NGUID": "M",
-    "AdNumPre_L": "C",
-    "AdNumPre_R": "C",
-    "FromAddr_L": "M",
-    "ToAddr_L": "M",
-    "FromAddr_R": "M",
-    "ToAddr_R": "M",
-    "Parity_L": "M",
-    "Parity_R": "M",
-    "St_PreMod": "C",
-    "St_PreDir": "C",
-    "St_PreTyp": "C",
-    "St_PreSep": "C",
-    "St_Name": "M",
-    "St_PosTyp": "C",
-    "St_PosDir": "C",
-    "St_PosMod": "C",
-    "LSt_PreDir": "C",
-    "LSt_Name": "C",
-    "LSt_Type": "C",
-    "LSt_PosDir": "C",
-    "ESN_L": "C",
-    "ESN_R": "C",
-    "MSAGComm_L": "C",
-    "MSAGComm_R": "C",
-    "Country_L": "M",
-    "Country_R": "M",
-    "State_L": "M",
-    "State_R": "M",
-    "County_L": "M",
-    "County_R": "M",
-    "AddCode_L": "C",
-    "AddCode_R": "C",
-    "IncMuni_L": "M",
-    "IncMuni_R": "M",
-    "UnincCom_L": "O",
-    "UnincCom_R": "O",
-    "NbrhdCom_L": "O",
-    "NbrhdCom_R": "O",
-    "PostCode_L": "O",
-    "PostCode_R": "O",
-    "PostComm_L": "O",
-    "PostComm_R": "O",
-    "RoadClass": "O",
-    "OneWay": "O",
-    "SpeedLimit": "O",
-    "Valid_L": "O",
-    "Valid_R": "O"
-  },
-  "domains": {},
+  "fieldInfos": [
+    {
+      "name": "DiscrpAgID",
+      "category": "R",
+      "domain": null
+    },
+    {
+      "name": "DateUpdate",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "Effective",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Expire",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "RCL_NGUID",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "AdNumPre_L",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "AdNumPre_R",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "FromAddr_L",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "ToAddr_L",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "FromAddr_R",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "ToAddr_R",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "Parity_L",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "Parity_R",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "St_PreMod",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PreDir",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PreTyp",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PreSep",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_Name",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "St_PosTyp",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PosDir",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "St_PosMod",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "LSt_PreDir",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "LSt_Name",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "LSt_Type",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "LSt_PosDir",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "ESN_L",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "ESN_R",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "MSAGComm_L",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "MSAGComm_R",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "Country_L",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "Country_R",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "State_L",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "State_R",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "County_L",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "County_R",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "AddCode_L",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "AddCode_R",
+      "category": "C",
+      "domain": null
+    },
+    {
+      "name": "IncMuni_L",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "IncMuni_R",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "UnincCom_L",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "UnincCom_R",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "NbrhdCom_L",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "NbrhdCom_R",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "PostCode_L",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "PostCode_R",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "PostComm_L",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "PostComm_R",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "RoadClass",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "OneWay",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "SpeedLimit",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Valid_L",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Valid_R",
+      "category": "O",
+      "domain": null
+    }
+  ],
   "featureSet": {
     "geometryType": "esriGeometryPolyline",
     "spatialReference": {

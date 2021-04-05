@@ -1,13 +1,32 @@
 {
   "layer": "PSAP",
-  "fieldCategories": {
-    "DiscrpAgID": "R",
-    "DateUpdate": "M",
-    "Effective": "O",
-    "Expire": "O",
-    "PB_NGUID": "M"
-  },
-  "domains": {},
+  "fieldInfos": [
+    {
+      "name": "DiscrpAgID",
+      "category": "R",
+      "domain": null
+    },
+    {
+      "name": "DateUpdate",
+      "category": "M",
+      "domain": null
+    },
+    {
+      "name": "Effective",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "Expire",
+      "category": "O",
+      "domain": null
+    },
+    {
+      "name": "PB_NGUID",
+      "category": "M",
+      "domain": null
+    }
+  ],
   "featureSet": {
     "geometryType": "esriGeometryPolygon",
     "spatialReference": {
