@@ -5,6 +5,7 @@ __pycache__/
 
 # custom stuff
 node_modules/
+test_env/
 
 # C extensions
 *.so
