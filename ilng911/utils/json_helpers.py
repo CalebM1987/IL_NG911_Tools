@@ -1,9 +1,8 @@
-from ..support.munch import munchify
-from ..utils import message
+from ..support.munch import munchify, Munch
 import json
 import os
 
-def load_json(json_file):
+def load_json(json_file: str):
     """loads a json file into a Munch (dict)
 
     Args:
@@ -17,7 +16,7 @@ def load_json(json_file):
             return munchify(json.load(f))
     raise IOError(f'JSON file "{json_file}" does not exist.')
 
-def write_json_file(obj, out_file, **kwargs):
+def write_json_file(obj, out_file: str, **kwargs):
     """writes a json file
 
     Args:
@@ -30,5 +29,5 @@ def write_json_file(obj, out_file, **kwargs):
     validated_filename = os.path.splitext(out_file)[0] + '.json'
     with open(validated_filename, 'w') as f:
         json.dump(obj, f, **kwargs)
-    message(f'Created json file: "{out_file}"')
+    print(f'Created json file: "{out_file}"')
     return validated_filename

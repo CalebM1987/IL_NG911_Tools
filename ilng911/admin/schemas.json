@@ -1,0 +1,30 @@
+{
+  "NG911_Fields": {
+    "fields": [
+      {
+        "name": "Name",
+        "alias": "Field Name",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "FeatureClass",
+        "alias": "Feature Class",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+      {
+        "name": "CoreField",
+        "alias": "Is Core Field",
+        "type": "esriFieldTypeString",
+        "length": 3
+      },
+      {
+        "name": "Name",
+        "alias": "Field Name",
+        "type": "esriFieldTypeString",
+        "length": 75
+      },
+    ]
+  }
+}
