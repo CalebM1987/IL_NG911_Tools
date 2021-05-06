@@ -234,7 +234,7 @@
     }
   ],
   "featureSet": {
-    "geometryType": null,
+    "geometryType": "esriGeometryPoint",
     "spatialReference": {
       "wkid": 4326
     },
