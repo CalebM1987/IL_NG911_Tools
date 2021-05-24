@@ -1,6 +1,7 @@
 {
   "scope": "ng911",
   "layer": "AddressPoints",
+  "featureType": "ADDRESS_POINTS",
   "fieldInfos": [
     {
       "name": "DiscrpAgID",

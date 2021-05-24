@@ -1,5 +1,8 @@
 import os
 import sys
+import arcpy
+import datetime
+import warnings
 
 is_arc = os.path.basename(sys.executable).startswith('Arc')
 
@@ -8,6 +11,22 @@ if is_arc:
     import arcpy
     needs_arc_message = True
 
+class lazyprop:
+    """Based on code from David Beazley's "Python Cookbook".
+    
+    @see: https://stackoverflow.com/q/62160411/3005089
+    """
+    def __init__(self, func):
+        self.__doc__ = getattr(func, '__doc__')
+        self.func = func
+
+    def __get__(self, instance, cls):
+        if instance is None:
+            return self
+        else:
+            value = instance.__dict__[self.func.__name__] = self.func(instance)
+            return value
+
 
 def message(*args):
     """prints one or more messages to the stdout.  If being used in an arcpy process, it will also call arcpy.AddMessage()"""
@@ -15,6 +34,41 @@ def message(*args):
         print(str(msg))
         if needs_arc_message:
             arcpy.AddMessage(str(msg))
+
+def mil_to_date(mil):
+    """Date items from REST services are reported in milliseconds,
+            this function will convert milliseconds to datetime objects.
+    Args:
+        mil: Time in milliseconds.
+    Returns:
+        Datetime object.
+    """
+
+    if isinstance(mil, str):
+        mil = int(mil)
+    if mil == None:
+        return None
+    elif mil < 0:
+        return datetime.datetime.utcfromtimestamp(0) + datetime.timedelta(seconds=(mil/1000))
+    else:
+        try:
+            return datetime.datetime.utcfromtimestamp(mil / 1000)
+        except Exception as e:
+            warnings.warn('bad milliseconds value: {}'.format(mil))
+            raise e
+
+def date_to_mil(date=None):
+    """Converts datetime.datetime() object to milliseconds.
+    Args:
+        date: datetime.datetime() object
+    Returns:
+        Time in milliseconds.
+    """
+
+    if isinstance(date, datetime.datetime):
+        epoch = datetime.datetime.utcfromtimestamp(0)
+        return int((date - epoch).total_seconds() * 1000.0)
+
 
 def find_ws(path, ws_type=None, return_type=False):
     """finds the workspace for a given feature class or shapefile
@@ -93,3 +147,35 @@ def find_ws(path, ws_type=None, return_type=False):
                     return (sub_dir, desc.workspaceType)
                 else:
                     return sub_dir
+
+def copy_schema(template: str, output: str, sr: arcpy.SpatialReference=None, shapeType: str='') -> str:
+    """creates an empty feature class or table based on a template
+
+    Args:
+        template (str): the template feature class or table
+        output (str): the output empty table or feature class
+        sr (arcpy.SpatialReference, optional): an arcpy.SpatialReference object.
+        shapeType (str, optional): a shapeType. Defaults to ''.
+
+    Returns:
+        str: the output feature class or table
+
+    >>> #Example
+    >>> copy_schema(r'C:\Temp\soils_city.shp', r'C:\Temp\soils_county.shp')
+    """
+    path, name = os.path.split(output)
+    desc = arcpy.Describe(template)
+    ftype = desc.dataType
+    exp = '{0} is null'.format(arcpy.AddFieldDelimiters(template, desc.OIDFieldName))
+    # if not emptyTable:
+    #     exp = ''
+    if 'table' in ftype.lower() or shapeType.lower() == 'table':
+        arcpy.conversion.TableToTable(template, path, name, exp)
+    else:
+        if not shapeType:
+            shapeType = desc.shapeType.upper()
+        sm = 'SAME_AS_TEMPLATE'
+        if not sr:
+            sr = desc.spatialReference
+        arcpy.management.CreateFeatureclass(path, name, shapeType, template, sm, sm, sr)
+    return output

@@ -1,20 +1,28 @@
 import os
 import arcpy
 from ..support.munch import munchify, Munch
-from ..schemas import load_schema
-from ..utils import message
+# from ..schemas import load_schema, DataType
+from ..utils import message, lazyprop
 
 
 class NG911LayerTypes:
     __props__ = [
+        'PSAP',
+        'ESB',
+        'ESB_EMS',
+        'ESB_FIRE',
+        'ESB_LAW,'
         'ADDRESS_POINTS',
         'ROAD_CENTERLINE',
-        'PSAP_ESB',
         'PROVISIONING_BOUNDARY'
     ]
+    PSAP = 'PSAP'
+    ESB = 'ESB'
+    ESB_EMS = 'ESB_EMS'
+    ESB_FIRE = 'ESB_FIRE'
+    ESB_LAW = 'ESB_LAW'
     ADDRESS_POINTS = 'ADDRESS_POINTS'
     ROAD_CENTERLINE = 'ROAD_CENTERLINE'
-    PSAP_ESB = 'PSAP_ESB'
     PROVISIONING_BOUNDARY = 'PROVISIONING_BOUNDARY'
 
     def __iter__(self):
@@ -23,13 +31,23 @@ class NG911LayerTypes:
 
 class NG911SchemaTables:
     __props__ = [
-        'NG911_Tables'
+        'NG911_Tables',
+        'AgencyInfo',
+        'CustomFields',
+        'CADVendorFields'
     ]
 
     NG911_TABLES = 'NG911_Tables'
+    AGENCY_INFO = 'AgencyInfo'
+    CUSTOM_FIELDS = 'CustomFields'
+    CAD_VENDOR_FIELDS= 'CADVendorFields'
 
 
 class NG911Data: 
+    state = None
+    county = None
+    country = 'US'
+    agencyID = None
     types = NG911LayerTypes
     schemaTables = NG911SchemaTables
 
@@ -43,30 +61,69 @@ class NG911Data:
         """
         self.gdb_path = schema_gdb
         
-        schema = self.get_table('NG911_Tables')
+        schema = self.get_table(self.schemaTables.NG911_TABLES)
         with arcpy.da.SearchCursor(schema, ['Path', 'FeatureType']) as rows:
             self.requiredTables = munchify([dict(zip(['path', 'type'], r)) for r in rows])
+        
+        with arcpy.da.SearchCursor(self.get_table(self.schemaTables.AGENCY_INFO), ['County', 'State', 'Country', 'AgencyID']) as rows:
+            for r in rows:
+                self.county, self.state, self.country, self.agencyID = r
+        print(self.county, self.agencyID)
 
+    @lazyprop
+    def psap(self):
+        try:
+            return [t.path for t in filter(lambda x: x.type == self.types.PSAP, self.requiredTables)][0]
+        except IndexError:
+            return None
 
-    @property
+    @lazyprop
+    def esb(self):
+        try:
+            return [t.path for t in filter(lambda x: x.type == self.types.ESB, self.requiredTables)][0]
+        except IndexError:
+            return None
+
+    @lazyprop
+    def esbFire(self):
+        try:
+            return [t.path for t in filter(lambda x: x.type == self.types.ESP_FIRE, self.requiredTables)][0]
+        except IndexError:
+            return None
+
+    @lazyprop
+    def esbLaw(self):
+        try:
+            return [t.path for t in filter(lambda x: x.type == self.types.ESP_LAW, self.requiredTables)][0]
+        except IndexError:
+            return None
+
+    @lazyprop
+    def esbEMS(self):
+        try:
+            return [t.path for t in filter(lambda x: x.type == self.types.ESP_EMS, self.requiredTables)][0]
+        except IndexError:
+            return None
+
+    @lazyprop
     def esbTables(self):
-        return [t.path for t in filter(lambda x: x.type == self.types.PSAP_ESB, self.requiredTables)]
+        return [t.path for t in filter(lambda x: x.type.startswith('ESB'), self.requiredTables)]
 
-    @property
+    @lazyprop
     def addressPoints(self):
         try:
             return [t.path for t in self.requiredTables if t.type == self.types.ADDRESS_POINTS][0]
         except IndexError:
             return None
 
-    @property
+    @lazyprop
     def roadCenterlines(self):
         try:
             return [t.path for t in self.requiredTables if t.type == self.types.ROAD_CENTERLINE][0]
         except IndexError:
             return None
 
-    @property
+    @lazyprop
     def provisioningBoundary(self):
         try:
             return [t for t in self.requiredTables if t.type == self.types.PROVISIONING_BOUNDARY][0]
@@ -75,10 +132,18 @@ class NG911Data:
 
     @staticmethod
     def get_basename(path: str) -> str:
+        """gets the basname for a feature class
+
+        Args:
+            path (str): the feature class path
+
+        Returns:
+            str: the basename
+        """
         return os.path.basename(path or '').split('.')[-1]
 
     def has_911_type(self, name: str) -> bool:
-        """[summary]
+        """returns a boolean for whether there is a 911 type
 
         Args:
             name (str): [description]
@@ -92,10 +157,10 @@ class NG911Data:
         """checks to see if a layer exists in the NG911 data by basename
 
         Args:
-            name (str): [description]
+            name (str): the 911 data type 
 
         Returns:
-            bool: [description]
+            str: the feature class path
         """
         schemaTab = self.get_table(self.schemaTables.NG911_TABLES)
         where = f"Basename = '{name}'"
@@ -105,25 +170,28 @@ class NG911Data:
             except:
                 return None
 
-    def has_911_table(self, name: str) -> str:
-        """checks to see if a layer exists in the NG911 data by basename
+    # def has_911_table(self, name: str) -> str:
+    #     """checks to see if a layer exists in the NG911 data by basename
 
-        Args:
-            name (str): [description]
+    #     Args:
+    #         name (str): [description]
 
-        Returns:
-            bool: [description]
-        """
-        fc = self.get_911_table(name)
-        if not fc:
-            return False
-        try:
-            fc = [r[1] for r in rows if r[0] == name][0]
-            return arcpy.Exists(fc)
-        except:
-            return False
+    #     Returns:
+    #         bool: [description]
+    #     """
+    #     fc = self.get_911_table(name)
+    #     if not fc:
+    #         return False
+    #     try:
+    #         schemaTab = self.get_table(self.schemaTables.NG911_TABLES)
+    #         where = f"Basename = '{name}'"
+    #         with arcpy.da.SearchCursor(schemaTab, ['BaseName', 'Path'], where) as rows:
+    #             fc = [r[1] for r in rows if r[0] == name][0]
+    #             return arcpy.Exists(fc)
+    #     except:
+    #         return False
 
-    def get_table(self, name: str) -> str:
+    def get_table(self, name: str=NG911SchemaTables.NG911_TABLES) -> str:
         """gets the full path to a table
 
         Args:
@@ -135,10 +203,10 @@ class NG911Data:
         if name in self.__tables__:
             return os.path.join(self.gdb_path, name)
 
-    def load_911_schema(self, name: str) -> Munch:
-        return load_schema(name)      
+    # def load_911_schema(self, name: str) -> Munch:
+    #     return load_schema(name)      
 
-    def get_911_layer(self, name: str, check_map=True) -> arcpy._mp.Layer:
+    def get_911_layer(self, name: str, check_map=False) -> arcpy._mp.Layer:
         """gets a NG 911 feature class as a arcpy._mp.Layer
 
         Args:

@@ -6,6 +6,15 @@ from ..env import ng911_db
 from ..utils import find_ws, message
 from ..support.munch import munchify
 from ..core.address import SKIP_NAMES, STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES
+from typing import List
+import ctypes
+try:
+    MessageBox = ctypes.windll.user32.MessageBoxW
+except:
+    MessageBox = arcpy.AddMessage
+
+def debug_window(msg='This is a message', title="Info"):
+    MessageBox(None, msg, title, 0)
 
 field_types = dict(
     Date='GPDate',
@@ -20,7 +29,7 @@ SKIP_TYPES = ('OID', 'Geometry', 'Blob', 'GUID', 'Raster')
 
 SHAPE_FIELD_REGEX = re.compile('^(shape)[.|_]', re.IGNORECASE)
 
-def table_to_params(table: str, schema: DataSchema):
+def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[]):
     """creates tool parameters for fields from a given table
 
     Args:
@@ -30,6 +39,7 @@ def table_to_params(table: str, schema: DataSchema):
     Returns:
         list[arcpy.Parameter]: the arcpy parameters
     """
+    table = schema.table
     shapeType = arcpy.Describe(table).shapeType
     if shapeType == 'Polyline':
         shapeType = 'Line'
@@ -37,23 +47,24 @@ def table_to_params(table: str, schema: DataSchema):
     ws = find_ws(table)
 
     params = [
-        arcpy.Parameter(
-            name=f'{shapeType}_Geometry',
-            displayName=f'{shapeType} Geometry',
-            datatype=f'GP{shapeType}',
-            direction='Input',
-            parameterType='Required'
-        )
+        # arcpy.Parameter(
+        #     name=f'{shapeType}_Geometry',
+        #     displayName=f'{shapeType} Geometry',
+        #     datatype=f'GP{shapeType}',
+        #     direction='Input',
+        #     parameterType='Required'
+        # )
     ]
     fields = [f for f in arcpy.ListFields(table) if f.type not in SKIP_TYPES and f.name not in SKIP_NAMES]
+    # filters.extend(f.name for f in schema.customFields)
     for field in fields:
-        if not SHAPE_FIELD_REGEX.match(field.name):
+        if not SHAPE_FIELD_REGEX.match(field.name) and field.name not in filters:
             param = arcpy.Parameter(
                 name=field.name,
                 displayName=field.aliasName,
                 datatype=field_types.get(field.type, 'GPString'),
                 direction='Input',
-                category='Street Info' if field.name in STREET_ATTRIBUTES else None,
+                category='Street Info' if field.name in STREET_ATTRIBUTES else category,
                 parameterType='Required' if field.name in schema.requiredFields else 'Optional'
             )
 
