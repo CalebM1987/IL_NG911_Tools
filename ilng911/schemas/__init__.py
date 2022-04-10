@@ -240,8 +240,6 @@ class DataSchema(FeatureBase):
             copyTab = copy_schema(self.table, time.strftime(r'in_memory\temp_%Y%m%d%H%M%S'))
            
             if is_arc: 
-                
-                
                 irows = arcpy.da.InsertCursor(copyTab, editable_fields + ['SHAPE@'])
                 message('editing in arcgis pro', self.table)
                 for ft in self._features:
