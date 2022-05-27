@@ -6,6 +6,13 @@ import warnings
 
 is_arc = os.path.basename(sys.executable).startswith('Arc')
 
+def updir(path: str, levels: int=1):
+    """gets path n levels up from given path"""
+    p = path
+    for i in range(levels):
+        p = os.path.dirname(p)
+    return p
+
 needs_arc_message = False
 if is_arc:
     import arcpy

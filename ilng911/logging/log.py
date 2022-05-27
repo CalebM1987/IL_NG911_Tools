@@ -1,23 +1,22 @@
 import os
 import sys
-from sde_maintenance.utils import timestamp
 import logging
 import contextlib
 import logging
+import time
 import traceback as tb
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-import sys
-from sde_maintenance.env import thisDir
+from io import StringIO
+from ilng911.env import NG_911_DIR
+from ilng911.utils import updir
 
 
-logDir = os.path.join(os.path.dirname(thisDir), 'Logs')
-
+logDir = os.path.join(updir(NG_911_DIR, 1), 'Logs')
 
 default_format = '%(asctime)s - %(levelname)s - %(message)s'
 date_format='%Y-%m-%d %H:%M:%S'
+
+def timestamp(prefix: str, suffix='.log', fmt: str='%Y%m%d%H%M%S') -> str:
+    return ''.join([prefix or '', time.strftime(fmt), suffix])
 
 def log(msg, level='info'):
     """prints message to stdout and also to log file.

@@ -8,9 +8,9 @@ from ..utils.json_helpers import load_json
 from ..support.munch import Munch
 from .enums import FieldCategory
 from ..core.common import Feature, FeatureBase, LOCATION_FIELDS, is_shape_field
-from ..env import ng911_db, is_arc
+from ..env import ng911_db
 from typing import List, Dict
-from ..utils import cursors, message, copy_schema
+from ..utils import cursors, message, copy_schema, is_arc
 from functools import partial
 
 schemasDir = os.path.join(os.path.dirname(__file__), '_schemas')

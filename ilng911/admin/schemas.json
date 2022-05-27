@@ -24,7 +24,7 @@
         "alias": "Field Name",
         "type": "esriFieldTypeString",
         "length": 75
-      },
+      }
     ]
   }
 }

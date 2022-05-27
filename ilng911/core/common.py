@@ -42,7 +42,7 @@ class FeatureBase:
         return [f.name for f in self.fields if f.type == 'OID'][0]
 
 class NG911Encoder(json.JSONEncoder):
-    """Encoder for restapi objects to make serializeable for JSON."""
+    """Encoder to make serializeable for JSON."""
     def default(self, o):
         """Encodes object for JSON.
         Args:
