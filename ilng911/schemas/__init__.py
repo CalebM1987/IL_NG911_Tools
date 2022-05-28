@@ -10,8 +10,9 @@ from .enums import FieldCategory
 from ..core.common import Feature, FeatureBase, LOCATION_FIELDS, is_shape_field
 from ..env import ng911_db
 from typing import List, Dict
-from ..utils import cursors, message, copy_schema, is_arc
+from ..utils import cursors, copy_schema, is_arc
 from functools import partial
+from ..logging import log
 
 schemasDir = os.path.join(os.path.dirname(__file__), '_schemas')
 
@@ -75,7 +76,7 @@ class DataSchema(FeatureBase):
     @lazyprop
     def customFields(self):
         table = ng911_db.get_table(ng911_db.schemaTables.CUSTOM_FIELDS)
-        print('table is: ', table)
+        log(f'table for custom fields is: {table}')
         where = f"TargetTable = '{self._schema.featureType}'"
         # fieldNames = [f.name for f in arcpy.ListFields(table)]
         # print(fieldNames)
@@ -96,7 +97,7 @@ class DataSchema(FeatureBase):
         try:
             return [f.name for f in self.fields if f.name.endswith('_NGUID')][0]
         except IndexError:
-            print('could not get nena identifier field...')
+            log('could not get nena identifier field...', 'warn')
             return 'Site_NGUID'
 
     @lazyprop
@@ -140,10 +141,10 @@ class DataSchema(FeatureBase):
                     ids.append(r[0])
                 if i > 5:
                     break
-        print('ids yo: ', ids)
+        log(f'ids for creating identifiers: {ids}')
         if ids:
             oid = max(ids) + count
-            print('max id: ', oid)
+            max(f'max id: {oid}')
         else:
             oid = int(arcpy.management.GetCount(self.table).getOutput(0)) + count
             
@@ -152,7 +153,7 @@ class DataSchema(FeatureBase):
     def calculate_custom_fields(self, ft: Feature):
         for field in self.customFields:
             expr = ft.calculate_custom_field(field.name, field.expression)
-            print(f'calculatd {field}: {expr}')
+            log(f'calculatd {field}: {expr}')
 
     def get_layer(self) -> arcpy._mp.Layer:
         """will fetch an arcpy._mp.Layer for the parent feature class
@@ -236,16 +237,16 @@ class DataSchema(FeatureBase):
         count = 0
         if self._features:
             editable_fields = [f.name for f in self.fields if f.editable]
-            print('editable fields: ', editable_fields)
+            log(f'editable fields: {editable_fields}')
             copyTab = copy_schema(self.table, time.strftime(r'in_memory\temp_%Y%m%d%H%M%S'))
            
             if is_arc: 
                 irows = arcpy.da.InsertCursor(copyTab, editable_fields + ['SHAPE@'])
-                message('editing in arcgis pro', self.table)
+                log(f'editing in arcgis pro: "{self.table}"')
                 for ft in self._features:
                     if not ft.attributes.get(self.oidField):
                         row = [ft.attributes.get(f) for f in editable_fields] + [ft.geometry]
-                        message(row)
+                        log(f'row values: {row}')
                         irows.insertRow(row)
                         self._commited.append(ft)
                         self._features.remove(ft)
@@ -256,12 +257,12 @@ class DataSchema(FeatureBase):
                 arcpy.management.Append(copyTab, self.table, 'NO_TEST')
                 arcpy.management.Delete(copyTab)
             else:
-                message('using in standalone, starting edit session')
+                log('using in standalone, starting edit session')
                 with cursors.InsertCursor(self.table, editable_fields + ['SHAPE@']) as irows:
                     for ft in self._features:
-                        print('ft yo: ', ft, ft.attributes.get(self.oidField))
+                        log('ft yo: ', ft, ft.attributes.get(self.oidField))
                         if not ft.attributes.get(self.oidField):
-                            self.create_identifier
+                            self.create_identifier(ft.attributes.get(self.oidField))
                             irows.insertRow([ft.attributes.get(f) for f in editable_fields] + [ft.geometry])
                             self._commited.append(ft)
                             self._features.remove(ft)
@@ -276,9 +277,9 @@ class DataSchema(FeatureBase):
             #         r[2] = datetime.datetime.now().date()
             #         rows.updateRow(r)
             #         nenaCount += 1
-        message(f"Committed {count} features in {self._schema.layer} table.")
+        log(f"Committed {count} features in {self._schema.layer} table.")
         # if nenaCount:
-        #     message(f"Created NENA Identifier for {count} features in {self._schema.layer} table.")
+        #     log(f"Created NENA Identifier for {count} features in {self._schema.layer} table.")
 
         return count
 

@@ -1,0 +1,1070 @@
+{
+    "fields": [
+      {
+        "name": "Name",
+        "alias": "Name",
+        "type": "esriFieldTypeString",
+        "length": 25
+      },
+      {
+        "name": "Abbreviation",
+        "alias": "Abbreviation",
+        "type": "esriFieldTypeString",
+        "length": 10
+      },
+      {
+        "name": "AttributeType",
+        "alias": "Attribute Type",
+        "type": "esriFieldTypeString",
+        "length": 20,
+        "domain": {
+          "type": "codedValue",
+          "name": "AttributeTypes",
+          "codedValues": [
+            {
+              "name": "STREET_TYPE",
+              "code": "STREET_TYPE"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Name",
+        "alias": "Field Name",
+        "type": "esriFieldTypeString",
+        "length": 75
+      }
+    ],
+    "features": [
+        {
+          "Name": "ALLEY",
+          "Abbreviation": "ALY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ANEX",
+          "Abbreviation": "ANX",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ARCADE",
+          "Abbreviation": "ARC",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "AVENUE",
+          "Abbreviation": "AVE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BAYOU",
+          "Abbreviation": "BYU",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BEACH",
+          "Abbreviation": "BCH",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BEND",
+          "Abbreviation": "BND",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BLUFF",
+          "Abbreviation": "BLF",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BLUFFS",
+          "Abbreviation": "BLFS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BOTTOM",
+          "Abbreviation": "BTM",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BOULEVARD",
+          "Abbreviation": "BLVD",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BRANCH",
+          "Abbreviation": "BR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BRIDGE",
+          "Abbreviation": "BRG",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BROOK",
+          "Abbreviation": "BRK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BROOKS",
+          "Abbreviation": "BRKS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BURG",
+          "Abbreviation": "BG",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BURGS",
+          "Abbreviation": "BGS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "BYPASS",
+          "Abbreviation": "BYP",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CAMP",
+          "Abbreviation": "CP",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CANYON",
+          "Abbreviation": "CYN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CAPE",
+          "Abbreviation": "CPE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CAUSEWAY",
+          "Abbreviation": "CSWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CENTER",
+          "Abbreviation": "CTR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CENTERS",
+          "Abbreviation": "CTRS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CIRCLE",
+          "Abbreviation": "CIR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CIRCLES",
+          "Abbreviation": "CIRS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CLIFF",
+          "Abbreviation": "CLF",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CLIFFS",
+          "Abbreviation": "CLFS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CLUB",
+          "Abbreviation": "CLB",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "COMMON",
+          "Abbreviation": "CMN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "COMMONS",
+          "Abbreviation": "CMNS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CORNER",
+          "Abbreviation": "COR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CORNERS",
+          "Abbreviation": "CORS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "COURSE",
+          "Abbreviation": "CRSE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "COURT",
+          "Abbreviation": "CT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "COURTS",
+          "Abbreviation": "CTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "COVE",
+          "Abbreviation": "CV",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "COVES",
+          "Abbreviation": "CVS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CREEK",
+          "Abbreviation": "CRK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CRESCENT",
+          "Abbreviation": "CRES",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CREST",
+          "Abbreviation": "CRST",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CROSSING",
+          "Abbreviation": "XING",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CROSSROAD",
+          "Abbreviation": "XRD",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CROSSROADS",
+          "Abbreviation": "XRDS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "CURVE ",
+          "Abbreviation": "CURV",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "DALE",
+          "Abbreviation": "DL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "DAM",
+          "Abbreviation": "DM",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "DIVIDE",
+          "Abbreviation": "DV",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "DRIVE",
+          "Abbreviation": "DR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "DRIVES ",
+          "Abbreviation": "DRS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ESTATE",
+          "Abbreviation": "EST",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ESTATES",
+          "Abbreviation": "ESTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "EXPRESSWAY",
+          "Abbreviation": "EXPY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "EXTENSION",
+          "Abbreviation": "EXT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "EXTENSIONS",
+          "Abbreviation": "EXTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FALL",
+          "Abbreviation": "FALL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FALLS",
+          "Abbreviation": "FLS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FERRY",
+          "Abbreviation": "FRY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FIELD",
+          "Abbreviation": "FLD",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FIELDS",
+          "Abbreviation": "FLDS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FLAT",
+          "Abbreviation": "FLT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FLATS",
+          "Abbreviation": "FLTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FORD",
+          "Abbreviation": "FRD",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FORDS",
+          "Abbreviation": "FRDS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FOREST",
+          "Abbreviation": "FRST",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FORGE",
+          "Abbreviation": "FRG",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FORGES",
+          "Abbreviation": "FRGS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FORK",
+          "Abbreviation": "FRK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FORKS",
+          "Abbreviation": "FRKS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FORT",
+          "Abbreviation": "FT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "FREEWAY",
+          "Abbreviation": "FWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GARDEN",
+          "Abbreviation": "GDN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GARDENS",
+          "Abbreviation": "GDNS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GATEWAY",
+          "Abbreviation": "GTWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GLEN",
+          "Abbreviation": "GLN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GLENS",
+          "Abbreviation": "GLNS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GREEN",
+          "Abbreviation": "GRN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GREENS",
+          "Abbreviation": "GRNS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GROVE",
+          "Abbreviation": "GRV",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "GROVES",
+          "Abbreviation": "GRVS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "HARBOR",
+          "Abbreviation": "HBR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "HARBORS",
+          "Abbreviation": "HBRS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "HAVEN",
+          "Abbreviation": "HVN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "HEIGHTS",
+          "Abbreviation": "HTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "HIGHWAY",
+          "Abbreviation": "HWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "HILL",
+          "Abbreviation": "HL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "HILLS",
+          "Abbreviation": "HLS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "HOLLOW",
+          "Abbreviation": "HOLW",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "INLET",
+          "Abbreviation": "INLT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ISLAND",
+          "Abbreviation": "IS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ISLANDS",
+          "Abbreviation": "ISS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ISLE",
+          "Abbreviation": "ISLE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "JUNCTION",
+          "Abbreviation": "JCT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "JUNCTIONS",
+          "Abbreviation": "JCTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "KEY",
+          "Abbreviation": "KY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "KEYS",
+          "Abbreviation": "KYS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "KNOLL",
+          "Abbreviation": "KNL ",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "KNOLLS",
+          "Abbreviation": "KNLS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LAKE",
+          "Abbreviation": "LK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LAKES",
+          "Abbreviation": "LKS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LAND",
+          "Abbreviation": "LAND",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LANDING",
+          "Abbreviation": "LNDG",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LANE",
+          "Abbreviation": "LN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LIGHT",
+          "Abbreviation": "LGT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LIGHTS",
+          "Abbreviation": "LGTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LOAF",
+          "Abbreviation": "LF",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LOCK",
+          "Abbreviation": "LCK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LOCKS",
+          "Abbreviation": "LCKS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LODGE",
+          "Abbreviation": "LDG",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "LOOP",
+          "Abbreviation": "LOOP",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MALL",
+          "Abbreviation": "MALL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MANOR",
+          "Abbreviation": "MNR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MANORS",
+          "Abbreviation": "MNRS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MEADOW",
+          "Abbreviation": "MDW",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MEADOWS",
+          "Abbreviation": "MDWS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MEWS",
+          "Abbreviation": "MEWS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MILL",
+          "Abbreviation": "ML",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MILLS",
+          "Abbreviation": "MLS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MISSION",
+          "Abbreviation": "MSN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MOTORWAY",
+          "Abbreviation": "MTWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MOUNT",
+          "Abbreviation": "MT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MOUNTAIN",
+          "Abbreviation": "MTN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "MOUNTAINS",
+          "Abbreviation": "MTNS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "NECK",
+          "Abbreviation": "NCK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ORCHARD",
+          "Abbreviation": "ORCH",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "OVAL",
+          "Abbreviation": "OVAL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "OVERPASS",
+          "Abbreviation": "OPAS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PARK",
+          "Abbreviation": "PARK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PARKS",
+          "Abbreviation": "PARK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PARKWAY",
+          "Abbreviation": "PKWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PARKWAYS",
+          "Abbreviation": "PKWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PASS",
+          "Abbreviation": "PASS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PASSAGE",
+          "Abbreviation": "PSGE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PATH",
+          "Abbreviation": "PATH",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PIKE",
+          "Abbreviation": "PIKE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PINE",
+          "Abbreviation": "PNE ",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PINES",
+          "Abbreviation": "PNES",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PLACE",
+          "Abbreviation": "PL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PLAIN",
+          "Abbreviation": "PLN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PLAINS",
+          "Abbreviation": "PLNS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PLAZA",
+          "Abbreviation": "PLZ",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "POINT",
+          "Abbreviation": "PT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "POINTS",
+          "Abbreviation": "PTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PORT",
+          "Abbreviation": "PRT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PORTS",
+          "Abbreviation": "PRTS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "PRAIRIE",
+          "Abbreviation": "PR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RADIAL",
+          "Abbreviation": "RADL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RAMP",
+          "Abbreviation": "RAMP",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RANCH",
+          "Abbreviation": "RNCH",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RAPID",
+          "Abbreviation": "RPD",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RAPIDS",
+          "Abbreviation": "RPDS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "REST",
+          "Abbreviation": "RST",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RIDGE",
+          "Abbreviation": "RDG",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RIDGES",
+          "Abbreviation": "RDGS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RIVER",
+          "Abbreviation": "RIV",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ROAD",
+          "Abbreviation": "RD",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ROADS",
+          "Abbreviation": "RDS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ROUTE",
+          "Abbreviation": "RTE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "ROW",
+          "Abbreviation": "ROW",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RUE",
+          "Abbreviation": "RUE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "RUN",
+          "Abbreviation": "RUN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SHOAL",
+          "Abbreviation": "SHL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SHOALS",
+          "Abbreviation": "SHLS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SHORE",
+          "Abbreviation": "SHR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SHORES",
+          "Abbreviation": "SHRS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SKYWAY",
+          "Abbreviation": "SKWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SPRING",
+          "Abbreviation": "SPG",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SPRINGS",
+          "Abbreviation": "SPGS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SPUR",
+          "Abbreviation": "SPUR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SPURS",
+          "Abbreviation": "SPUR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SQUARE",
+          "Abbreviation": "SQ",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SQUARES",
+          "Abbreviation": "SQS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "STATION",
+          "Abbreviation": "STA",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "STRAVENUE",
+          "Abbreviation": "STRA",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "STREAM",
+          "Abbreviation": "STRM",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "STREET",
+          "Abbreviation": "ST",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "STREETS",
+          "Abbreviation": "STS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "SUMMIT",
+          "Abbreviation": "SMT",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "TERRACE",
+          "Abbreviation": "TER",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "THROUGHWAY",
+          "Abbreviation": "TRWY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "TRACE",
+          "Abbreviation": "TRCE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "TRACK",
+          "Abbreviation": "TRAK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "TRAFFICWAY",
+          "Abbreviation": "TRFY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "TRAIL",
+          "Abbreviation": "TRL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "TRAILER",
+          "Abbreviation": "TRLR",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "TUNNEL",
+          "Abbreviation": "TUNL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "TURNPIKE",
+          "Abbreviation": "TPKE",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "UNDERPASS",
+          "Abbreviation": "UPAS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "UNION",
+          "Abbreviation": "UN",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "UNIONS",
+          "Abbreviation": "UNS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VALLEY",
+          "Abbreviation": "VLY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VALLEYS",
+          "Abbreviation": "VLYS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VIADUCT",
+          "Abbreviation": "VIA",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VIEW",
+          "Abbreviation": "VW",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VIEWS",
+          "Abbreviation": "VWS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VILLAGE",
+          "Abbreviation": "VLG",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VILLAGES",
+          "Abbreviation": "VLGS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VILLE",
+          "Abbreviation": "VL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "VISTA",
+          "Abbreviation": "VIS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "WALK",
+          "Abbreviation": "WALK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "WALKS",
+          "Abbreviation": "WALK",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "WALL",
+          "Abbreviation": "WALL",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "WAY",
+          "Abbreviation": "WAY",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "WAYS",
+          "Abbreviation": "WAYS",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "WELL",
+          "Abbreviation": "WL ",
+          "AttributeType": "STREET_TYPE"
+        },
+        {
+          "Name": "WELLS",
+          "Abbreviation": "WLS",
+          "AttributeType": "STREET_TYPE"
+        }
+      ]
+  }

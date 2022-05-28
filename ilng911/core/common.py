@@ -5,9 +5,10 @@ import datetime
 # from ..schemas import DataSchema, DataType
 # from ..env import ng911_db 
 from ..support.munch import Munch, munchify
-from ..utils import lazyprop, date_to_mil, message
+from ..utils import lazyprop, date_to_mil
 from typing import List
 from .parser import *
+from ..logging import log
 
 SHAPE_PAT = re.compile('^(shape)[@]?', re.I)
 SHAPE_ATTR_PAT = re.compile('^(shape)[@._](\w+)', re.I)
@@ -129,13 +130,13 @@ class Feature(FeatureBase):
         return ' '.join(map(str, filter(None,expr)))
 
     def calculate_custom_field(self, field: str, expression: str) -> str:
-        print('expression is: ', expression)
+        log(f'calculate custom expression is: "{expression}"')
         expr = self.create_from_expression(expression)
         self.attributes[field] = expr
         return expr
 
     def prettyPrint(self):
-        message(json.dumps(self.toJson(), cls=NG911Encoder, indent=2))
+        log(json.dumps(self.toJson(), cls=NG911Encoder, indent=2))
 
     def toRow(self, fields: List[str]):
         vals = []

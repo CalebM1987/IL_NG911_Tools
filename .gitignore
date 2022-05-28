@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# logs
+Logs/
+*.log
+
+NG911_Tables.gdb/
+
 # custom stuff
 node_modules/
 # test_env/

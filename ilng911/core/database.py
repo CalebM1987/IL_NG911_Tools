@@ -2,10 +2,17 @@ import os
 import arcpy
 from ..support.munch import munchify, Munch
 # from ..schemas import load_schema, DataType
-from ..utils import message, lazyprop
+from ..utils import lazyprop
+from ..logging import log
 
+class PropIterator:
+    __props__ = []
 
-class NG911LayerTypes:
+    def __iter__(self):
+        for p in self._props:
+            return p
+
+class NG911LayerTypes(PropIterator):
     __props__ = [
         'PSAP',
         'ESB',
@@ -25,11 +32,8 @@ class NG911LayerTypes:
     ROAD_CENTERLINE = 'ROAD_CENTERLINE'
     PROVISIONING_BOUNDARY = 'PROVISIONING_BOUNDARY'
 
-    def __iter__(self):
-        for p in self._props:
-            return p
-
-class NG911SchemaTables:
+    
+class NG911SchemaTables(PropIterator):
     __props__ = [
         'NG911_Tables',
         'AgencyInfo',
@@ -40,8 +44,8 @@ class NG911SchemaTables:
     NG911_TABLES = 'NG911_Tables'
     AGENCY_INFO = 'AgencyInfo'
     CUSTOM_FIELDS = 'CustomFields'
-    CAD_VENDOR_FIELDS= 'CADVendorFields'
-
+    CAD_VENDOR_FIELDS = 'CADVendorFields'
+    CAD_VENDOR_FEATURES = 'CADVendorFeatures'
 
 class NG911Data: 
     state = None
@@ -68,7 +72,8 @@ class NG911Data:
         with arcpy.da.SearchCursor(self.get_table(self.schemaTables.AGENCY_INFO), ['County', 'State', 'Country', 'AgencyID']) as rows:
             for r in rows:
                 self.county, self.state, self.country, self.agencyID = r
-        print(self.county, self.agencyID)
+                break
+        log(f'Initialized NG911 Database for "{self.county}" with agency ID of "{self.agencyID}"')
 
     @lazyprop
     def psap(self):
@@ -87,21 +92,21 @@ class NG911Data:
     @lazyprop
     def esbFire(self):
         try:
-            return [t.path for t in filter(lambda x: x.type == self.types.ESP_FIRE, self.requiredTables)][0]
+            return [t.path for t in filter(lambda x: x.type == self.types.ESB_FIRE, self.requiredTables)][0]
         except IndexError:
             return None
 
     @lazyprop
     def esbLaw(self):
         try:
-            return [t.path for t in filter(lambda x: x.type == self.types.ESP_LAW, self.requiredTables)][0]
+            return [t.path for t in filter(lambda x: x.type == self.types.ESB_LAW, self.requiredTables)][0]
         except IndexError:
             return None
 
     @lazyprop
     def esbEMS(self):
         try:
-            return [t.path for t in filter(lambda x: x.type == self.types.ESP_EMS, self.requiredTables)][0]
+            return [t.path for t in filter(lambda x: x.type == self.types.ESB_EMS, self.requiredTables)][0]
         except IndexError:
             return None
 
@@ -228,7 +233,7 @@ class NG911Data:
                             if lyr.supports('DATASOURCE') and lyr.dataSource == fc:
                                     return lyr
                 except:
-                    message(f"layer for {name} not found in map, or running standalone")
+                    log(f"layer for {name} not found in map, or running standalone")
             return arcpy.management.MakeFeatureLayer(fc).getOutput(0)
         return None
 

@@ -3,8 +3,7 @@ import sys
 import arcpy
 import datetime
 import warnings
-
-is_arc = os.path.basename(sys.executable).startswith('Arc')
+from ..env import is_arc
 
 def updir(path: str, levels: int=1):
     """gets path n levels up from given path"""
@@ -12,11 +11,6 @@ def updir(path: str, levels: int=1):
     for i in range(levels):
         p = os.path.dirname(p)
     return p
-
-needs_arc_message = False
-if is_arc:
-    import arcpy
-    needs_arc_message = True
 
 class lazyprop:
     """Based on code from David Beazley's "Python Cookbook".
@@ -34,13 +28,6 @@ class lazyprop:
             value = instance.__dict__[self.func.__name__] = self.func(instance)
             return value
 
-
-def message(*args):
-    """prints one or more messages to the stdout.  If being used in an arcpy process, it will also call arcpy.AddMessage()"""
-    for msg in args:
-        print(str(msg))
-        if needs_arc_message:
-            arcpy.AddMessage(str(msg))
 
 def mil_to_date(mil):
     """Date items from REST services are reported in milliseconds,

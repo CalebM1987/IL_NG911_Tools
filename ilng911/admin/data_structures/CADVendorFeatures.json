@@ -1,0 +1,35 @@
+{
+    "fields": [
+      {
+        "name": "CADFeatureTable",
+        "alias": "CAD Feature Table",
+        "type": "esriFieldTypeString",
+        "length": 255
+      },
+      {
+        "name": "CADVendor",
+        "alias": "CAD Vendor",
+        "type": "esriFieldTypeString",
+        "length": 100,
+        "domain": {
+          "type": "codedValue",
+          "name": "CADVendors",
+          "codedValues": [
+            {
+              "name": "TRITECH",
+              "code": "TRITECH"
+            },
+            {
+              "name": "TYLER",
+              "code": "TYLER"
+            },
+            {
+              "name": "WTH",
+              "code": "WTH"
+            }
+          ]
+        }
+      }
+    ],
+    "features": []
+}

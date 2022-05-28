@@ -6,7 +6,7 @@ import logging
 import time
 import traceback as tb
 from io import StringIO
-from ilng911.env import NG_911_DIR
+from ilng911.env import NG_911_DIR, is_arc
 from ilng911.utils import updir
 
 
@@ -25,19 +25,21 @@ def log(msg, level='info'):
         *args: the message arguments
         level (str, optional): [description]. Defaults to 'info'.
     """
-    getattr(logging, level)(msg)
+    valid = ['debug', 'info', 'warn', 'error']
+    logger = logging.getLogger()
+    getattr(logger, level if level in valid else 'info')(msg)
 
-    if 'Arc' in os.path.basename(sys.executable):
+    if is_arc:
         import arcpy
         arcpy.AddMessage(msg)
     else:
         print(msg)
         
-def set_logger_context(prefix='SDE_Maintenance_', format=default_format, datefmt=date_format, level=logging.DEBUG, **kwargs):
+def set_logger_context(prefix='NG911_', format=default_format, datefmt=date_format, level=logging.DEBUG, **kwargs):
     """sets up the basic configuration for the logger
 
     Args:
-        prefix (str, optional): [description]. Defaults to 'SDE_Maintenance_'.
+        prefix (str, optional): [description]. Defaults to 'NG911_'.
         format ([type], optional): [description]. Defaults to default_format.
         datefmt ([type], optional): [description]. Defaults to date_format.
         level ([type], optional): [description]. Defaults to logging.DEBUG.
@@ -49,7 +51,7 @@ def set_logger_context(prefix='SDE_Maintenance_', format=default_format, datefmt
 
 
 @contextlib.contextmanager
-def log_context(prefix='SDE_Maintenance_', format=default_format, datefmt=date_format, level=logging.INFO, **kwargs):
+def log_context(prefix='NG911_', format=default_format, datefmt=date_format, level=logging.INFO, **kwargs):
     set_logger_context(prefix, format, datefmt, level, **kwargs)
     try:
         yield

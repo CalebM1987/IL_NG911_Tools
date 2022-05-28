@@ -9,6 +9,7 @@ from ..schemas import DataType, DataSchema
 from warnings import warn
 from itertools import zip_longest
 from .fields import FIELDS
+from ..logging import log
 
 
 thisDir = os.path.abspath(os.path.dirname(__file__))
@@ -102,7 +103,7 @@ def merge_street_segment_attributes(address: Feature, centerline: Union[int, Fea
     if isinstance(centerline, int):
         oidField = [f.name for f in fields if f.type == 'OID'][0]
         where = f'{oidField} = {centerline}'
-        print(f'matchFields: {matchFields}')
+        log(f'matchFields: {matchFields}')
         with arcpy.da.SearchCursor(centerlineTab, matchFields, where) as rows:
             try:
                 row = [r for r in rows][0]
@@ -139,7 +140,7 @@ def get_zip_code(pt: arcpy.PointGeometry) -> Dict[str, str]:
 
     # use fallback
     fallback = arcpy.management.MakeFeatureLayer(FALLBACK_ZIP_CODES).getOutput(0)
-    print('using fallback zip codes', fallback, fallback.dataSource)
+    log(f'using fallback zip codes {fallback} -> {fallback.dataSource}')
     
     arcpy.management.SelectLayerByLocation(fallback, 'INTERSECT', pt)
     with arcpy.da.SearchCursor(fallback, ['ZIP_CODE']) as rows:

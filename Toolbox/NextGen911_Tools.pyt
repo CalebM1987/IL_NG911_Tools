@@ -11,6 +11,7 @@ from ilng911.schemas import DataType, DataSchema
 from ilng911.support.munch import munchify
 from ilng911.core.address import STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES, create_address_point, get_range_and_parity
 from ilng911.core.fields import FIELDS
+from ilng911.logging import log
 
 
 class Toolbox(object):
@@ -65,7 +66,7 @@ class TestTool(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         import json
-        arcpy.AddMessage(f'path is: "{parameters[0].valueAsText}"')
+        log(f'path is: "{parameters[0].valueAsText}"')
 
         with open(r"C:\Users\calebma\Documents\Temp\roadCenterline911.json", 'w') as f:
             json.dump(parameters[1].valueAsText, indent=2)

@@ -3,9 +3,10 @@ import os
 import re
 from ..schemas import DataSchema
 from ..env import ng911_db
-from ..utils import find_ws, message
+from ..utils import find_ws
 from ..support.munch import munchify
 from ..core.address import SKIP_NAMES, STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES
+from ..logging import log
 from typing import List
 import ctypes
 try:
@@ -43,7 +44,7 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
     shapeType = arcpy.Describe(table).shapeType
     if shapeType == 'Polyline':
         shapeType = 'Line'
-    message(f'SHAPETYPE IS: {shapeType}')
+    log(f'SHAPETYPE IS: {shapeType}')
     ws = find_ws(table)
 
     params = [
@@ -71,10 +72,10 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
             # add filter if necessary
             if field.domain:
                 domain = ng911_db.get_domain(field.domain, ws)
-                print(f'found domain for param: {field.name}, {field.domain}, {type(domain)}')
+                log(f'found domain for param: {field.name}, {field.domain}, {type(domain)}')
                 if isinstance(domain, dict):
                     param.filter.list = sorted(list(domain.keys()))
-                    # print(f'set filter list: {param.filter.list}')
+                    # log(f'set filter list: {param.filter.list}')
 
             if field.defaultValue:
                 param.value = field.defaultValue
