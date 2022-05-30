@@ -3,7 +3,8 @@ import sys
 import arcpy
 import datetime
 import warnings
-from ..env import is_arc
+
+is_arc = os.path.basename(sys.executable).startswith('Arc')
 
 def updir(path: str, levels: int=1):
     """gets path n levels up from given path"""
@@ -12,7 +13,7 @@ def updir(path: str, levels: int=1):
         p = os.path.dirname(p)
     return p
 
-class Singleton (type):
+class Singleton(type):
     _instances = {}
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:

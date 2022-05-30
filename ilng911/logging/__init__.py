@@ -6,12 +6,9 @@ import logging
 import time
 import traceback as tb
 from io import StringIO
-from ilng911.env import NG_911_DIR, is_arc
-from ilng911.utils import updir
 
-
-logDir = os.path.join(updir(NG_911_DIR, 1), 'Logs')
-
+logDir = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'Logs')
+print('log dir: ', logDir)
 default_format = '%(asctime)s - %(levelname)s - %(message)s'
 date_format='%Y-%m-%d %H:%M:%S'
 
@@ -29,7 +26,7 @@ def log(msg, level='info'):
     logger = logging.getLogger()
     getattr(logger, level if level in valid else 'info')(msg)
 
-    if is_arc:
+    if os.path.basename(sys.executable).startswith('Arc'):
         import arcpy
         arcpy.AddMessage(msg)
     else:

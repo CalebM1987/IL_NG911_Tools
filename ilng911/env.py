@@ -1,11 +1,9 @@
 import os
 import sys
 
-is_arc = os.path.basename(sys.executable).startswith('Arc')
-
 NG_911_DIR = os.path.abspath(os.path.dirname(__file__))
 from ilng911.core.database import NG911Data
-from ilng911.config import load_config
+from ilng911.utils import is_arc
 
 def get_ng911_db(config_file='config.json') -> NG911Data:
     """gets the NG911Data helper instance
@@ -16,6 +14,4 @@ def get_ng911_db(config_file='config.json') -> NG911Data:
     Returns:
         NG911Data: the NG911Data helper instance
     """
-    config = load_config(config_file)
-    if config:
-        return NG911Data(config.get('ng911GDBSchemasPath'))
+    return NG911Data(config_file)
