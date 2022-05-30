@@ -2,8 +2,9 @@ import os
 import arcpy
 from ..support.munch import munchify, Munch
 # from ..schemas import load_schema, DataType
-from ..utils import Singleton, lazyprop, PropIterator
+from ..utils import lazyprop, PropIterator, Singleton
 from ..logging import log
+from ..config import load_config
 
 class NG911LayerTypes(PropIterator):
     __props__ = [
@@ -41,33 +42,62 @@ class NG911SchemaTables(PropIterator):
     CAD_VENDOR_FIELDS = 'CADVendorFields'
     CAD_VENDOR_FEATURES = 'CADVendorFeatures'
 
-class NG911Data(metaclass=Singleton): 
+class NG911Data:#(metaclass=Singleton): 
     state = None
     county = None
     country = 'US'
     agencyID = None
     types = NG911LayerTypes
     schemaTables = NG911SchemaTables
+    config = Munch()
 
     __tables__ = NG911SchemaTables.__props__
 
-    def __init__(self, schema_gdb: str):
+    def __init__(self, config_file='config.json'):
         """NextGen 911 Data helper
 
         Args:
             schema_gdb (str): the path to the "NG911_Schemas" geodatabse
         """
-        self.gdb_path = schema_gdb
+        self.config_file = config_file
+        self.setupComplete = False
+        self.gdb_path = None
+        self.setup()
         
-        schema = self.get_table(self.schemaTables.NG911_TABLES)
-        with arcpy.da.SearchCursor(schema, ['Path', 'FeatureType']) as rows:
-            self.requiredTables = munchify([dict(zip(['path', 'type'], r)) for r in rows])
+    def setup(self):
+        """setup feature class registration"""
+        if self.setupComplete:
+            return 
         
-        with arcpy.da.SearchCursor(self.get_table(self.schemaTables.AGENCY_INFO), ['County', 'State', 'Country', 'AgencyID']) as rows:
-            for r in rows:
-                self.county, self.state, self.country, self.agencyID = r
-                break
-        log(f'Initialized NG911 Database for "{self.county}" with agency ID of "{self.agencyID}"')
+        log('ng911 database setup initializing')
+        config = load_config(self.config_file)
+        if config:
+            gdb_path = config.get("ng911GDBSchemasPath")
+            if not arcpy.Exists(gdb_path):
+                log('ng911 database setup exited: no geodatabase exists')
+                return
+
+            self.config = config
+            self.gdb_path = gdb_path
+            schema = os.path.join(self.gdb_path, self.schemaTables.NG911_TABLES)
+            schemaExists = arcpy.Exists(schema)
+            if schemaExists:
+                with arcpy.da.SearchCursor(schema, ['Path', 'FeatureType']) as rows:
+                    self.requiredTables = munchify([dict(zip(['path', 'type'], r)) for r in rows])
+            
+            agencyTab = os.path.join(self.gdb_path, self.schemaTables.AGENCY_INFO)
+            agencyTabExists = arcpy.Exists(agencyTab)
+            if agencyTabExists:
+                with arcpy.da.SearchCursor(agencyTab, ['County', 'State', 'Country', 'AgencyID']) as rows:
+                    for r in rows:
+                        self.county, self.state, self.country, self.agencyID = r
+                        break
+
+            if schemaExists and agencyTabExists and self.agencyID and self.requiredTables:
+                self.setupComplete = True
+                log(f'Initialized NG911 Database for "{self.county}" with agency ID of "{self.agencyID}"')
+            else:
+                log(f'ng911 database setup incomplete - schemaExists: {schemaExists}, agency info set: {agencyTabExists and bool(self.agencyID)}, required tables set: {bool(self.requiredTables)}')
 
     @lazyprop
     def psap(self):
@@ -200,7 +230,16 @@ class NG911Data(metaclass=Singleton):
             str: the full path to the table
         """
         if name in self.__tables__:
-            return os.path.join(self.gdb_path, name)
+            full_path = os.path.join(self.gdb_path, name)
+            if self.setupComplete:
+                # skip exists check if setup is complete
+                return full_path
+            else:
+                self.setup()
+                if self.setupComplete and arcpy.Exists(full_path):
+                    return full_path
+
+        return None
 
     # def load_911_schema(self, name: str) -> Munch:
     #     return load_schema(name)      
