@@ -58,6 +58,12 @@ class NG911Data:
 
     __tables__ = NG911SchemaTables.__props__
 
+    def __new__(cls):
+        """ensure singleton instance"""
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(NG911Data, cls).__new__(cls)
+        return cls.instance
+
     def __init__(self, schema_gdb: str):
         """NextGen 911 Data helper
 
