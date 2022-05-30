@@ -2,7 +2,7 @@ import arcpy
 import os
 import re
 from ..schemas import DataSchema
-from ..env import ng911_db
+from ..env import get_ng911_db
 from ..utils import find_ws
 from ..support.munch import munchify
 from ..core.address import SKIP_NAMES, STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES

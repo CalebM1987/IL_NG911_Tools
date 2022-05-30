@@ -38,7 +38,8 @@ class NG911SchemaTables(PropIterator):
         'NG911_Tables',
         'AgencyInfo',
         'CustomFields',
-        'CADVendorFields'
+        'CADVendorFields',
+        'CADVendorFeatures'
     ]
 
     NG911_TABLES = 'NG911_Tables'

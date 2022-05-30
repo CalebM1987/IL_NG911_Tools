@@ -1,4 +1,5 @@
 from ..support.munch import munchify, Munch
+from ..logging import log
 import json
 import os
 
@@ -29,5 +30,5 @@ def write_json_file(obj, out_file: str, **kwargs):
     validated_filename = os.path.splitext(out_file)[0] + '.json'
     with open(validated_filename, 'w') as f:
         json.dump(obj, f, **kwargs)
-    print(f'Created json file: "{out_file}"')
+    log(f'Created json file: "{out_file}"')
     return validated_filename

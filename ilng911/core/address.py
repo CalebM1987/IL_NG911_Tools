@@ -1,6 +1,6 @@
 import os
 import arcpy
-from ..env import ng911_db
+from ..env import get_ng911_db
 from ..support.munch import munchify, Munch
 from typing import Union, Dict, List
 from ..core.common import Feature
@@ -175,6 +175,15 @@ def get_city_limits(pt: arcpy.PointGeometry) -> Dict[str, str]:
     return attrs
 
 def get_range_and_parity(pt: Union[arcpy.PointGeometry, Feature], centerline: Union[int, Feature]) -> Munch:
+    """finds address range and parity from a given street centerline Feature or OID
+
+    Args:
+        pt (Union[arcpy.PointGeometry, Feature]): a point geometry or address Feature
+        centerline (Union[int, Feature]): an OBJECTID of the street centerline or centerline Feature
+
+    Returns:
+        Munch: a d
+    """
     attrs = dict(
         parity = None,
         to_address=None,

@@ -8,7 +8,7 @@ from ..utils.json_helpers import load_json
 from ..support.munch import Munch
 from .enums import FieldCategory
 from ..core.common import Feature, FeatureBase, LOCATION_FIELDS, is_shape_field
-from ..env import ng911_db
+from ..env import get_ng911_db
 from typing import List, Dict
 from ..utils import cursors, copy_schema, is_arc
 from functools import partial
