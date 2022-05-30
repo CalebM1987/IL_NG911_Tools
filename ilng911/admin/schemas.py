@@ -46,7 +46,7 @@ def features_from_json(json_file: str, out_path: str):
                     if dom_type == 'CODED':
                         for cv in dom.codedValues:
                             arcpy.management.AddCodedValueToDomain(ws, dom.name, cv.code, cv.name)
-                        log(f'added {len(dom.codedValues)} to domain: "{dom.name}"')
+                        log(f'added {len(dom.codedValues)} coded values to domain: "{dom.name}"')
                     else:
                         # set range values
                         arcpy.management.SetValueForRangeDomain(ws, dom.name, *dom.get('range', []))
@@ -81,8 +81,8 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
     out_gdb = os.path.join(schemas_gdb_path, 'NG911_Schemas.gdb')
 
     if not arcpy.Exists(out_gdb):
-        arcpy.CreateFileGDB_management(*os.path.split(out_gdb))
-        log(f'Created NG911 Tables Schema: "{out_gdb}"')
+        arcpy.management.CreateFileGDB(*os.path.split(out_gdb))
+        log(f'Created NG911 Schema Geodatabase: "{out_gdb}"')
 
     # create all tables
     schemas_dir = os.path.join(NG_911_DIR, 'admin', 'data_structures')
@@ -110,9 +110,6 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
 
     write_config(conf, config_file)
 
-    # get ng911_db helper
-    ng911_db = get_ng911_db(config_file)
-
     # check for relationship class for vendors to fields
     hasVendorRel = False
     vendorRel = 'CADVendorsRel'
@@ -126,8 +123,8 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
 
     if not hasVendorRel:
         # create relationship class
-        cadVendors = ng911_db.get_table(NG911SchemaTables.CAD_VENDOR_FEATURES)
-        cadFields = ng911_db.get_table(NG911SchemaTables.CAD_VENDOR_FIELDS)
+        cadVendors = os.path.join(out_gdb, NG911SchemaTables.CAD_VENDOR_FEATURES)
+        cadFields = os.path.join(out_gdb, NG911SchemaTables.CAD_VENDOR_FIELDS)
         arcpy.management.CreateRelationshipClass(
             cadVendors, 
             cadFields, 
@@ -138,12 +135,12 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
             'BOTH', 
             'ONE_TO_MANY', 
             'ATTRIBUTED', 
-            'CADVendor',
-            'CADVendor',
+            'TableName',
+            'TableName',
         )
 
     # set agency info
-    table = ng911_db.get_table(NG911SchemaTables.AGENCY_INFO)
+    table = os.path.join(out_gdb, NG911SchemaTables.AGENCY_INFO)
 
     with UpdateCursor(table, ['County', 'AgencyID']) as rows:
         for r in rows:
@@ -152,7 +149,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
     log(f'set agency ID: "@{county}COIL.ORG"')
 
     # check for core feature classes
-    schemaTable = ng911_db.get_table(NG911SchemaTables.NG911_TABLES)
+    schemaTable = os.path.join(out_gdb, NG911SchemaTables.NG911_TABLES)
     with arcpy.da.SearchCursor(schemaTable, ['FeatureType', 'Path']) as rows:
         existing = [r[0] for r in rows if r[1] and arcpy.Exists(r[1])]
 
