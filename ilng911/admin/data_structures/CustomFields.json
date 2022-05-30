@@ -1,18 +1,6 @@
 {
     "fields": [
       {
-        "name": "Name",
-        "alias": "Field Name",
-        "type": "esriFieldTypeString",
-        "length": 64
-      },
-      {
-        "name": "Expression",
-        "alias": "Expression",
-        "type": "esriFieldTypeString",
-        "length": 255
-      },
-      {
         "name": "TableType",
         "alias": "911 Feature Table Type",
         "type": "esriFieldTypeString",
@@ -55,6 +43,18 @@
             }
           ]
         }
+      },
+      {
+        "name": "FieldName",
+        "alias": "Field Name",
+        "type": "esriFieldTypeString",
+        "length": 64
+      },
+      {
+        "name": "Expression",
+        "alias": "Expression",
+        "type": "esriFieldTypeString",
+        "length": 255
       }
     ],
     "features": []

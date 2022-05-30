@@ -1,7 +1,13 @@
 {
     "fields": [
       {
-        "name": "Name",
+        "name": "TableName",
+        "alias": "CAD Table Name",
+        "type": "esriFieldTypeString",
+        "length": 64
+      },
+      {
+        "name": "FieldName",
         "alias": "Field Name",
         "type": "esriFieldTypeString",
         "length": 64
@@ -11,30 +17,6 @@
         "alias": "Expression",
         "type": "esriFieldTypeString",
         "length": 255
-      },
-      {
-        "name": "CADVendor",
-        "alias": "CAD Vendor",
-        "type": "esriFieldTypeString",
-        "length": 100,
-        "domain": {
-          "type": "codedValue",
-          "name": "CADVendors",
-          "codedValues": [
-            {
-              "name": "TRITECH",
-              "code": "TRITECH"
-            },
-            {
-              "name": "TYLER",
-              "code": "TYLER"
-            },
-            {
-              "name": "WTH",
-              "code": "WTH"
-            }
-          ]
-        }
       }
     ],
     "features": []
