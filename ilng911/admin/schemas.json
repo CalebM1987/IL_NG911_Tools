@@ -17,7 +17,21 @@
         "name": "CoreField",
         "alias": "Is Core Field",
         "type": "esriFieldTypeString",
-        "length": 3
+        "length": 3,
+        "domain": {
+          "type": "codedValue",
+          "name": "Yes_No",
+          "values": [
+            {
+              "name": "Yes",
+              "value": "Yes"
+            },
+            {
+              "name": "No",
+              "value": "No"
+            }
+          ]
+        }
       },
       {
         "name": "Name",
@@ -25,6 +39,7 @@
         "type": "esriFieldTypeString",
         "length": 75
       }
-    ]
+    ],
+    "features": []
   }
 }

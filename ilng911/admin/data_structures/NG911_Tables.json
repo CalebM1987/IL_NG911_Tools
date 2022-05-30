@@ -1,7 +1,7 @@
 {
     "fields": [
       {
-        "name": "BaseName",
+        "name": "Basename",
         "alias": "Name",
         "type": "esriFieldTypeString",
         "length": 64
@@ -55,6 +55,12 @@
             }
           ]
         }
+      },
+      {
+        "name": "NENA_Prefix",
+        "alias": "NENA Prefix",
+        "type": "esriFieldTypeString",
+        "length": 15
       }
     ],
     "features": []

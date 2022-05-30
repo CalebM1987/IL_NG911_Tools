@@ -1,5 +1,5 @@
 import arcpy
-from ..env import ng911_db
+from ..env import get_ng911_db
 from ..support.munch import munchify
 
 

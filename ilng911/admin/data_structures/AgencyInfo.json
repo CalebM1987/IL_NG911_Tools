@@ -2,7 +2,7 @@
     "fields": [
         {
             "name": "County",
-            "alias": "911 Feature Type",
+            "alias": "County",
             "type": "esriFieldTypeString",
             "length": 50,
             "domain": {
@@ -422,7 +422,7 @@
         },
         {
             "name": "State",
-            "alias": "Feature Class Path",
+            "alias": "State",
             "type": "esriFieldTypeString",
             "length": 2
         },
@@ -442,6 +442,7 @@
     "features": [
         {
             "attributes": {
+                "OBJECTID": 1,
                 "County": null,
                 "State": "IL",
                 "Country": "USA",

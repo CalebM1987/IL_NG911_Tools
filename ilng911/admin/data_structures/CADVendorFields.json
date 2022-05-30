@@ -13,12 +13,6 @@
         "length": 255
       },
       {
-        "name": "CADFeatureTable",
-        "alias": "CAD Feature Table",
-        "type": "esriFieldTypeString",
-        "length": 255
-      },
-      {
         "name": "CADVendor",
         "alias": "CAD Vendor",
         "type": "esriFieldTypeString",
