@@ -5,18 +5,21 @@ import time
 import datetime
 from ..utils import lazyprop
 from ..utils.json_helpers import load_json
-from ..support.munch import Munch
+from ..support.munch import Munch, munchify
 from .enums import FieldCategory
 from ..core.common import Feature, FeatureBase, LOCATION_FIELDS, is_shape_field
 from ..env import get_ng911_db
 from typing import List, Dict
-from ..utils import cursors, copy_schema, is_arc
+from ..utils import cursors, copy_schema, is_arc, PropIterator
 from functools import partial
 from ..logging import log
 
 schemasDir = os.path.join(os.path.dirname(__file__), '_schemas')
 
-class DataType:
+# get ng911_db helper
+ng911_db = get_ng911_db()
+
+class DataType(PropIterator):
     ADDRESS_POINTS="AddressPoints"
     ROAD_CENTERLINE="RoadCenterline"
     PROVISIONING_BOUNDARY="ProvisioningBoundary"
@@ -28,6 +31,26 @@ class DataType:
     ESB_LAW="ESB_Law"
     INCORPORATED_MUNICIPAL="IncorporatedMunicipal"
     UNINCORPORATED_MUNICIPAL="UnincorporatedMunicipal"
+
+DATA_TYPES = DataType()
+
+DATA_TYPES_LOOKUP = munchify({ getattr(DATA_TYPES, p): p for p in DATA_TYPES })
+
+DEFAULT_NENA_PREFIXES = munchify(
+    dict(
+        ADDRESS_POINTS='SITE',
+        ROAD_CENTERLINE='RCL',
+        PROVISIONING_BOUNDARY='PB',
+        PSAP='PSAP',
+        ESB='ES',
+        ESB_EMS='EMS',
+        ESB_FIRE='FIRE',
+        ESB_LAW='LAW',
+        INCORPORATED_MUNICIPAL='INCMUNI',
+        UNINCORPORATED_MUNICIPAL='UNINCMUNI',
+        ZIP_CODES='ZIP'
+    )
+)
 
 def load_schema(name: str) -> Munch:
     """loads a json schema

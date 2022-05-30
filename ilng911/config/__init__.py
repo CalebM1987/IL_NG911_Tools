@@ -1,4 +1,5 @@
 import os
+import glob
 from ..utils.json_helpers import load_json, write_json_file
 from ..support.munch import munchify, Munch
 from typing import Dict, Union
@@ -16,6 +17,11 @@ def load_config(file_name='config.json') -> Munch:
         Munch: the config
     """
     config_file = os.path.join(thisDir, file_name)
+    if not os.path.exists(config_file):
+        try:
+            config_file = glob.glob(os.path.join(thisDir, '*.json'))[0]
+        except IndexError:
+            return None
 
     if os.path.exists(config_file):
         return load_json(config_file)

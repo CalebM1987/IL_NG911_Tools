@@ -5,9 +5,10 @@ import json
 import arcpy
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from ilng911.env import get_ng911_db
+from ilng911.env import NG_911_DIR, get_ng911_db
 from ilng911.admin.schemas import create_ng911_admin_gdb
 from ilng911.core.fields import FIELDS
+from ilng911.utils.json_helpers import load_json
 from ilng911.logging import log
 
 
@@ -20,28 +21,46 @@ class Toolbox(object):
 
         # List of tool classes associated with this toolbox
         self.tools = [
-            CreateNG911SchemaTables
+            CreateNG911SchemaGeoDatabase,
+            CreateNG911SchemaTables,
         ]
 
-class CreateNG911SchemaTables(object):
+class CreateNG911SchemaGeoDatabase(object):
     def __init__(self):
-        self.label = "Create NG911 Schema Tables"
-        self.description = "creates the NG911 Schema Tables database"
+        self.label = "1. Create NG911 Schema Geodatabase"
+        self.description = "creates the NG911 Schema geodatabase"
         self.canRunInBackground = False
     
     def getParameterInfo(self):
-        path = arcpy.Parameter(
-            name="Path", 
-            displayName="Path",
+        gdb_path = arcpy.Parameter(
+            name="gdb_path", 
+            displayName="Geodatabase Path",
             datatype="DEWorkspace"
         )
 
-        fs = arcpy.Parameter(
-            name="Feature_Set",
-            displayName="Feature Set",
-            datatype='DEFeatureClass',#"GPFeatureRecordSetLayer"
+        county = arcpy.Parameter(
+            name="county",
+            displayName="County",
+            datatype='GPString',
         )
-        return [ path, fs ]
+
+        config_file = arcpy.Parameter(
+            name="config_file",
+            displayName='Config File Name',
+
+        )
+
+        # set defaults and filters
+        config_file.value = 'config.json'
+
+        # get list of counties
+        agency_file = os.path.join(NG_911_DIR, 'admin', 'data_structures', 'AgencyInfo.json')
+        agencyInfo = load_json(agency_file)
+        county_field = [f for f in agencyInfo.fields if f.name == 'County'][0]
+        county.filter.list = [cv.name for cv in county_field.domain.codedValues]
+        
+
+        return [ gdb_path, county, config_file ]
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -67,19 +86,14 @@ class CreateNG911SchemaTables(object):
             json.dump(parameters[1].valueAsText, indent=2)
         return
 
-class CreateRoadCenterline(object):
+class CreateNG911SchemaTables(object):
     def __init__(self):
-        """Define the tool (tool name is the name of the class)."""
-        self.label = "Create Road Centerline"
-        self.description = ""
+        self.label = "2. Create NG911 Schema Tables"
+        self.description = "creates the NG911 Schema Tables database"
         self.canRunInBackground = False
-        self.paramLookup = {}
-
+    
     def getParameterInfo(self):
-        """Define parameter definitions"""
-        params = table_to_params(DataSchema(DataType.ROAD_CENTERLINE))
-        return params
-        
+        required_features
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -98,102 +112,11 @@ class CreateRoadCenterline(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        return
+        import json
+        log(f'path is: "{parameters[0].valueAsText}"')
 
-class CreateAddressPoint(object):
-    def __init__(self):
-        """Define the tool (tool name is the name of the class)."""
-        self.label = "Create Address Point"
-        self.description = ""
-        self.canRunInBackground = False
-
-    def getParameterInfo(self):
-        """Define parameter definitions"""
-        featureSet = arcpy.Parameter(
-            name="featureSet",
-            displayName="Draw Point",
-            direction="Input",
-            datatype="GPFeatureRecordSetLayer"
-        )
-        featureSet.value = r"C:\Users\calebma\Documents\IL_911\IL_NG911_Tools\test_env\test\AddressPoints.lyrx"
-
-        centerlineOID = arcpy.Parameter(
-            name="centerlineOID",
-            displayName="Centerline OBJECTID",
-            direction="Input",
-            datatype="GPLong"
-        )
-        centerline = DataSchema(DataType.ROAD_CENTERLINE)
-        with arcpy.da.SearchCursor(centerline.table, ['OID@']) as rows:
-            centerlineOID.filter.list = [r[0] for r in rows]
-
-        params = [featureSet, centerlineOID]
-
-        params.extend(table_to_params(DataSchema(DataType.ADDRESS_POINTS), filters=STREET_ATTRIBUTES))
-        for p in params[2:]:
-            p.enabled = False
-        return params
-        
-
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
-    def updateParameters(self, parameters):
-        """Modify the values and properties of parameters before internal
-        validation is performed.  This method is called whenever a parameter
-        has been changed."""
-        if parameters[1].value and parameters[0].altered:
-            for p in parameters[2:]:
-                p.enabled = True
-        return
-
-    def updateMessages(self, parameters):
-        """Modify the messages created by internal validation for each tool
-        parameter.  This method is called after internal validation."""
-        addNum = [p for p in parameters if p.name ==FIELDS.ADDRESS.NUMBER][0]
-        if addNum.value and parameters[1].value and parameters[0].altered and not addNum.hasBeenValidated:
-            # debug_window(f'Calling Address Number Validation NOw? {addNum.value}')
-            with arcpy.da.SearchCursor(parameters[0].value, ['SHAPE@']) as rows:
-                geom = [r[0] for r in rows][0]
-                # debug_window(geom.JSON)
-            info = get_range_and_parity(geom, parameters[1].value)
-            # debug_window(json.dumps(info))
-            messages = []
-            if addNum.value < info.from_address or addNum.value > info.to_address:
-                msg = f'Address Number is not in range {info.to_address} - {info.from_address}'
-                # debug_window(msg)
-                messages.append(msg)
-                
-            if info.parity == 'O' and not addNum.value % 2:
-                messages.append('Address Number should be Odd')
-                # debug_window('Address Number should be Odd')
-            elif info.parity == 'E' and addNum.value % 2:
-                messages.append('Address Number should be Even')
-                # debug_window('Address Number should be Even')
-            if messages:
-                addNum.setWarningMessage('\n'.join(messages))
-        return
-
-    def execute(self, parameters, messages):
-        """The source code of the tool."""
-        # fs = arcpy.FeatureSet(parameters[0])
-        fs = arcpy.FeatureSet()
-        fs.load(parameters[0].value)
-        attrs = {p.name: p.valueAsText for p in parameters[2:]}
-        fsJson = munchify(json.loads(fs.JSON))
-        geomJson = fsJson.features[0].get('geometry')
-        geomJson["spatialReference"] = {"wkid": 4326 }
-        pt = arcpy.AsShape(geomJson, True)
-        ft, schema = create_address_point(pt, parameters[1].value, **attrs)
-        ft.prettyPrint()
-        try: 
-            aprx = arcpy.mp.ArcGISProject('current')
-            lyr = aprx.activeMap.listLayers(parameters[0].valueAsText)[0]
-            if lyr:
-                aprx.removeLayer(lyr)
-        except:
-            pass
+        with open(r"C:\Users\calebma\Documents\Temp\roadCenterline911.json", 'w') as f:
+            json.dump(parameters[1].valueAsText, indent=2)
         return
 
 if __name__ == '__main__':

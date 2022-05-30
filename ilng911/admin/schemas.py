@@ -4,12 +4,13 @@ import glob
 import datetime
 from ..env import NG_911_DIR, get_ng911_db
 from ..logging import log
-from ..utils.cursors import find_ws, UpdateCursor
+from ..utils.cursors import find_ws, UpdateCursor, InsertCursor
 from ..utils.json_helpers import load_json
 from ..utils.helpers import field_types
 from ..support.munch import munchify
 from ..config import write_config
 from ..core.database import NG911SchemaTables
+from ..schemas import DATA_TYPES, DATA_TYPES_LOOKUP, DEFAULT_NENA_PREFIXES
 
 def features_from_json(json_file: str, out_path: str):
     """create features from a json file, will also add
@@ -65,18 +66,19 @@ def features_from_json(json_file: str, out_path: str):
     return out_path
     
 
-def create_ng911_admin_gdb(gdb_path: str, county: str, config_file='config.json') -> str:
+def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, config_file='config.json') -> str:
     """creates the NG911_SchemaTables.gdb
 
     Args:
-        gdb_path (str): the geodatabase folder path
+        ng911_gdb (str): the ng911 geodatabase path
+        schemas_gdb_path (str): the geodatabase folder path
         county (str): the county for 
         config_file (str, optional): _description_. Defaults to 'config.json'.
 
     Returns:
         str: _description_
     """
-    out_gdb = os.path.join(gdb_path, 'NG911_Schemas.gdb')
+    out_gdb = os.path.join(schemas_gdb_path, 'NG911_Schemas.gdb')
 
     if not arcpy.Exists(out_gdb):
         arcpy.CreateFileGDB_management(*os.path.split(out_gdb))
@@ -93,11 +95,18 @@ def create_ng911_admin_gdb(gdb_path: str, county: str, config_file='config.json'
             features_from_json(fl, table)
 
     # write config file
+    agencyId = f'@{county}COIL.ORG'
     conf = {
-        'ng911GDBPath': out_gdb,
+        'ng911GDBPath': ng911_gdb,
+        'ng911GDBSchemasPath': out_gdb,
         'createdBy': os.getenv('username'),
-        'created': datetime.datetime.utcnow().isoformat()
+        'created': datetime.datetime.utcnow().isoformat(),
+        'county': county,
+        'agencyId': agencyId
     }
+
+    if not config_file.endswith('.json'):
+        config_file += '.json'
 
     write_config(conf, config_file)
 
@@ -138,5 +147,25 @@ def create_ng911_admin_gdb(gdb_path: str, county: str, config_file='config.json'
 
     with UpdateCursor(table, ['County', 'AgencyID']) as rows:
         for r in rows:
-            rows.updateRow([county, f'@{county}COIL.ORG'])
+            rows.updateRow([county, agencyId])
+
     log(f'set agency ID: "@{county}COIL.ORG"')
+
+    # check for core feature classes
+    schemaTable = ng911_db.get_table(NG911SchemaTables.NG911_TABLES)
+    with arcpy.da.SearchCursor(schemaTable, ['FeatureType', 'Path']) as rows:
+        existing = [r[0] for r in rows if r[1] and arcpy.Exists(r[1])]
+
+    # try to find required feature classes
+    toAdd = [p for p in DATA_TYPES if p not in existing]
+
+    # walk through gdb
+    with arcpy.da.InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix']) as rows:
+        for root, fds, tables in arcpy.da.Walk(ng911_gdb):
+            for tab in tables:
+                target = DATA_TYPES_LOOKUP.get(tab)
+                if target and target in toAdd:
+                    full_path = os.path.join(root, tab)
+                    rows.insertRow((tab, full_path, target, DEFAULT_NENA_PREFIXES.get(target)))
+                    log(f'Found Schema for "{target}" -> "{tab}"')
+

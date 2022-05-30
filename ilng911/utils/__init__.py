@@ -12,6 +12,20 @@ def updir(path: str, levels: int=1):
         p = os.path.dirname(p)
     return p
 
+class Singleton (type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class PropIterator:
+    __props__ = []
+
+    def __iter__(self):
+        for p in (self.__props__ or [p for p in dir(self) if not p.startswith('__')]):
+            yield p
+
 class lazyprop:
     """Based on code from David Beazley's "Python Cookbook".
     

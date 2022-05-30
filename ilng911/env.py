@@ -18,4 +18,4 @@ def get_ng911_db(config_file='config.json') -> NG911Data:
     """
     config = load_config(config_file)
     if config:
-        return NG911Data(config.get('ng911GDBPath'))
+        return NG911Data(config.get('ng911GDBSchemasPath'))
