@@ -9,9 +9,11 @@ from ilng911.logging import log_context, log
 if __name__ == '__main__':
     schemas_dir = os.path.join(NG_911_DIR, 'admin', 'data_structures')
     tables = ['NG911_Tables', 'AgencyInfo', 'CustomFields', 'CustomFields']
+    schemaPath = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911'
+    gdbPath = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\IL_NG911_Brown_Master_v3.2.5.gdb'
 
     with log_context() as lc:
-        gdb = create_ng911_admin_gdb(r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911', 'BROWN')
+        gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'BROWN')
 
         # for tab in tables:
         #     json_file = os.path.join(schemas_dir, tab + '.json')

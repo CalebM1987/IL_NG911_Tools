@@ -1,5 +1,8 @@
 {
-  "ng911GDBPath": "L:\\Users\\caleb.mackey\\Documents\\GIS_Data\\IL_NG911\\NG911_Schemas.gdb",
+  "ng911GDBPath": "L:\\Users\\caleb.mackey\\Documents\\GIS_Data\\IL_NG911\\IL_NG911_Brown_Master_v3.2.5.gdb",
+  "ng911GDBSchemasPath": "L:\\Users\\caleb.mackey\\Documents\\GIS_Data\\IL_NG911\\NG911_Schemas.gdb",
   "createdBy": "caleb.mackey",
-  "created": "2022-05-30T01:04:59.890289"
+  "created": "2022-05-30T04:14:53.959504",
+  "county": "BROWN",
+  "agencyId": "@BROWNCOIL.ORG"
 }

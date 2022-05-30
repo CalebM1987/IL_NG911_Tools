@@ -2,15 +2,8 @@ import os
 import arcpy
 from ..support.munch import munchify, Munch
 # from ..schemas import load_schema, DataType
-from ..utils import lazyprop
+from ..utils import Singleton, lazyprop, PropIterator
 from ..logging import log
-
-class PropIterator:
-    __props__ = []
-
-    def __iter__(self):
-        for p in self._props:
-            return p
 
 class NG911LayerTypes(PropIterator):
     __props__ = [
@@ -48,7 +41,7 @@ class NG911SchemaTables(PropIterator):
     CAD_VENDOR_FIELDS = 'CADVendorFields'
     CAD_VENDOR_FEATURES = 'CADVendorFeatures'
 
-class NG911Data: 
+class NG911Data(metaclass=Singleton): 
     state = None
     county = None
     country = 'US'
@@ -57,12 +50,6 @@ class NG911Data:
     schemaTables = NG911SchemaTables
 
     __tables__ = NG911SchemaTables.__props__
-
-    def __new__(cls):
-        """ensure singleton instance"""
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(NG911Data, cls).__new__(cls)
-        return cls.instance
 
     def __init__(self, schema_gdb: str):
         """NextGen 911 Data helper

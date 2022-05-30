@@ -78,6 +78,9 @@ DATE_FIELDS = [
     'Expire'
 ]
 
+# get ng911_db helper
+ng911_db = get_ng911_db()
+
 def merge_street_segment_attributes(address: Feature, centerline: Union[int, Feature]):
     """merge street segment attributes into address point feature
 
