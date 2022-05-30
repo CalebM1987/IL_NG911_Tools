@@ -6,40 +6,34 @@ import arcpy
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from ilng911.env import get_ng911_db
-from ilng911.geoprocessing import table_to_params, debug_window
-from ilng911.schemas import DataType, DataSchema
-from ilng911.support.munch import munchify
-from ilng911.core.address import STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES, create_address_point, get_range_and_parity
+from ilng911.admin.schemas import create_ng911_admin_gdb
 from ilng911.core.fields import FIELDS
 from ilng911.logging import log
 
-ng911_db = get_ng911_db()
 
 class Toolbox(object):
     def __init__(self):
         """Define the toolbox (the name of the toolbox is the name of the
         .pyt file)."""
-        self.label = "NextGen 911 Tools"
+        self.label = "NextGen 911 Administrator Tools"
         self.alias = ""
 
         # List of tool classes associated with this toolbox
         self.tools = [
-            CreateRoadCenterline,
-            CreateAddressPoint,
-            TestTool
+            CreateNG911SchemaTables
         ]
 
-class TestTool(object):
+class CreateNG911SchemaTables(object):
     def __init__(self):
-        self.label = "Test Tool"
-        self.description = ""
+        self.label = "Create NG911 Schema Tables"
+        self.description = "creates the NG911 Schema Tables database"
         self.canRunInBackground = False
     
     def getParameterInfo(self):
         path = arcpy.Parameter(
             name="Path", 
             displayName="Path",
-            datatype="DEFeatureClass"
+            datatype="DEWorkspace"
         )
 
         fs = arcpy.Parameter(
