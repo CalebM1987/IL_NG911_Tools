@@ -74,7 +74,8 @@ class CreateNG911SchemaGeoDatabase(object):
         config = load_config(config_file.value)
         if config:
             ng911_gdb.value = config.get("ng911GDBPath")
-            schemas_gdb_path.value = config.get("ng911GDBSchemasPath")
+            schemasPathConf = config.get("ng911GDBSchemasPath")
+            schemas_gdb_path.value = os.path.dirname(schemasPathConf) if schemasPathConf else None
             county.value = config.get('county')
 
         return [ ng911_gdb, schemas_gdb_path, county, config_file ]
@@ -140,7 +141,7 @@ class CreateNG911SchemaTables(object):
         )
 
         # required fields vt
-        required_features.columns = [['GPString', 'Feature Type'], ['GPFeatureLayer', '911 Feature Type'], ['GPString', 'NENA Prefix']]
+        required_features.columns = [['GPString', '911 Feature Type'], ['GPFeatureLayer', '911 Layer'], ['GPString', 'NENA Prefix']]
         # look for existing features
         ng911_db = get_ng911_db()
         ng911_db.setup()
@@ -149,9 +150,16 @@ class CreateNG911SchemaTables(object):
             if table:
                 with arcpy.da.SearchCursor(table, ['FeatureType', 'Path', 'NENA_Prefix']) as rows:
                     required_features.values = [list(r) for r in rows]
+
+        # set dropdowns for feature type
+        featureTypes = list(iter(DATA_TYPES))
+        required_features.filters[0].type = 'ValueList'
+        required_features.filters[0].list = featureTypes
         
         # custom fields
         custom_fields.columns = [['GPString', '911 Feature Type'], ['GPString', 'Field'], ['GPString', 'Expression']]
+        custom_fields.filters[0].type = 'ValueList'
+        custom_fields.filters[0].list = featureTypes
 
         # cad vendor features
         cad_vendor_features.columns = [['GPString', 'CAD Vendor'], ['GPFeatureLayer', 'CAD Table']]    
