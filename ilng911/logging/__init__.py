@@ -7,7 +7,7 @@ import time
 import traceback as tb
 from io import StringIO
 
-logDir = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'Logs')
+logDir = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'Logs')
 print('log dir: ', logDir)
 default_format = '%(asctime)s - %(levelname)s - %(message)s'
 date_format='%Y-%m-%d %H:%M:%S'
@@ -52,7 +52,7 @@ def log_context(prefix='NG911_', format=default_format, datefmt=date_format, lev
     set_logger_context(prefix, format, datefmt, level, **kwargs)
     try:
         yield
-    except Exception:
+    except Exception as e:
         # We want the _full_ traceback with the context
         # First we get the current call stack, which constitutes the "top",
         # it has the context up to the point where the context manager is used
@@ -85,3 +85,4 @@ def log_context(prefix='NG911_', format=default_format, datefmt=date_format, lev
         bottom_stack.close()
         # Log the combined stack
         log('Full Error Traceback:\n{}'.format(tb_string), level="error")
+        raise e

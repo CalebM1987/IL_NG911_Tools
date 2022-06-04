@@ -430,7 +430,7 @@
             "name": "Country",
             "alias": "Country",
             "type": "esriFieldTypeString",
-            "length": 50
+            "length": 2
         },
         {
             "name": "AgencyID",
@@ -445,7 +445,7 @@
                 "OBJECTID": 1,
                 "County": null,
                 "State": "IL",
-                "Country": "USA",
+                "Country": "US",
                 "AgencyID": null
             }
         }

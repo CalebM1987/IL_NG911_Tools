@@ -1,7 +1,7 @@
 {
     "fields": [
       {
-        "name": "TableType",
+        "name": "TargetTable",
         "alias": "911 Feature Table Type",
         "type": "esriFieldTypeString",
         "length": 30,

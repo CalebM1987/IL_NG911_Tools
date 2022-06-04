@@ -8,7 +8,7 @@ from ..utils.json_helpers import load_json
 from ..support.munch import Munch, munchify
 from .enums import FieldCategory
 from ..core.common import Feature, FeatureBase, LOCATION_FIELDS, is_shape_field
-from ..env import get_ng911_db
+from ..env import get_ng911_db, DEBUG_WS
 from typing import List, Dict
 from ..utils import cursors, copy_schema, is_arc, PropIterator
 from functools import partial
@@ -103,7 +103,7 @@ class DataSchema(FeatureBase):
         where = f"TargetTable = '{self._schema.featureType}'"
         # fieldNames = [f.name for f in arcpy.ListFields(table)]
         # print(fieldNames)
-        fields = ['Name', 'TargetTable',  'Expression']
+        fields = ['FieldName', 'TargetTable',  'Expression']
         flookup = { f.name: f for f in self.fields }
         custFields = []
 
@@ -261,7 +261,7 @@ class DataSchema(FeatureBase):
         if self._features:
             editable_fields = [f.name for f in self.fields if f.editable]
             log(f'editable fields: {editable_fields}')
-            copyTab = copy_schema(self.table, time.strftime(r'in_memory\temp_%Y%m%d%H%M%S'))
+            copyTab = copy_schema(self.table, time.strftime(os.path.join(DEBUG_WS, 'temp_%Y%m%d%H%M%S')))
            
             if is_arc: 
                 irows = arcpy.da.InsertCursor(copyTab, editable_fields + ['SHAPE@'])
@@ -274,11 +274,13 @@ class DataSchema(FeatureBase):
                         self._commited.append(ft)
                         self._features.remove(ft)
                         count += 1
-                del irows
+                del irows                                        
 
                 # now append to actual table
                 arcpy.management.Append(copyTab, self.table, 'NO_TEST')
+                log('appended feature to table')
                 arcpy.management.Delete(copyTab)
+                log('cleaned up temporary table')
             else:
                 log('using in standalone, starting edit session')
                 with cursors.InsertCursor(self.table, editable_fields + ['SHAPE@']) as irows:

@@ -111,15 +111,19 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
     write_config(conf, config_file)
 
     # check for relationship class for vendors to fields
-    hasVendorRel = False
+    hasVendorRel, hasSpatialRel = False, False
     vendorRel = 'CADVendorsRel'
+    spatialRel = 'SpatailJoinFeaturesRel'
     for dirpath, dirnames, rels in arcpy.da.Walk(out_gdb, datatype='RelationshipClass'):
         for rel in rels:
             log(f'relationship class: "{rel}"')
             if rel == vendorRel:
                 hasVendorRel = True
                 log('found existing CAD Vendors relationship')
-                break
+                
+            if rel == spatialRel:
+                hasSpatialRel = True
+                log('found existing spatial join features relationship')
 
     if not hasVendorRel:
         # create relationship class
@@ -138,6 +142,26 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
             'TableName',
             'TableName',
         )
+        log(f'created "{vendorRel}" relationship')
+
+    if not hasSpatialRel:
+        # create relationship class
+        spatialFeatures = os.path.join(out_gdb, NG911SchemaTables.SPATIAL_JOIN_FEATURES)
+        spatialFields = os.path.join(out_gdb, NG911SchemaTables.SPATIAL_JOIN_FIELDS)
+        arcpy.management.CreateRelationshipClass(
+            spatialFeatures, 
+            spatialFields, 
+            os.path.join(out_gdb, spatialRel), 
+            'COMPOSITE', 
+            NG911SchemaTables.SPATIAL_JOIN_FIELDS, 
+            NG911SchemaTables.SPATIAL_JOIN_FEATURES, 
+            'BOTH', 
+            'ONE_TO_MANY', 
+            'ATTRIBUTED', 
+            'TableName',
+            'TableName',
+        )
+        log(f'created "{spatialRel}" relationship')
 
     # set agency info
     table = os.path.join(out_gdb, NG911SchemaTables.AGENCY_INFO)

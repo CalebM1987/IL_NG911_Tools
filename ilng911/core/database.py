@@ -12,7 +12,7 @@ class NG911LayerTypes(PropIterator):
         'ESB',
         'ESB_EMS',
         'ESB_FIRE',
-        'ESB_LAW,'
+        'ESB_LAW',
         'ADDRESS_POINTS',
         'ROAD_CENTERLINE',
         'PROVISIONING_BOUNDARY'
@@ -33,7 +33,9 @@ class NG911SchemaTables(PropIterator):
         'AgencyInfo',
         'CustomFields',
         'CADVendorFields',
-        'CADVendorFeatures'
+        'CADVendorFeatures',
+        'SpatialJoinFields',
+        'SpatialJoinFeatures',
     ]
 
     NG911_TABLES = 'NG911_Tables'
@@ -41,8 +43,10 @@ class NG911SchemaTables(PropIterator):
     CUSTOM_FIELDS = 'CustomFields'
     CAD_VENDOR_FIELDS = 'CADVendorFields'
     CAD_VENDOR_FEATURES = 'CADVendorFeatures'
+    SPATIAL_JOIN_FIELDS = 'SpatialJoinFields'
+    SPATIAL_JOIN_FEATURES = 'SpatialJoinFeatures'
 
-class NG911Data:#(metaclass=Singleton): 
+class NG911Data(metaclass=Singleton): 
     state = None
     county = None
     country = 'US'
@@ -88,9 +92,9 @@ class NG911Data:#(metaclass=Singleton):
             agencyTab = os.path.join(self.gdb_path, self.schemaTables.AGENCY_INFO)
             agencyTabExists = arcpy.Exists(agencyTab)
             if agencyTabExists:
-                with arcpy.da.SearchCursor(agencyTab, ['County', 'State', 'Country', 'AgencyID']) as rows:
+                with arcpy.da.SearchCursor(agencyTab, ['County', 'State', 'AgencyID']) as rows:
                     for r in rows:
-                        self.county, self.state, self.country, self.agencyID = r
+                        self.county, self.state, self.agencyID = r
                         break
 
             if schemaExists and agencyTabExists and self.agencyID and self.requiredTables:
@@ -192,10 +196,16 @@ class NG911Data:#(metaclass=Singleton):
             str: the feature class path
         """
         schemaTab = self.get_table(self.schemaTables.NG911_TABLES)
-        where = f"Basename = '{name}'"
-        with arcpy.da.SearchCursor(schemaTab, ['BaseName', 'Path'], where) as rows:
+        if name in self.types.__props__:
+            where = f"FeatureType = '{name}'"
+            index = 2
+        else:
+            where = f"Basename = '{name}'"
+            index = 0
+
+        with arcpy.da.SearchCursor(schemaTab, ['BaseName', 'Path', 'FeatureType'], where) as rows:
             try:
-                return [r[1] for r in rows if r[0] == name][0]
+                return [r[1] for r in rows if r[index] == name][0]
             except:
                 return None
 

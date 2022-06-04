@@ -1,0 +1,24 @@
+{
+    "fields": [
+      {
+        "name": "TableName",
+        "alias": "Spatial Join Table Name",
+        "type": "esriFieldTypeString",
+        "length": 64,
+        "domain": {
+          "type": "codedValue",
+          "name": "SpatailJoin_Tables",
+          "codedValues": [
+            
+          ]
+        }
+      },
+      {
+        "name": "Path",
+        "alias": "Data Path",
+        "type": "esriFieldTypeString",
+        "length": 64
+      }
+    ],
+    "features": []
+}

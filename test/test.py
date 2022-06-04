@@ -20,6 +20,9 @@ if __name__ == '__main__':
             ng911_db.setup()
             log(f'created admin gdb, is setup complete? {ng911_db.setupComplete}')
 
+        points = ng911_db.get_911_table(ng911_db.types.ADDRESS_POINTS)
+        print('points is: ', points)
+        print(arcpy.Describe(points).oidFieldName)
         # for tab in tables:
         #     json_file = os.path.join(schemas_dir, tab + '.json')
         #     table = os.path.join(gdb, tab)

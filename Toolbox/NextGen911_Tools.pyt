@@ -4,14 +4,20 @@ import sys
 import json
 import arcpy
 
+# debug mode
+os.environ['NG911_DEBUG_MODE'] = 'DEBUG'
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from ilng911.env import get_ng911_db
-from ilng911.geoprocessing import table_to_params, debug_window
+from ilng911.geoprocessing import log_params, table_to_params, debug_window
 from ilng911.schemas import DataType, DataSchema
 from ilng911.support.munch import munchify
 from ilng911.core.address import STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES, create_address_point, get_range_and_parity
 from ilng911.core.fields import FIELDS
-from ilng911.logging import log
+from ilng911.utils.json_helpers import load_json
+from ilng911.logging import log, log_context
+thisDir = os.path.abspath(os.path.dirname(__file__))
+helpersDir = os.path.join(thisDir, 'helpers')
 
 ng911_db = get_ng911_db()
 
@@ -121,7 +127,15 @@ class CreateAddressPoint(object):
             direction="Input",
             datatype="GPFeatureRecordSetLayer"
         )
-        featureSet.value = r"C:\Users\calebma\Documents\IL_911\IL_NG911_Tools\test_env\test\AddressPoints.lyrx"
+
+        fs = arcpy.FeatureSet()
+        points = ng911_db.get_911_table(ng911_db.types.ADDRESS_POINTS)
+        desc = arcpy.Describe(points)
+        where = f"{desc.oidFieldName} IS NULL"
+        renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
+        fs.load(points, where)#, None, json.dumps(renderer), True) # getting error on this kwarg??
+
+        featureSet.value = fs
 
         centerlineOID = arcpy.Parameter(
             name="centerlineOID",
@@ -167,7 +181,7 @@ class CreateAddressPoint(object):
             # debug_window(json.dumps(info))
             messages = []
             if addNum.value < info.from_address or addNum.value > info.to_address:
-                msg = f'Address Number is not in range {info.to_address} - {info.from_address}'
+                msg = f'Address Number is not in range {info.from_address} - {info.to_address}'
                 # debug_window(msg)
                 messages.append(msg)
                 
@@ -184,23 +198,30 @@ class CreateAddressPoint(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         # fs = arcpy.FeatureSet(parameters[0])
-        fs = arcpy.FeatureSet()
-        fs.load(parameters[0].value)
-        attrs = {p.name: p.valueAsText for p in parameters[2:]}
-        fsJson = munchify(json.loads(fs.JSON))
-        geomJson = fsJson.features[0].get('geometry')
-        geomJson["spatialReference"] = {"wkid": 4326 }
-        pt = arcpy.AsShape(geomJson, True)
-        ft, schema = create_address_point(pt, parameters[1].value, **attrs)
-        ft.prettyPrint()
-        try: 
-            aprx = arcpy.mp.ArcGISProject('current')
-            lyr = aprx.activeMap.listLayers(parameters[0].valueAsText)[0]
-            if lyr:
-                aprx.removeLayer(lyr)
-        except:
-            pass
-        return
+        with log_context(self.__class__.__name__ + '_') as lc:
+            log_params(parameters)
+            fs = arcpy.FeatureSet()
+            fs.load(parameters[0].value)
+            attrs = {p.name: p.valueAsText for p in parameters[2:]}
+            fsJson = munchify(json.loads(fs.JSON))
+            geomJson = fsJson.features[0].get('geometry')
+            geomJson["spatialReference"] = {"wkid": 4326 }
+            pt = arcpy.AsShape(geomJson, True)
+            ft, schema = create_address_point(pt, parameters[1].value, **attrs)
+            ft.prettyPrint()
+            try: 
+                # try to remove feature set layer
+                aprx = arcpy.mp.ArcGISProject('current')
+                log(f'attempting to remove temporary drawing layer: "{parameters[0].valueAsText}"')
+                lyr = aprx.activeMap.listLayers(parameters[0].valueAsText)[0]
+                log(f'found temporary drawing layer: {lyr}')
+                if lyr:
+                    aprx.activeMap.removeLayer(lyr)
+                    log(f'removed temporary drawing layer: "{parameters[0].valueAsText}"')
+            except Exception as e:
+                log(f'failed to remove temporary draw layer: {e}', 'warn')
+                pass
+            return
 
 if __name__ == '__main__':
     tbx = Toolbox()

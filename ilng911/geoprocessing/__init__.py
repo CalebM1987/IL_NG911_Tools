@@ -1,9 +1,10 @@
 import arcpy
 import os
 import re
+import json
 from ..schemas import DataSchema
 from ..env import get_ng911_db
-from ..utils import find_ws
+from ..utils.cursors import find_ws
 from ..support.munch import munchify
 from ..core.address import SKIP_NAMES, STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES
 from ..logging import log
@@ -63,6 +64,7 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
     # filters.extend(f.name for f in schema.customFields)
     for field in fields:
         if not SHAPE_FIELD_REGEX.match(field.name) and field.name not in filters:
+            log(f'Creating parameter "{field.name}", required: {field.name in schema.requiredFields}')
             param = arcpy.Parameter(
                 name=field.name,
                 displayName=field.aliasName,
@@ -118,3 +120,16 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
     #     params[0].value = '-10104222.172, 4864013.569'
 
     return params #munchify(params)
+
+def log_params(parameters: List[arcpy.Parameter]):
+    params = {}
+    for p in parameters:
+        if p.datatype in ('GPFeatureSet', 'FeatureSet'):
+            try:
+                params[p.name] = json.loads(p.value.JSON)
+            except Exception as e:
+                log(f'failed to get feature set value: ', e)
+                params[p.name] = p.valueAsText
+        else:
+            params[p.name] = p.valueAsText
+    log(f'Input Parameters:\n{json.dumps(params, indent=2)}\n')
