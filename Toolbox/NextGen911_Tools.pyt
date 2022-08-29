@@ -133,7 +133,7 @@ class CreateAddressPoint(object):
         desc = arcpy.Describe(points)
         where = f"{desc.oidFieldName} IS NULL"
         renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
-        fs.load(points, where)#, None, json.dumps(renderer), True) # getting error on this kwarg??
+        fs.load(points, where)#, None, json.dumps(renderer), True) # getting error renderer arguments??
 
         featureSet.value = fs
 

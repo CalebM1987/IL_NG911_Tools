@@ -124,7 +124,7 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
 def log_params(parameters: List[arcpy.Parameter]):
     params = {}
     for p in parameters:
-        if p.datatype in ('GPFeatureSet', 'FeatureSet'):
+        if p.datatype in ('GPFeatureRecordSetLayer', 'Feature Set', 'GPRecordSet', 'Record Set'):
             try:
                 params[p.name] = json.loads(p.value.JSON)
             except Exception as e:

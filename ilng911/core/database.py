@@ -230,6 +230,23 @@ class NG911Data(metaclass=Singleton):
     #     except:
     #         return False
 
+    def get_table_type(self, path):
+        """get the table type from a given path
+
+        Args:
+            path (str): the path for the table
+
+        Returns:
+            str: the table type
+        """
+        schemaTab = self.get_table(self.schemaTables.NG911_TABLES)
+        with arcpy.da.SearchCursor(schemaTab, ['Path', 'FeatureType']) as rows:
+            try:
+                return [r[1] for r in rows if r[0] == path][0]
+            except:
+                return None
+
+
     def get_table(self, name: str=NG911SchemaTables.NG911_TABLES) -> str:
         """gets the full path to a table
 

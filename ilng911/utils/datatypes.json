@@ -1,0 +1,739 @@
+{
+    "datatypes": [
+      {
+        "text": "Address Locator",
+        "value": "DEAddressLocator",
+        "description": "A dataset used for geocoding that stores the address attributes, associated indexes, and rules that define the process for translating nonspatial descriptions of places to spatial data."
+      },
+      {
+        "text": "Address Locator Style",
+        "value": "GPAddressLocatorStyle",
+        "description": "A template on which to base the new address locator."
+      },
+      {
+        "text": "Analysis Cell Size",
+        "value": "analysis_cell_size",
+        "description": "The cell size used by raster tools."
+      },
+      {
+        "text": "Any Value",
+        "value": "GPType",
+        "description": "A data type that accepts any value."
+      },
+      {
+        "text": "ArcMap Document",
+        "value": "DEMapDocument",
+        "description": "A file that contains one map, its layout, and its associated layers, tables, charts, and reports."
+      },
+      {
+        "text": "Areal Unit",
+        "value": "GPArealUnit",
+        "description": "An areal unit type and value, such as square meter or acre."
+      },
+      {
+        "text": "Boolean",
+        "value": "GPBoolean",
+        "description": "A Boolean value."
+      },
+      {
+        "text": "CAD Drawing Dataset",
+        "value": "DECadDrawingDataset",
+        "description": "A vector data source mixed with feature types and symbology. The dataset is not usable for feature class-based queries or analysis."
+      },
+      {
+        "text": "Calculator Expression",
+        "value": "GPCalculatorExpression",
+        "description": "A calculator expression."
+      },
+      {
+        "text": "Catalog Root",
+        "value": "DECatalogRoot",
+        "description": "The top-level node in the Catalog tree."
+      },
+      {
+        "text": "Cell Size",
+        "value": "GPSACellSize",
+        "description": "The cell size used by the ArcGIS Spatial Analyst extension."
+      },
+      {
+        "text": "Cell Size XY",
+        "value": "GPCellSizeXY",
+        "description": "Defines the two sides of a raster cell."
+      },
+      {
+        "text": "Composite Layer",
+        "value": "GPCompositeLayer",
+        "description": "A reference to several children layers, including symbology and rendering properties."
+      },
+      {
+        "text": "Compression",
+        "value": "GPSAGDBEnvCompression",
+        "description": "Specifies the type of compression used for a raster."
+      },
+      {
+        "text": "Coordinate System",
+        "value": "GPCoordinateSystem",
+        "description": "A reference framework, such as the UTM system consisting of a set of points, lines, and/or surfaces, and a set of rules used to define the positions of points in two- and three-dimensional space."
+      },
+      {
+        "text": "Coordinate Systems Folder",
+        "value": "DESpatialReferencesFolder",
+        "description": "A folder on disk storing coordinate systems."
+      },
+      {
+        "text": "Coverage",
+        "value": "DECoverage",
+        "description": "A coverage dataset, a proprietary data model for storing geographic features as points, arcs, and polygons with associated feature attribute tables."
+      },
+      {
+        "text": "Coverage Feature Class",
+        "value": "DECoverageFeatureClasses",
+        "description": "A coverage feature class, such as point, arc, node, route, route system, section, polygon, and region."
+      },
+      {
+        "text": "Data Element",
+        "value": "DEType",
+        "description": "A dataset visible in ArcCatalog."
+      },
+      {
+        "text": "Data File",
+        "value": "GPDataFile",
+        "description": "A data file."
+      },
+      {
+        "text": "Database Connections",
+        "value": "DERemoteDatabaseFolder",
+        "description": "The database connection folder in ArcCatalog."
+      },
+      {
+        "text": "Dataset",
+        "value": "DEDatasetType",
+        "description": "A collection of related data, usually grouped or stored together."
+      },
+      {
+        "text": "Date",
+        "value": "GPDate",
+        "description": " A date value."
+      },
+      {
+        "text": "dBASE Table",
+        "value": "DEDbaseTable",
+        "description": "Attribute data stored in dBASE format."
+      },
+      {
+        "text": "Decimate",
+        "value": "GP3DADecimate",
+        "description": "Specifies a subset of nodes of a TIN to create a generalized version of that TIN."
+      },
+      {
+        "text": "Diagram Layer",
+        "value": "GPDiagramLayer",
+        "description": "A diagram layer."
+      },
+      {
+        "text": "Disk Connection",
+        "value": "DEDiskConnection",
+        "description": "An access path to a data storage device."
+      },
+      {
+        "text": "Double",
+        "value": "GPDouble",
+        "description": "Any floating-point number stored as a double precision, 64-bit value."
+      },
+      {
+        "text": "Encrypted String",
+        "value": "GPEncryptedString",
+        "description": "Encrypted string for passwords."
+      },
+      {
+        "text": "Envelope",
+        "value": "GPEnvelope",
+        "description": "The coordinate pairs that define the minimum bounding rectangle in which the data source falls."
+      },
+      {
+        "text": "Evaluation Scale",
+        "value": "GPEvaluationScale",
+        "description": "The scale value range and increment value applied to inputs in a weighted overlay operation."
+      },
+      {
+        "text": "Extent",
+        "value": "GPExtent",
+        "description": "Specifies the coordinate pairs that define the minimum bounding rectangle (xmin, ymin and xmax, ymax) of a data source. All coordinates for the data source fall in this boundary."
+      },
+      {
+        "text": "Extract Values",
+        "value": "GPSAExtractValues",
+        "description": "An extract values parameter."
+      },
+      {
+        "text": "Feature Class",
+        "value": "DEFeatureClass",
+        "description": "A collection of spatial data with the same shape type: point, multipoint, polyline, and polygon."
+      },
+      {
+        "text": "Feature Dataset",
+        "value": "DEFeatureDataset",
+        "description": "A collection of feature classes that share a common geographic area and the same spatial reference system."
+      },
+      {
+        "text": "Feature Layer",
+        "value": "GPFeatureLayer",
+        "description": "A reference to a feature class, including symbology and rendering properties."
+      },
+      {
+        "text": "Feature Set",
+        "value": "GPFeatureRecordSetLayer",
+        "description": "Interactive features that draw the features when the tool is run."
+      },
+      {
+        "text": "Field",
+        "value": "Field",
+        "description": "A column in a table that stores the values for a single attribute."
+      },
+      {
+        "text": "Field Info",
+        "value": "GPFieldInfo",
+        "description": "The details about a field in a FieldMap."
+      },
+      {
+        "text": "Field Mappings",
+        "value": "GPFieldMapping",
+        "description": "A collection of fields in one or more input tables."
+      },
+      {
+        "text": "File",
+        "value": "DEFile",
+        "description": "A file on disk."
+      },
+      {
+        "text": "Folder",
+        "value": "DEFolder",
+        "description": "Specifies a location on disk where data is stored."
+      },
+      {
+        "text": "Formulated Raster",
+        "value": "GPRasterFormulated",
+        "description": "A raster surface whose cell values are represented by a formula or constant."
+      },
+      {
+        "text": "Fuzzy function",
+        "value": "GPSAFuzzyFunction",
+        "description": "Specifies the algorithm used in fuzzification of an input raster."
+      },
+      {
+        "text": "Geodataset",
+        "value": "DEGeodatasetType",
+        "description": "A collection of data with a common theme in a geodatabase."
+      },
+      {
+        "text": "GeoDataServer",
+        "value": "DEGeoDataServer",
+        "description": "A coarse-grained object that references a geodatabase."
+      },
+      {
+        "text": "Geometric Network",
+        "value": "DEGeometricNetwork",
+        "description": "A linear network represented by topologically connected edge and junction features. Feature connectivity is based on their geometric coincidence."
+      },
+      {
+        "text": "Geostatistical Layer",
+        "value": "GPGALayer",
+        "description": "A reference to a geostatistical data source, including symbology and rendering properties."
+      },
+      {
+        "text": "Geostatistical Search Neighborhood",
+        "value": "GPGASearchNeighborhood",
+        "description": "Defines the searching neighborhood parameters for a geostatistical layer."
+      },
+      {
+        "text": "Geostatistical Value Table",
+        "value": "GPGAValueTable",
+        "description": "A collection of data sources and fields that define a geostatistical layer."
+      },
+      {
+        "text": "GlobeServer",
+        "value": "DEGlobeServer",
+        "description": "A Globe server."
+      },
+      {
+        "text": "GPServer",
+        "value": "DEGPServer",
+        "description": "A geoprocessing server."
+      },
+      {
+        "text": "Graph",
+        "value": "GPGraph",
+        "description": "A graph."
+      },
+      {
+        "text": "Graph Data Table",
+        "value": "GPGraphDataTable",
+        "description": "A graph data table."
+      },
+      {
+        "text": "Group Layer",
+        "value": "GPGroupLayer",
+        "description": "A collection of layers that appear and act as a single layer. Group layers make it easier to organize a map, assign advanced drawing order options, and share layers for use in other maps."
+      },
+      {
+        "text": "Horizontal Factor",
+        "value": "GPSAHorizontalFactor",
+        "description": "The relationship between the horizontal cost factor and the horizontal relative moving angle."
+      },
+      {
+        "text": "Image Service",
+        "value": "DEImageServer",
+        "description": "An image service."
+      },
+      {
+        "text": "Index",
+        "value": "Index",
+        "description": " A data structure used to speed the search for records in geographic datasets and databases."
+      },
+      {
+        "text": "INFO Expression",
+        "value": "GPINFOExpression",
+        "description": "A syntax for defining and manipulating data in an INFO table."
+      },
+      {
+        "text": "INFO Item",
+        "value": "GPArcInfoItem",
+        "description": "An item in an INFO table."
+      },
+      {
+        "text": "INFO Table",
+        "value": "DEArcInfoTable",
+        "description": "A table in an INFO database."
+      },
+      {
+        "text": "Internet Tiled Layer",
+        "value": "GPInternetTiledLayer",
+        "description": "An internet tiled layer."
+      },
+      {
+        "text": "KML Layer",
+        "value": "GPKMLLayer",
+        "description": "A KML layer."
+      },
+      {
+        "text": "LAS Dataset",
+        "value": "DELasDataset",
+        "description": "A LAS dataset stores reference to one or more LAS files on disk as well as to additional surface features. A LAS file is a binary file that stores airborne lidar data."
+      },
+      {
+        "text": "LAS Dataset Layer",
+        "value": "GPLasDatasetLayer",
+        "description": "A layer that references a LAS dataset on disk. This layer can apply filters on lidar files and surface constraints referenced by a LAS dataset."
+      },
+      {
+        "text": "Layer",
+        "value": "GPLayer",
+        "description": "A reference to a data source, such as a shapefile, coverage, geodatabase feature class, or raster, including symbology and rendering properties."
+      },
+      {
+        "text": "Layer File",
+        "value": "DELayer",
+        "description": "A layer file stores a layer definition, including symbology and rendering properties."
+      },
+      {
+        "text": "Line",
+        "value": "GPLine",
+        "description": "A shape, straight or curved, defined by a connected series of unique x,y-coordinate pairs."
+      },
+      {
+        "text": "Linear Unit",
+        "value": "GPLinearUnit",
+        "description": "A linear unit type and value such as meter or feet."
+      },
+      {
+        "text": "Long",
+        "value": "GPLong",
+        "description": "An integer number value."
+      },
+      {
+        "text": "M Domain",
+        "value": "GPMDomain",
+        "description": "A range of lowest and highest possible value for m-coordinates."
+      },
+      {
+        "text": "Map",
+        "value": "GPMap",
+        "description": "An ArcGIS Pro map."
+      },
+      {
+        "text": "MapServer",
+        "value": "DEMapServer",
+        "description": "A map server."
+      },
+      {
+        "text": "Map Server Layer",
+        "value": "GPMapServerLayer",
+        "description": "A map server layer."
+      },
+      {
+        "text": "Mosaic Dataset",
+        "value": "DEMosaicDataset",
+        "description": "A collection of raster and image data that allows you to store, view, and query the data. It is a data model in the geodatabase used to manage a collection of raster datasets (images) stored as a catalog and viewed as a mosaicked image."
+      },
+      {
+        "text": "Mosaic Layer",
+        "value": "GPMosaicLayer",
+        "description": "A layer that references a mosaic dataset."
+      },
+      {
+        "text": "Neighborhood",
+        "value": "GPSANeighborhood",
+        "description": "The shape of the area around each cell used to calculate statistics."
+      },
+      {
+        "text": "Network Analyst Class FieldMap",
+        "value": "NAClassFieldMap",
+        "description": " Mapping between location properties in a Network Analyst layer (such as stops, facilities, and incidents) and a point feature class."
+      },
+      {
+        "text": "Network Analyst Hierarchy Settings",
+        "value": "GPNAHierarchySettings",
+        "description": "A hierarchy attribute that divides hierarchy values of a network dataset into three groups using two integers. The first integer sets the ending value of the first group; the second number sets the beginning value of the third group."
+      },
+      {
+        "text": "Network Analyst Layer",
+        "value": "GPNALayer",
+        "description": "A special group layer used to express and solve network routing problems. Each sublayer held in memory in a Network Analyst layer represents some aspect of the routing problem and the routing solution."
+      },
+      {
+        "text": "Network Dataset",
+        "value": "DENetworkDataset",
+        "description": "A collection of topologically connected network elements (edges, junctions, and turns), derived from network sources and associated with a collection of network attributes."
+      },
+      {
+        "text": "Network Dataset Layer",
+        "value": "GPNetworkDatasetLayer",
+        "description": "A reference to a network dataset, including symbology and rendering properties."
+      },
+      {
+        "text": "Network Travel Mode",
+        "value": "NetworkTravelMode",
+        "description": "A dictionary of travel mode objects.\n"
+      },
+      {
+        "text": "Parcel Fabric For ArcMap",
+        "value": "DECadastralFabric",
+        "description": "A parcel fabric is a dataset for the storage, maintenance, and editing of a continuous surface of connected parcels or parcel network."
+      },
+      {
+        "text": "Parcel Fabric Layer",
+        "value": "GPCadastralFabricLayer",
+        "description": "A layer referencing a parcel fabric on disk. This layer works as a group layer organizing a set of related layers under a single layer."
+      },
+      {
+        "text": "Point",
+        "value": "GPPoint",
+        "description": "A pair of x,y-coordinates."
+      },
+      {
+        "text": "Polygon",
+        "value": "GPPolygon",
+        "description": "A connected sequence of x,y-coordinate pairs, where the first and last coordinate pair are the same."
+      },
+      {
+        "text": "Projection File",
+        "value": "DEPrjFile",
+        "description": "A file storing coordinate system information for spatial data."
+      },
+      {
+        "text": "Pyramid",
+        "value": "GPSAGDBEnvPyramid",
+        "description": "Specifies if pyramids are built."
+      },
+      {
+        "text": "Radius",
+        "value": "GPSARadius",
+        "description": "Specifies which surrounding points are used for interpolation."
+      },
+      {
+        "text": "Random Number Generator",
+        "value": "GPRandomNumberGenerator",
+        "description": "Specifies the seed and the generator to use when creating random values."
+      },
+      {
+        "text": "Raster Band",
+        "value": "DERasterBand",
+        "description": "A layer in a raster dataset."
+      },
+      {
+        "text": "Raster Calculator Expression",
+        "value": "GPRasterCalculatorExpression",
+        "description": "A raster calculator expression."
+      },
+      {
+        "text": "Raster Catalog",
+        "value": "DERasterCatalog",
+        "description": "A collection of raster datasets defined in a table. Each table record defines an individual raster dataset in the catalog."
+      },
+      {
+        "text": "Raster Catalog Layer",
+        "value": "GPRasterCatalogLayer",
+        "description": "A reference to a raster catalog, including symbology and rendering properties."
+      },
+      {
+        "text": "Raster Data Layer",
+        "value": "GPRasterDataLayer",
+        "description": "A raster data layer."
+      },
+      {
+        "text": "Raster Dataset",
+        "value": "DERasterDataset",
+        "description": "A single dataset built from one or more rasters."
+      },
+      {
+        "text": "Raster Layer",
+        "value": "GPRasterLayer",
+        "description": "A reference to a raster, including symbology and rendering properties."
+      },
+      {
+        "text": "Raster Statistics",
+        "value": "GPSAGDBEnvStatistics",
+        "description": "Specifies if raster statistics build."
+      },
+      {
+        "text": "Raster Type",
+        "value": "GPRasterBuilder",
+        "description": "Raster data is added to a mosaic dataset by specifying a raster type. The raster type identifies metadata, such as georeferencing, acquisition date, and sensor type, with a raster format."
+      },
+      {
+        "text": "Record Set",
+        "value": "GPRecordSet",
+        "description": "Interactive table; type in the table values when the tool is run."
+      },
+      {
+        "text": "Relationship Class",
+        "value": "DERelationshipClass",
+        "description": "The details about the relationship between objects in the geodatabase."
+      },
+      {
+        "text": "Remap",
+        "value": "GPSARemap",
+        "description": "A table that defines how raster cell values are reclassified."
+      },
+      {
+        "text": "Route Measure Event Properties",
+        "value": "GPRouteMeasureEventProperties",
+        "description": "Specifies the fields on a table that describe events measured by a linear reference route system."
+      },
+      {
+        "text": "Scene Service Layer",
+        "value": "GPSceneServiceLayer",
+        "description": "A scene service layer."
+      },
+      {
+        "text": "Schematic Dataset",
+        "value": "DESchematicDataset",
+        "description": "A schematic dataset contains a collection of schematic diagram templates and schematic feature classes that share the same application domain, for example, water or electrical."
+      },
+      {
+        "text": "Schematic Diagram",
+        "value": "DESchematicDiagram",
+        "description": "A schematic diagram."
+      },
+      {
+        "text": "Schematic Diagram Class",
+        "value": "DESchematicDiagramClass",
+        "description": "A schematic diagram class."
+      },
+      {
+        "text": "Schematic Folder",
+        "value": "DESchematicFolder",
+        "description": "A schematic folder."
+      },
+      {
+        "text": "Schematic Layer",
+        "value": "GPSchematicLayer",
+        "description": "A schematic layer is a composite layer composed of feature layers based on the schematic feature classes associated with the template on which the schematic diagram is based."
+      },
+      {
+        "text": "SemiVariogram",
+        "value": "GPSASemiVariogram",
+        "description": "Specifies the distance and direction representing two locations used to quantify autocorrelation."
+      },
+      {
+        "text": "ServerConnection",
+        "value": "DEServerConnection",
+        "description": "A server connection."
+      },
+      {
+        "text": "Shapefile",
+        "value": "DEShapefile",
+        "description": "Spatial data in a shapefile format."
+      },
+      {
+        "text": "Spatial Reference",
+        "value": "GPSpatialReference",
+        "description": "The coordinate system used to store a spatial dataset, including the spatial domain."
+      },
+      {
+        "text": "SQL Expression",
+        "value": "GPSQLExpression",
+        "description": "A syntax for defining and manipulating data from a relational database."
+      },
+      {
+        "text": "String",
+        "value": "GPString",
+        "description": " A text value."
+      },
+      {
+        "text": "String Hidden",
+        "value": "GPStringHidden",
+        "description": "A string that is masked by * characters.Note:The text is not encrypted when used in scripting."
+      },
+      {
+        "text": "Table",
+        "value": "DETable",
+        "description": "Tabular data."
+      },
+      {
+        "text": "Table View",
+        "value": "GPTableView",
+        "description": "A representation of tabular data for viewing and editing purposes, stored in memory or on disk."
+      },
+      {
+        "text": "Terrain Layer",
+        "value": "GPTerrainLayer",
+        "description": "A reference to a terrain, including symbology and rendering properties. It’s used to draw a terrain."
+      },
+      {
+        "text": "Text File",
+        "value": "DETextfile",
+        "description": "A text file."
+      },
+      {
+        "text": "Tile Size",
+        "value": "GPSAGDBEnvTileSize",
+        "description": "Specifies the width and the height of data stored in block."
+      },
+      {
+        "text": "Time configuration",
+        "value": "GPSATimeConfiguration",
+        "description": "Specifies the time periods used for calculating solar radiation at specific locations."
+      },
+      {
+        "text": "Time Unit",
+        "value": "GPTimeUnit",
+        "description": "A time unit type and value such as minutes or hours."
+      },
+      {
+        "text": "TIN",
+        "value": "DETin",
+        "description": "A vector data structure that partitions geographic space into contiguous, nonoverlapping triangles. The vertices of each triangle are sample data points with x-, y-, and z-values."
+      },
+      {
+        "text": "Tin Layer",
+        "value": "GPTinLayer",
+        "description": "A reference to a TIN, including topological relationships, symbology, and rendering properties."
+      },
+      {
+        "text": "Tool",
+        "value": "DETool",
+        "description": " A geoprocessing tool."
+      },
+      {
+        "text": "Toolbox",
+        "value": "DEToolbox",
+        "description": "A geoprocessing toolbox."
+      },
+      {
+        "text": "Topo Features",
+        "value": "GPSATopoFeatures",
+        "description": "Features that are input to the interpolation."
+      },
+      {
+        "text": "Topology",
+        "value": "DETopology",
+        "description": "A topology that defines and enforces data integrity rules for spatial data."
+      },
+      {
+        "text": "Topology Layer",
+        "value": "GPTopologyLayer",
+        "description": "A reference to a topology, including symbology and rendering properties."
+      },
+      {
+        "text": "Transformation Function",
+        "value": "GPSATransformationFunction",
+        "description": "A Spatial Analyst transformation function."
+      },
+      {
+        "text": "Utility Network",
+        "value": " DEUtilityNetwork",
+        "description": "A utility network."
+      },
+      {
+        "text": "Utility Network Layer",
+        "value": "GPUtilityNetworkLayer",
+        "description": "A utility network layer."
+      },
+      {
+        "text": "Value Table",
+        "value": "GPValueTable",
+        "description": "A collection of columns of values."
+      },
+      {
+        "text": "Variant",
+        "value": "GPVariant",
+        "description": "A data value that can contain any basic type: Boolean, date, double, long, and string."
+      },
+      {
+        "text": "Vector Tile Layer",
+        "value": "GPVectorLayer",
+        "description": "A vector tile layer."
+      },
+      {
+        "text": "Vertical Factor",
+        "value": "GPSAVerticalFactor",
+        "description": "Specifies the relationship between the vertical cost factor and the vertical, relative moving angle."
+      },
+      {
+        "text": "VPF Coverage",
+        "value": "DEVPFCoverage",
+        "description": "Spatial data stored in Vector Product Format."
+      },
+      {
+        "text": "VPF Table",
+        "value": "DEVPFTable",
+        "description": "Attribute data stored in Vector Product Format."
+      },
+      {
+        "text": "WCS Coverage",
+        "value": "DEWCSCoverage",
+        "description": "Web Coverage Service (WCS) is an open specification for sharing raster datasets on the web."
+      },
+      {
+        "text": "Weighted Overlay Table",
+        "value": "GPSAWeightedOverlayTable",
+        "description": "A table with data to combine multiple rasters by applying a common measurement scale of values to each raster, weighing each according to its importance."
+      },
+      {
+        "text": "Weighted Sum",
+        "value": "GPSAWeightedSum",
+        "description": "Specifies data for overlaying several rasters, each multiplied by their given weight and summed."
+      },
+      {
+        "text": "WMS Map",
+        "value": "DEWMSMap",
+        "description": "A WMS map."
+      },
+      {
+        "text": "Workspace",
+        "value": "DEWorkspace",
+        "description": "A container such as a geodatabase or folder."
+      },
+      {
+        "text": "XY Domain",
+        "value": "GPXYDomain",
+        "description": "A range of lowest and highest possible values for x,y-coordinates."
+      },
+      {
+        "text": "Z Domain",
+        "value": "GPZDomain",
+        "description": "A range of lowest and highest possible values for z-coordinates."
+      }
+    ]
+  }

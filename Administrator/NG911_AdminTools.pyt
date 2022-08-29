@@ -10,9 +10,14 @@ from ilng911.env import NG_911_DIR, get_ng911_db
 from ilng911.admin.schemas import create_ng911_admin_gdb
 from ilng911.core.fields import FIELDS
 from ilng911.utils.json_helpers import load_json
+from ilng911.utils.helpers import parameter_from_json, parse_value_table
 from ilng911.logging import log, log_context
+from ilng911.utils.cursors import UpdateCursor, InsertCursor
 from ilng911.schemas import DATA_TYPES, DATA_TYPES_LOOKUP, DEFAULT_NENA_PREFIXES
 from ilng911.env import get_ng911_db
+
+helpers_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'helper')
+helpers_json = load_json(os.path.join(helpers_dir, 'tools.json'))
 
 class Toolbox(object):
     def __init__(self):
@@ -25,6 +30,8 @@ class Toolbox(object):
         self.tools = [
             CreateNG911SchemaGeoDatabase,
             CreateNG911SchemaTables,
+            AddOverlayAttributes,
+            AddCustomFields,
         ]
 
 class CreateNG911SchemaGeoDatabase(object):
@@ -161,6 +168,12 @@ class CreateNG911SchemaTables(object):
         custom_fields.filters[0].type = 'ValueList'
         custom_fields.filters[0].list = featureTypes
 
+        # create dropdowns from address + centerline fields
+        if ng911_db.addressPoints and arcpy.Exists(ng911_db.addressPoints):
+            flds = [f.name for f in arcpy.ListFields(ng911_db.addressPoints) if f.type == 'String']
+            custom_fields.filters[1].type = 'ValueList'
+            custom_fields.filters[1].list = flds
+
         # cad vendor features
         cad_vendor_features.columns = [['GPString', 'CAD Vendor'], ['GPFeatureLayer', 'CAD Table']]    
 
@@ -187,8 +200,133 @@ class CreateNG911SchemaTables(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         with log_context(self.__class__.__name__ + '_') as lc:
-            pass
+            ng911_db = get_ng911_db()
+            if ng911_db.setupComplete:
+                # check for core feature classes
+                param_lookup = {p.name: p for p in parameters}
+                required_features = param_lookup.get('required_features')
+                schemaTable = ng911_db.get_table(ng911_db.schemaTables.NG911_TABLES)
+                with arcpy.da.SearchCursor(schemaTable, ['FeatureType', 'Path']) as rows:
+                    existing = {r[0]: r for r in rows if r[1] and arcpy.Exists(r[1])}
+
+                # try to find required feature classes
+                toAdd = {p[0]: p for p in required_features.values if p[0] in existing and existing.get(p[0])[1] != p[1] }
+
+                # add missing features
+                if toAdd:
+                    with arcpy.da.InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix']) as rows:
+                        for target, row in toAdd.items():
+                            log(f'checking for required type: "{target}": {row[1:]}')
+                            full_path = row[1]
+                            basename = os.path.basename(full_path)
+                            rows.insertRow((basename, full_path, target, row[2] or DEFAULT_NENA_PREFIXES.get(target)))
+                            log(f'Found Schema for "{target}" -> "{basename}"')
+
+            # add custom fields
+            
         return
+
+class AddOverlayAttributes(object):
+    def __init__(self):
+        self.label = "Add Overlay Attributes"
+        self.description = "add attributes that will be populated based on a spatial relationship"
+        self.canRunInBackground = False
+    
+    def getParameterInfo(self):
+        try:
+            tool = [t for t in helpers_json.tools if t.name == self.__class__.__name__][0]
+            return [parameter_from_json(p) for p in tool.params]
+        except IndexError:
+            return []
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        with log_context(self.__class__.__name__ + '_') as lc:
+            create_ng911_admin_gdb(*[p.value for p in parameters])
+        return
+
+class AddCustomFields(object):
+    def __init__(self):
+        self.label = "Add Custom Fields"
+        self.description = "add attributes that will be populated based on an expression"
+        self.canRunInBackground = False
+    
+    def getParameterInfo(self):
+        
+        try:
+            log('Attempting to get parameters from json')
+            tool = [t for t in helpers_json.tools if t.name == self.__class__.__name__][0]
+            return [parameter_from_json(p) for p in tool.params]
+        except IndexError:
+            return []
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        with log_context(self.__class__.__name__ + '_') as lc:
+            target = arcpy.Describe(parameters[0].value).catalogPath
+            log(f'vt as text: {parameters[1].valueAsText}')
+            vt = parse_value_table(parameters[1].valueAsText)
+            log(f'Custom Fields ValueTable:\n{vt}')
+            il911_db = get_ng911_db()
+            tableType = il911_db.get_table_type(target)
+            if not tableType:
+                log('Unsupported Table Path provided', 'error')
+                arcpy.AddError('Unsupported Table Path provided')
+                return
+
+            log(f'Preparing to add Custom Fields for "{tableType}"')
+
+            # get custom fields table
+            fieldsTable = il911_db.get_table(il911_db.schemaTables.CUSTOM_FIELDS)
+            
+            # check for updates first
+            skipIndices = []
+            with UpdateCursor(fieldsTable, ['TargetTable', 'FieldName', 'Expression']) as rows:
+                for r in rows:
+                    for i, (field, exp) in enumerate(vt):
+                        if tableType == r[0] and field == r[1]:
+                            rows.updateRow([r[0], r[1], exp])
+                            skipIndices.append(i)
+                            log(f'updated existing expression for field "{field}" with expression "{exp}"')
+
+            # now insert any new table/field combos
+            with InsertCursor(fieldsTable, ['TargetTable', 'FieldName', 'Expression']) as irows:
+                for i, (field, exp) in enumerate(vt):
+                    if i not in skipIndices:
+                        irows.insertRow([tableType, field, exp])
+                        log(f'added new expression for field "{field}": "{exp}"')
+
+            
 
 if __name__ == '__main__':
     tbx = Toolbox()

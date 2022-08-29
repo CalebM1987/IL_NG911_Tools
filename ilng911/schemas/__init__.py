@@ -260,7 +260,7 @@ class DataSchema(FeatureBase):
         count = 0
         if self._features:
             editable_fields = [f.name for f in self.fields if f.editable]
-            log(f'editable fields: {editable_fields}')
+            log(f'editable fields for schema "{self._schema.layer}": {editable_fields}')
             copyTab = copy_schema(self.table, time.strftime(os.path.join(DEBUG_WS, 'temp_%Y%m%d%H%M%S')))
            
             if is_arc: 
@@ -269,7 +269,7 @@ class DataSchema(FeatureBase):
                 for ft in self._features:
                     if not ft.attributes.get(self.oidField):
                         row = [ft.attributes.get(f) for f in editable_fields] + [ft.geometry]
-                        log(f'row values: {row}')
+                        log(f'inserting row values for "{self._schema.layer}": {row}')
                         irows.insertRow(row)
                         self._commited.append(ft)
                         self._features.remove(ft)

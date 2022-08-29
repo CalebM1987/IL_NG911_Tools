@@ -1,0 +1,16 @@
+{
+    "examples": 
+        [
+           {
+               "TargetTable": "ADDRESS_POINTS",
+               "FieldName": "GC_ADDRESS_wZIP",
+               "Expression": "{Add_Number} {St_Name} {St_PosTyp} {Post_Code}"
+           },
+           {
+               "TargetTable": "ADDRESS_POINTS",
+               "FieldName": "GC_ADDRESS_wZIP",
+               "Expression": "{Add_Number} {St_Name} {St_PosType} {MSAGComm}"
+           }
+       ]
+    
+}

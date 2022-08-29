@@ -1,0 +1,66 @@
+{
+    "tools": [
+        {
+            "name": "AddOverlayAttributes",
+            "params": [
+                {
+                    "name": "target_table",
+                    "displayName": "Target Table",
+                    "datatype": "GPFeatureLayer"
+                },
+                {
+                    "name": "target_field",
+                    "displayName": "Target Field",
+                    "datatype": "Field",
+                    "parameterDependencies": ["target_table"]
+                },
+                {
+                    "name": "source_table",
+                    "displayName": "Source Table",
+                    "datatype": "GPFeatureLayer"
+                },
+                {
+                    "name": "source_field",
+                    "displayName": "Source Field",
+                    "datatype": "Field",
+                    "parameterDependencies": ["target_table"]
+                }
+            ]
+        },
+        {
+            "name": "AddCustomFields",
+            "params": [
+                {
+                    "name": "target_table",
+                    "displayName": "Target Table",
+                    "datatype": "GPFeatureLayer"
+                },
+                {
+                    "name": "custom_fields",
+                    "displayName": "Custom Fields",
+                    "datatype": "GPValueTable",
+                    "parameterDependencies": ["target_table"],
+                    "valueTable": {
+                        "fields": [
+                            {
+                                "name": "Field",
+                                "datatype": "Field"
+                            },
+                            {
+                                "name": "Expression",
+                                "datatype": "GPString"
+                            }
+                        ],
+                        "filters": [
+                            { 
+                                "type": "Field",
+                                "list": ["Text" ]
+                            }
+                        ]
+                    }
+                }
+                
+            ]
+        }
+    ]
+}

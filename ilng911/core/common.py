@@ -49,7 +49,7 @@ class NG911Encoder(json.JSONEncoder):
         Args:
             o: Object.
         """
-        if isinstance(o, datetime.datetime):
+        if isinstance(o, (datetime.datetime, datetime.date)):
             return date_to_mil(o)
     
         elif isinstance(o, (dict, list)):
@@ -83,7 +83,9 @@ class Feature(FeatureBase):
             kwargs[LOCATION_FIELDS.LATITUDE] = wgs84.centroid.Y
             kwargs[LOCATION_FIELDS.LONGITUDE] = wgs84.centroid.X
 
+        log(f'kwargs before filtering:\n{json.dumps(kwargs, indent=4, cls=NG911Encoder)}')
         self.attributes.update(self.filter_attrs(kwargs))
+        log(f'filtered kwargs:\n{json.dumps(self.filter_attrs(kwargs), indent=4, cls=NG911Encoder)}')
 
     @lazyprop
     def _writable(self):
@@ -107,7 +109,8 @@ class Feature(FeatureBase):
     def update(self, **kwargs):
         self.attributes.update(self.filter_attrs(kwargs))
 
-    def toJson(self) -> Munch:
+    def toJson(self, ) -> Munch:
+        """ convert Feature to JSON object """
         return munchify(
             dict(
                 attributes=self.attributes,
@@ -136,6 +139,7 @@ class Feature(FeatureBase):
         return expr
 
     def prettyPrint(self):
+        """ pretty prints the json feature"""
         log(json.dumps(self.toJson(), cls=NG911Encoder, indent=2))
 
     def toRow(self, fields: List[str]):
