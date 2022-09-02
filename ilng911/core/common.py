@@ -51,6 +51,10 @@ class NG911Encoder(json.JSONEncoder):
         """
         if isinstance(o, (datetime.datetime, datetime.date)):
             return date_to_mil(o)
+
+        elif isinstance(o, arcpy.Geometry):
+            arcpy.PointGeometry.JSON
+            return json.loads(o.JSON)
     
         elif isinstance(o, (dict, list)):
             return o
@@ -109,7 +113,7 @@ class Feature(FeatureBase):
     def update(self, **kwargs):
         self.attributes.update(self.filter_attrs(kwargs))
 
-    def toJson(self, ) -> Munch:
+    def toJson(self) -> Munch:
         """ convert Feature to JSON object """
         return munchify(
             dict(
@@ -140,7 +144,14 @@ class Feature(FeatureBase):
 
     def prettyPrint(self):
         """ pretty prints the json feature"""
-        log(json.dumps(self.toJson(), cls=NG911Encoder, indent=2))
+        dct = self.toJson()
+
+        # fix geometry
+        if dct.get('SHAPE@'):
+            del dct['SHAPE@']
+            dct['geometry'] = self.geometry
+
+        log(json.dumps(dct, cls=NG911Encoder, indent=2))
 
     def toRow(self, fields: List[str]):
         vals = []
