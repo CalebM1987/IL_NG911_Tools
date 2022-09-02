@@ -32,7 +32,7 @@ class Toolbox(object):
         self.tools = [
             CreateRoadCenterline,
             CreateAddressPoint,
-            TestTool
+            # TestTool
         ]
 
 class TestTool(object):
@@ -149,7 +149,21 @@ class CreateAddressPoint(object):
 
         params = [featureSet, centerlineOID]
 
-        params.extend(table_to_params(DataSchema(DataType.ADDRESS_POINTS), filters=STREET_ATTRIBUTES))
+        # check for custom populated fields, add to filters
+        custFieldsTab = ng911_db.get_table(ng911_db.schemaTables.CUSTOM_FIELDS)
+        overlayFieldsTab = ng911_db.get_table(ng911_db.schemaTables.SPATIAL_JOIN_FIELDS)
+        where = f"TargetTable = '{ng911_db.types.ADDRESS_POINTS}'"
+
+        # custom fields
+        with arcpy.da.SearchCursor(custFieldsTab, ['TargetTable', 'FieldName'], where_clause=where) as rows:
+            custFields = [r[1] for r in rows]
+
+        # overlay attributes
+        with arcpy.da.SearchCursor(overlayFieldsTab, ['TargetTable', 'FieldName'], where_clause=where) as rows:
+            overlayFields = [r[1] for r in rows]
+
+        filters = STREET_ATTRIBUTES + custFields + overlayFields
+        params.extend(table_to_params(DataSchema(DataType.ADDRESS_POINTS), filters=filters))
         for p in params[2:]:
             p.enabled = False
         return params
