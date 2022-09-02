@@ -135,7 +135,7 @@ class DataSchema(FeatureBase):
                 pass
         return prefix
 
-    def create_identifier(self, oid: int=0) -> str:
+    def create_identifier(self, oid: int=None) -> str:
         """form a unique NENA compliant identifier
 
         Args:
@@ -146,31 +146,36 @@ class DataSchema(FeatureBase):
         Returns:
             str: the NENA identifier
         """
-        count = len(self._features) + 1
-        sql_clause=(None, f'ORDER BY {self.oidField} DESC')
-        pat = re.compile(f'{self.agencyPrefix}([0-9]+){ng911_db.agencyID}', re.I)
-        ids = []
-        with arcpy.da.SearchCursor(self.table, [self.oidField, self.nenaIdentifier], sql_clause=sql_clause) as rows:
-            for i,r in enumerate(rows):
-                m = pat.match(r[1])
-                if m:
-                    groups = m.groups()
-                    try:
-                        ids.append(int(groups[0]))
+        if not oid:
+            log('no id for NENA identifier provided, calculating value now')
+            count = len(self._features) + 1
+            sql_clause=(None, f'ORDER BY {self.oidField} DESC')
+            pat = re.compile(f'{self.agencyPrefix}([0-9]+){ng911_db.agencyID}', re.I)
+            ids = []
+            with arcpy.da.SearchCursor(self.table, [self.oidField, self.nenaIdentifier], sql_clause=sql_clause) as rows:
+                for i,r in enumerate(rows):
+                    m = pat.match(r[1])
+                    if m:
+                        groups = m.groups()
+                        try:
+                            ids.append(int(groups[0]))
 
-                    except IndexError:
+                        except IndexError:
+                            ids.append(r[0])
+                    else:
                         ids.append(r[0])
-                else:
-                    ids.append(r[0])
-                if i > 5:
-                    break
-        log(f'ids for creating identifiers: {ids}')
-        if ids:
-            oid = max(ids) + count
-            max(f'max id: {oid}')
+                    if i > 5:
+                        break
+            log(f'ids for creating identifiers: {ids}')
+            if ids:
+                oid = max(ids) + count
+                max(f'max id: {oid}')
+            else:
+                oid = int(arcpy.management.GetCount(self.table).getOutput(0)) + count
+
         else:
-            oid = int(arcpy.management.GetCount(self.table).getOutput(0)) + count
-            
+            log(f'creating NENA identifier from provided OBJECTID {oid}') 
+
         return f'{self.agencyPrefix}{oid}{ng911_db.agencyID}'
 
     def calculate_custom_fields(self, ft: Feature):
@@ -221,6 +226,13 @@ class DataSchema(FeatureBase):
         """
         feature.update(**kwargs)
         return feature
+
+    def find_feature_from_oid(self, oid: int) -> Feature:
+        """creates a Feature Instance from a given OBJECTID"""
+        fields = self.fieldNames + ['SHAPE@']
+        with arcpy.da.SearchCursor(self.table, fields, where_clause=f'{self.oidField} = {oid}') as rows:
+            for r in rows:
+                return self.fromRow(fields, r)
 
     def fromRow(self, fields: List[str], row: tuple) -> Feature:
         """create a feature from an arcpy.SearchCursor Row
@@ -285,26 +297,27 @@ class DataSchema(FeatureBase):
                 log('using in standalone, starting edit session')
                 with cursors.InsertCursor(self.table, editable_fields + ['SHAPE@']) as irows:
                     for ft in self._features:
-                        log('ft yo: ', ft, ft.attributes.get(self.oidField))
                         if not ft.attributes.get(self.oidField):
-                            self.create_identifier(ft.attributes.get(self.oidField))
+                            # skip creating identifier on insert
+                            # self.create_identifier(ft.attributes.get(self.oidField))
                             irows.insertRow([ft.attributes.get(f) for f in editable_fields] + [ft.geometry])
                             self._commited.append(ft)
                             self._features.remove(ft)
                             count += 1
             
-            # # now update with ids
-            # nenaCount = 0
-            # where = f'{self.nenaIdentifier} is null'
-            # with cursors.UpdateCursor(self.table, ['OID@', self.nenaIdentifier, 'DateUpdate'], where) as rows:
-            #     for r in rows:
-            #         r[1] = self.create_identifier(r[0])
-            #         r[2] = datetime.datetime.now().date()
-            #         rows.updateRow(r)
-            #         nenaCount += 1
+            # now update with ids
+            nenaCount = 0
+            where = f'{self.nenaIdentifier} is null'
+            with cursors.UpdateCursor(self.table, ['OID@', self.nenaIdentifier, 'DateUpdate'], where) as rows:
+                for r in rows:
+                    log(f'attempting to create NENA identifier with OBJECTID: {r[0]}')
+                    r[1] = self.create_identifier(r[0])
+                    r[2] = datetime.datetime.now().date()
+                    rows.updateRow(r)
+                    nenaCount += 1
         log(f"Committed {count} features in {self._schema.layer} table.")
-        # if nenaCount:
-        #     log(f"Created NENA Identifier for {count} features in {self._schema.layer} table.")
+        if nenaCount:
+            log(f"Created NENA Identifier for {count} features in {self._schema.layer} table.")
 
         return count
 

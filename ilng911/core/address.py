@@ -133,33 +133,30 @@ def get_range_and_parity(pt: Union[arcpy.PointGeometry, Feature], centerline: Un
         address_prefix=None,
         side=None
     )
+    flds = FIELDS.STREET
+    
     if isinstance(pt, Feature):
         pt = pt.geometry
         log(f'parity and range, point geometry is: {pt}')
 
     if isinstance(centerline, int):
         schema = DataSchema(DataType.ROAD_CENTERLINE)
-        flds = FIELDS.STREET
-        where = f'{schema.oidField} = {centerline}'
-        fields = schema.fieldNames + ['SHAPE@']
-        with arcpy.da.SearchCursor(schema.table, fields, where) as rows:
-            for r in rows:
-                centerline = schema.fromRow(fields, r)
+        centerline = schema.find_feature_from_oid(centerline)
         
-        # make sure we have a valid feature
-        if isinstance(centerline, Feature):
-            log('range and parity, centerline is a Feature')
-            # angle = get_angle(centerline.geometry)
-            line = centerline.geometry
-            log(f'parity and range, centerline geometry is: {pt}')
-            pq = line.queryPointAndDistance(pt)
-            side = 'R' if pq[-1] else 'L'
-            parity = centerline.get(f'Parity_{side}')
-            attrs['parity'] = parity
-            attrs['side'] = side
-            attrs['address_prefix'] = centerline.get(flds.ADDRESS_PREFIX_RIGHT if side == 'R' else flds.ADDRESS_PREFIX_LEFT)
-            attrs['to_address'] = centerline.get(flds.TO_ADDRESS_RIGHT if side == 'R' else flds.TO_ADDRESS_LEFT)
-            attrs['from_address'] = centerline.get(flds.FROM_ADDRESS_RIGHT if side == 'R' else flds.FROM_ADDRESS_LEFT)
+    # make sure we have a valid feature
+    if isinstance(centerline, Feature):
+        log('range and parity, centerline is a Feature')
+        # angle = get_angle(centerline.geometry)
+        line = centerline.geometry
+        log(f'parity and range, centerline geometry is: {pt}')
+        pq = line.queryPointAndDistance(pt)
+        side = 'R' if pq[-1] else 'L'
+        parity = centerline.get(f'Parity_{side}')
+        attrs['parity'] = parity
+        attrs['side'] = side
+        attrs['address_prefix'] = centerline.get(flds.ADDRESS_PREFIX_RIGHT if side == 'R' else flds.ADDRESS_PREFIX_LEFT)
+        attrs['to_address'] = centerline.get(flds.TO_ADDRESS_RIGHT if side == 'R' else flds.TO_ADDRESS_LEFT)
+        attrs['from_address'] = centerline.get(flds.FROM_ADDRESS_RIGHT if side == 'R' else flds.FROM_ADDRESS_LEFT)
     
     return munchify(attrs)
 
@@ -223,7 +220,7 @@ def merge_street_segment_attributes(address: Feature, centerline: Union[int, Fea
                 ptAttr = mapping['pt']
                 lnAttr = f"{mapping['ln']}_{info.side}"
                 attrs[ptAttr] = centerline.get(lnAttr)
-                log(f'Extracted value from "{lnAttr}" to "{ptAttr}": "{attrs[ptAttr]}" based on side "{info.side}')
+                log(f'Extracted value from "{lnAttr}" to "{ptAttr}": "{attrs[ptAttr]}" based on side "{info.side}"')
             
 
         # check for Inc_Muni, if not use location to get
