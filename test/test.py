@@ -3,7 +3,8 @@ import sys
 import arcpy
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from ilng911.core.address import create_address_point
+from ilng911.core.address import create_address_point, get_range_and_parity
+from ilng911.schemas import DataSchema, DataType
 from ilng911.admin.schemas import features_from_json, create_ng911_admin_gdb
 from ilng911.env import NG_911_DIR, get_ng911_db
 from ilng911.logging import log_context, log
@@ -15,7 +16,7 @@ if __name__ == '__main__':
     gdbPath = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\IL_NG911_Brown_Master_v3.2.5.gdb'
 
     with log_context() as lc:
-        # ng911_db = get_ng911_db()
+        ng911_db = get_ng911_db()
         # log(f'setup is complete? {ng911_db.setupComplete}')
         # if not ng911_db.setupComplete:
         #     gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'BROWN')
@@ -36,7 +37,11 @@ if __name__ == '__main__':
         #     if os.path.exists(json_file) and not arcpy.Exists(table):
         #         features_from_json(json_file, table)
 
+        centerlineSchema = DataSchema(DataType.ROAD_CENTERLINE)
 
+        feature = centerlineSchema.find_feature_from_oid(238)
+        feature.prettyPrint()
+        
         # sample: 144 main
         pg = arcpy.AsShape({
             "x": -90.76689954799997,
@@ -46,6 +51,9 @@ if __name__ == '__main__':
             "latestWkid": 4326
             }
         }, True)
+
+        info = get_range_and_parity(pg, feature)
+        log('range and parity', info)
         
         null = None
         kwargs = {
