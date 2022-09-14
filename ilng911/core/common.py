@@ -124,17 +124,16 @@ class Feature(FeatureBase):
 
     def create_from_expression(self, expression: str='') -> str:
         tokens = get_string_tokens(expression)
-        expr = expression.split(' ')
-        for i, part in enumerate(expr):
-            if part in tokens:
-                raw = part.strip('{}') 
-                if raw in self.fieldNames:
-                    expr[i] = self.get(raw)
-                elif raw == CUSTOM_TOKENS.PreDirectionAbbr:
-                    expr[i] = STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.PRE_DIRECTION))
-                elif raw == CUSTOM_TOKENS.PostDirectionAbbr:
-                    expr[i] = STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.POST_DIRECTION))
-        return ' '.join(map(str, filter(None,expr)))
+        val = expression[:]
+        for token in tokens:
+            raw = token.strip('{}') 
+            if raw in self.fieldNames:
+                val = re.sub(token, str(self.get(raw) or ''), val, flags=re.I)
+            elif raw == CUSTOM_TOKENS.PreDirectionAbbr:
+                 val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.PRE_DIRECTION) or ''), val, flags=re.I)
+            elif raw == CUSTOM_TOKENS.PostDirectionAbbr:
+                val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.POST_DIRECTION) or ''), val, flags=re.I)
+        return val.strip()
 
     def calculate_custom_field(self, field: str, expression: str) -> str:
         log(f'calculate custom expression is: "{expression}"')
