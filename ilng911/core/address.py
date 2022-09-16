@@ -1,6 +1,7 @@
 import os
 import arcpy
 import json
+import math
 from ..env import get_ng911_db
 from ..support.munch import munchify, Munch
 from typing import Union, Dict, List
@@ -305,6 +306,61 @@ def create_address_point(pg: arcpy.PointGeometry, centerlineOID: int, **kwargs):
     schema.commit_features()
     return ft, schema
 
+def find_closest_centerlines(pg: Union[arcpy.Geometry, Feature]) -> Dict:
+    """finds the closest road centerlines from a given point
+
+    Args:
+        pg (Union[arcpy.Geometry, Feature]): _description_
+
+    Returns:
+        Dict: _description_
+    """
+    if isinstance(pg, Feature):
+        pg = pg.geometry
+
+    roads_lyr = ng911_db.get_911_layer(DataType.ROAD_CENTERLINE)
+    distances = [200, 500, 1000, 3000]
+    for dist in distances:
+        arcpy.management.SelectLayerByLocation(roads_lyr, 'WITHIN_A_DISTANCE', pg, search_distance=f'{dist} FEET')
+        count = int(arcpy.management.GetCount(roads_lyr).getOutput(0))
+        log(f'selected {count} roads within a distance of {dist} ft to the new address point')
+        if count:
+            break
+
+    fields = ['SHAPE@', 'OID@', 'St_Name', 'St_PosTyp', 'FromAddr_L', 'ToAddr_L',  'FromAddr_R', 'ToAddr_R']
+    # f'{min(r[4:])} - {max(r[4:])}' #range
+    roads = []
+    with arcpy.da.SearchCursor(roads_lyr, fields) as rows:
+        for r in rows:
+            attrs = dict(zip(fields[1:], r[1:]))
+            # get distance (will be in DD)
+            attrs['distance'] = pg.distanceTo(r[0])
+            attrs['block'] =  round(list(filter(None, r[4:]) or [0])[0], -2)
+            attrs['range'] = f'{min(r[4:])} - {max(r[4:])}'
+            roads.append(munchify(attrs))
+    
+    if len(roads) == 1:
+        return roads
+
+    closest = []
+    # find unique roads
+    unique = {}
+    for r in roads:
+        st = f'{r.St_Name} {r.St_PosTyp}'
+        if st in unique:
+            unique[st].append(r) 
+        else:
+            unique[st] = [r]
+    
+    for rd in unique.keys():
+        rds = unique[rd]
+        min_dist = min(r.distance for r in rds)
+        log(f'distance to closest segment of "{rd}" is {min_dist}')
+        closest.append([r for r in rds if r.distance == min_dist][0])
+
+    return sorted(closest, key=lambda d: d['distance'])
+
+    
 if __name__ == '__main__':
     # sample point 205 MAIN
     x, y = -10104222.172, 4864013.569

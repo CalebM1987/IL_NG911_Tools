@@ -17,7 +17,7 @@
         "name": "Path",
         "alias": "Data Path",
         "type": "esriFieldTypeString",
-        "length": 64
+        "length": 255
       }
     ],
     "features": []

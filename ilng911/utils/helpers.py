@@ -1,4 +1,5 @@
 import os
+import re
 import arcpy
 import json
 from typing import Optional, List, Any, Dict#,  Literal, TypedDict # not supported until ^3.8

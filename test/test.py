@@ -1,9 +1,10 @@
 import os
 import sys
 import arcpy
+import json
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from ilng911.core.address import create_address_point, get_range_and_parity
+from ilng911.core.address import create_address_point, get_range_and_parity, find_closest_centerlines
 from ilng911.schemas import DataSchema, DataType
 from ilng911.admin.schemas import features_from_json, create_ng911_admin_gdb
 from ilng911.env import NG_911_DIR, get_ng911_db
@@ -15,8 +16,11 @@ if __name__ == '__main__':
     schemaPath = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911'
     gdbPath = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\IL_NG911_Brown_Master_v3.2.5.gdb'
 
+    testStr = 'this is a test with house number {Add_Number}, and street name {St_Name}'
+
     with log_context() as lc:
-        ng911_db = get_ng911_db()
+        gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'BROWN')
+        # ng911_db = get_ng911_db()
         # log(f'setup is complete? {ng911_db.setupComplete}')
         # if not ng911_db.setupComplete:
         #     gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'BROWN')
@@ -37,10 +41,10 @@ if __name__ == '__main__':
         #     if os.path.exists(json_file) and not arcpy.Exists(table):
         #         features_from_json(json_file, table)
 
-        centerlineSchema = DataSchema(DataType.ROAD_CENTERLINE)
+        # centerlineSchema = DataSchema(DataType.ROAD_CENTERLINE)
 
-        feature = centerlineSchema.find_feature_from_oid(238)
-        feature.prettyPrint()
+        # feature = centerlineSchema.find_feature_from_oid(238)
+        # feature.prettyPrint()
         
         # sample: 144 main
         pg = arcpy.AsShape({
@@ -52,8 +56,8 @@ if __name__ == '__main__':
             }
         }, True)
 
-        info = get_range_and_parity(pg, feature)
-        log('range and parity', info)
+        # info = get_range_and_parity(pg, feature)
+        # log('range and parity', info)
         
         null = None
         kwargs = {
@@ -79,8 +83,16 @@ if __name__ == '__main__':
             "Placement": null
         }
 
-        ft, schema = create_address_point(pg, **kwargs)
-        ft.prettyPrint()
-        log('done??')
+        # ft, schema = create_address_point(pg, **kwargs)
+        # schema = DataSchema(DataType.ADDRESS_POINTS)
+        # ft = schema.create_feature(pg, **kwargs)
+        # schema.calculate_custom_fields(ft)
+        # ft.calculate_custom_field('DemoField', testStr)
+        # print('demo field: ', ft.get('DemoField'))
+        # ft.prettyPrint()
+
+        roads = find_closest_centerlines(pg)
+        print(json.dumps(roads, indent=2))
+        # log('done??')
 
         

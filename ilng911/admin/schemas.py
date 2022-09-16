@@ -2,6 +2,7 @@ import os
 import arcpy
 import glob
 import datetime
+from typing import List
 from ..env import NG_911_DIR, get_ng911_db
 from ..logging import log
 from ..utils.cursors import find_ws, UpdateCursor, InsertCursor
@@ -181,7 +182,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
     toAdd = [p for p in DATA_TYPES if p not in existing]
 
     # walk through gdb
-    with arcpy.da.InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix']) as rows:
+    with InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix']) as rows:
         for root, fds, tables in arcpy.da.Walk(ng911_gdb):
             for tab in tables:
                 target = DATA_TYPES_LOOKUP.get(tab)
@@ -190,3 +191,37 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
                     rows.insertRow((tab, full_path, target, DEFAULT_NENA_PREFIXES.get(target)))
                     log(f'Found Schema for "{target}" -> "{tab}"')
 
+
+def register_spatial_join_fields(target_table: str, target_field: str, join_table: str, fields: List[str]):
+    """registers spatial join fields
+
+    Args:
+        target_table (str): _description_
+        target_field (str): _description_
+        join_table (str): _description_
+        fields (List[str]): _description_
+    """
+    ng_911_db = get_ng911_db()
+    spatialFeatures = ng_911_db.get_table(NG911SchemaTables.SPATIAL_JOIN_FEATURES)
+    spatialFields = ng_911_db.get_table(NG911SchemaTables.SPATIAL_JOIN_FIELDS)
+    features_name = os.path.basename(spatialFeatures)
+    existing_where = f"Path = '{target_table}' AND TableName = '{features_name}'"
+
+    tab = arcpy.management.MakeTableView(spatialFeatures, 'spatial_features', existing_where)
+
+    if not int(arcpy.management.GetCount(tab).getOutput(0)):
+        # does not exist, insert row
+        with InsertCursor(spatialFeatures, ['Path', 'TableName']) as rows:
+            rows.insertRow([spatialFeatures, features_name])
+            log(f'Registered new Spatial Join Feature: "{spatialFeatures}"')
+
+    spa_fields = ['TargetTable', 'TargetField', 'TableName', 'JoinField']
+    with arcpy.da.SearchCursor(spatialFields, spa_fields) as rows:
+        existing = [list(r) for r in rows]
+
+    with InsertCursor(spatialFields, spa_fields) as rows:
+        for fld in fields:
+            vals = [target_table, target_field, features_name, fld]
+            if vals not in existing:
+                rows.insertRow(vals)
+                log(f'Added new Spatial Join Field "{fld}" from "{features_name}" to be inserted into "{target_table}" in "{target_field}" field.')

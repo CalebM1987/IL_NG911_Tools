@@ -45,21 +45,14 @@
         }
       },
       {
-        "name": "TableName",
-        "alias": "Spatial Join Table Name",
+        "name": "TargetField",
+        "alias": "Field Name",
         "type": "esriFieldTypeString",
-        "length": 64,
-        "domain": {
-          "type": "codedValue",
-          "name": "SpatailJoin_Tables",
-          "codedValues": [
-            
-          ]
-        }
+        "length": 64
       },
       {
-        "name": "FieldName",
-        "alias": "Field Name",
+        "name": "TableName",
+        "alias": "Spatial Join Table Name",
         "type": "esriFieldTypeString",
         "length": 64
       },

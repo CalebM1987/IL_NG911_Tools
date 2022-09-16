@@ -7,7 +7,7 @@ import arcpy
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from ilng911.config import load_config
 from ilng911.env import NG_911_DIR, get_ng911_db
-from ilng911.admin.schemas import create_ng911_admin_gdb
+from ilng911.admin.schemas import create_ng911_admin_gdb, register_spatial_join_fields
 from ilng911.core.fields import FIELDS
 from ilng911.utils.json_helpers import load_json
 from ilng911.utils.helpers import parameter_from_json, parse_value_table
@@ -39,6 +39,7 @@ class CreateNG911SchemaGeoDatabase(object):
         self.label = "1. Create NG911 Schema Geodatabase"
         self.description = "creates the NG911 Schema geodatabase"
         self.canRunInBackground = False
+        self.category = 'Setup'
     
     def getParameterInfo(self):
         ng911_gdb = arcpy.Parameter(
@@ -113,6 +114,7 @@ class CreateNG911SchemaTables(object):
         self.label = "2. Create NG911 Schema Tables"
         self.description = "creates the NG911 Schema Tables database"
         self.canRunInBackground = False
+        self.category = 'Setup'
     
     def getParameterInfo(self):
         required_features = arcpy.Parameter(
@@ -231,6 +233,7 @@ class AddOverlayAttributes(object):
         self.label = "Add Overlay Attributes"
         self.description = "add attributes that will be populated based on a spatial relationship"
         self.canRunInBackground = False
+        self.category = 'Custom Fields'
     
     def getParameterInfo(self):
         try:
@@ -256,8 +259,13 @@ class AddOverlayAttributes(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
+     
         with log_context(self.__class__.__name__ + '_') as lc:
-            create_ng911_admin_gdb(*[p.value for p in parameters])
+            target = parameters[0].valueAsText
+            target_field = parameters[1].valueAsText
+            source = arcpy.Describe(parameters[2].value).catalogPath
+            fields = [f.name for f in parameters[3].value]
+            register_spatial_join_fields(target, target_field, source, fields)
         return
 
 class AddCustomFields(object):
@@ -265,6 +273,7 @@ class AddCustomFields(object):
         self.label = "Add Custom Fields"
         self.description = "add attributes that will be populated based on an expression"
         self.canRunInBackground = False
+        self.category = 'Custom Fields'
     
     def getParameterInfo(self):
         

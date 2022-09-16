@@ -4,7 +4,7 @@ import re
 import json
 from ..schemas import DataSchema
 from ..env import get_ng911_db
-from ..utils.cursors import find_ws
+from ..utils.cursors import find_ws, UpdateCursor
 from ..support.munch import munchify
 from ..core.address import SKIP_NAMES, STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES
 from ..logging import log
@@ -133,3 +133,40 @@ def log_params(parameters: List[arcpy.Parameter]):
         else:
             params[p.name] = p.valueAsText
     log(f'Input Parameters:\n{json.dumps(params, indent=2)}\n')
+
+
+def check_for_scratch_gdb(clearRecords=False) -> str:
+    """will check for existance of scratch geodatabase, will create if does not already exist.  Note: 
+    we cannot 
+
+    Returns:
+        str: _description_
+    """
+    folder = arcpy.env.scratchFolder
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+        log(f'no scratch folder found, created at: "{folder}"')
+
+    # edits_gdb_name = re.sub('[^A-Za-z0-9]+', '-', os.getenv('username') or 'anonymous').replace('__', '-') + '.gdb'
+    # edits_gdb = os.path.join(folder, edits_gdb_name)
+
+    # if not arcpy.Exists(edits_gdb):
+    #     arcpy.management.CreateFileGDB(folder, edits_gdb_name)
+    #     log(f'no scratch folder found, created at: "{folder}"')
+    edits_gdb = arcpy.env.scratchGDB
+    log(f'scratch geodatabse is: "{edits_gdb}"')
+
+    sketch_points = os.path.join(edits_gdb, 'sketch_points')
+    if not arcpy.Exists(sketch_points):
+        arcpy.management.CreateFeatureclass(edits_gdb, 'sketch_points', 'POINT')
+        arcpy.management.AddField(sketch_points, 'CENTERLINE', 'LONG')
+        log('created "sketch_points" feature class')
+        
+    elif clearRecords:
+        # empty rows
+        with UpdateCursor(sketch_points, ['OID@']) as rows:
+            for r in rows:
+                rows.deleteRow()
+        log('removed all records from "sketch_points"')
+
+    return edits_gdb

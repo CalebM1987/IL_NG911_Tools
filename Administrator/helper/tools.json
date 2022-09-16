@@ -23,7 +23,8 @@
                     "name": "source_field",
                     "displayName": "Source Field",
                     "datatype": "Field",
-                    "parameterDependencies": ["target_table"]
+                    "parameterDependencies": ["source_table"],
+                    "multiValue": true
                 }
             ]
         },
