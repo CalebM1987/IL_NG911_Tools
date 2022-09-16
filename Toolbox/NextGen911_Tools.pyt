@@ -12,7 +12,7 @@ from ilng911.env import get_ng911_db
 from ilng911.geoprocessing import log_params, table_to_params, debug_window
 from ilng911.schemas import DataType, DataSchema
 from ilng911.support.munch import munchify
-from ilng911.core.address import STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES, create_address_point, get_range_and_parity
+from ilng911.core.address import STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES, create_address_point, get_range_and_parity, find_closest_centerlines
 from ilng911.core.fields import FIELDS
 from ilng911.utils.json_helpers import load_json
 from ilng911.logging import log, log_context
@@ -127,6 +127,9 @@ class CreateAddressPoint(object):
             direction="Input",
             datatype="GPFeatureRecordSetLayer"
         )
+        # featureSet.value = r'L:\Users\caleb.mackey\Documents\gitProjects\IL_NG911_Tools\Toolbox\helpers\AddressPoints.lyrx'
+        # featureSet.schema.featureType
+        # featureSet.schema.geometryType = 'Point'
 
         fs = arcpy.FeatureSet()
         points = ng911_db.get_911_table(ng911_db.types.ADDRESS_POINTS)
@@ -139,13 +142,26 @@ class CreateAddressPoint(object):
 
         centerlineOID = arcpy.Parameter(
             name="centerlineOID",
-            displayName="Centerline OBJECTID",
+            displayName="Road Centerline",
             direction="Input",
-            datatype="GPLong"
+            datatype="GPLong",
+            enabled=False
         )
-        centerline = DataSchema(DataType.ROAD_CENTERLINE)
-        with arcpy.da.SearchCursor(centerline.table, ['OID@']) as rows:
-            centerlineOID.filter.list = [r[0] for r in rows]
+        try:
+            with arcpy.da.SearchCursor("RoadCenterline", ['OID@']) as rows:
+                roadOID = [r[0] for r in rows][0]
+                debug_window(f'oid is? {roadOID}')
+                log(f'fetched road oid from selection: {roadOID}')
+        except IndexError:
+            roadOID = 208
+            debug_window(f'using hard coded oid: {roadOID}')
+            log('could not fetch road oid, defaulting to 208')
+        centerlineOID.value = roadOID
+        
+        # centerlineOID.enabled = False
+        # centerline = DataSchema(DataType.ROAD_CENTERLINE)
+        # with arcpy.da.SearchCursor(centerline.table, ['OID@']) as rows:
+        #     centerlineOID.filter.list = [r[0] for r in rows]
 
         params = [featureSet, centerlineOID]
 
@@ -159,13 +175,13 @@ class CreateAddressPoint(object):
             custFields = [r[1] for r in rows]
 
         # overlay attributes
-        with arcpy.da.SearchCursor(overlayFieldsTab, ['TargetTable', 'FieldName'], where_clause=where) as rows:
+        with arcpy.da.SearchCursor(overlayFieldsTab, ['TargetTable', 'TargetField'], where_clause=where) as rows:
             overlayFields = [r[1] for r in rows]
 
         filters = STREET_ATTRIBUTES + custFields + overlayFields
         params.extend(table_to_params(DataSchema(DataType.ADDRESS_POINTS), filters=filters))
-        for p in params[2:]:
-            p.enabled = False
+        # for p in params[2:]:
+        #     p.enabled = False
         return params
         
 
@@ -177,15 +193,36 @@ class CreateAddressPoint(object):
         """Modify the values and properties of parameters before internal
         validation is performed.  This method is called whenever a parameter
         has been changed."""
-        if parameters[1].value and parameters[0].altered:
-            for p in parameters[2:]:
-                p.enabled = True
+        # if parameters[0].altered and parameters[0].value and not parameters[1].value: #not parameters[1].altered:# and int(arcpy.GetCount_management(parameters[0].value).getOutput(0)):
+            
+        #     debug_window(parameters[0].valueAsText)
+        #     debug_window(f'count: {int(arcpy.GetCount_management(parameters[0].value).getOutput(0))}')
+        #     with arcpy.da.SearchCursor(parameters[0].value, ['SHAPE@', 'OID@']) as rows:
+        #         try:
+        #             geom = [r[0] for r in rows][0]
+        #         except IndexError:
+        #             geom = None
+        #     if geom:
+        #         debug_window('we have geometry')
+        #         # get list of closest roads
+        #         roads = find_closest_centerlines(geom)
+        #         debug_window(json.dumps(roads))
+        #         if len(roads) == 1:
+        #             rd = roads[0]
+        #             parameters[1].value = f'{rd["OID@"]}: {rd.St_Name} {rd.St_PosTyp}'
+        #         else:
+        #             parameters[1].filter.list = [f'{rd["OID@"]}: {rd.St_Name} {rd.St_PosTyp}' for rd in roads]
+        #         parameters[1].enabled = True
+
+        # if parameters[1].value and parameters[0].altered:
+        #     for p in parameters[2:]:
+        #         p.enabled = True
         return
 
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
         parameter.  This method is called after internal validation."""
-        addNum = [p for p in parameters if p.name ==FIELDS.ADDRESS.NUMBER][0]
+        addNum = [p for p in parameters if p.name == FIELDS.ADDRESS.NUMBER][0]
         if addNum.value and parameters[1].value and parameters[0].altered and not addNum.hasBeenValidated:
             # debug_window(f'Calling Address Number Validation NOw? {addNum.value}')
             with arcpy.da.SearchCursor(parameters[0].value, ['SHAPE@']) as rows:
@@ -217,11 +254,20 @@ class CreateAddressPoint(object):
             fs = arcpy.FeatureSet()
             fs.load(parameters[0].value)
             attrs = {p.name: p.valueAsText for p in parameters[2:]}
+            roadOID = parameters[1].value
+            # roadOID = int(parameters[1].valueAsText.split(':')[0])
+            # try:
+            #     with arcpy.da.SearchCursor("RoadCenterline", ['OID@']) as rows:
+            #         roadOID = [r[0] for r in rows][0]
+            #         log(f'fetched road oid from selection: {roadOID}')
+            # except IndexError:
+            #     roadOID = 208
+            #     log('could not fetch road oid, defaulting to 208')
             fsJson = munchify(json.loads(fs.JSON))
             geomJson = fsJson.features[0].get('geometry')
             geomJson["spatialReference"] = {"wkid": 4326 }
             pt = arcpy.AsShape(geomJson, True)
-            ft, schema = create_address_point(pt, parameters[1].value, **attrs)
+            ft, schema = create_address_point(pt, roadOID or 208, **attrs)
             ft.prettyPrint()
             try: 
                 # try to remove feature set layer
