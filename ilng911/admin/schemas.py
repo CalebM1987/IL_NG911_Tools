@@ -1,4 +1,5 @@
 import os
+import re
 import arcpy
 import glob
 import datetime
@@ -96,7 +97,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
             features_from_json(fl, table)
 
     # write config file
-    agencyId = f'@{county}COIL.ORG'
+    agencyId = f'@{county.lower()}coil.org'
     conf = {
         'ng911GDBPath': ng911_gdb,
         'ng911GDBSchemasPath': out_gdb,
@@ -171,7 +172,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
         for r in rows:
             rows.updateRow([county, agencyId])
 
-    log(f'set agency ID: "@{county}COIL.ORG"')
+    log(f'set agency ID: "{agencyId}"')
 
     # check for core feature classes
     schemaTable = os.path.join(out_gdb, NG911SchemaTables.NG911_TABLES)
@@ -191,6 +192,9 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
                     rows.insertRow((tab, full_path, target, DEFAULT_NENA_PREFIXES.get(target)))
                     log(f'Found Schema for "{target}" -> "{tab}"')
 
+
+    # populate nena ids
+    register_nena_identifiers()
 
 def register_spatial_join_fields(target_table: str, target_field: str, join_table: str, fields: List[str]):
     """registers spatial join fields
@@ -225,3 +229,61 @@ def register_spatial_join_fields(target_table: str, target_field: str, join_tabl
             if vals not in existing:
                 rows.insertRow(vals)
                 log(f'Added new Spatial Join Field "{fld}" from "{features_name}" to be inserted into "{target_table}" in "{target_field}" field.')
+
+
+def register_nena_identifiers():
+    ng_911_db = get_ng911_db()
+    if not ng_911_db.setupComplete:
+        raise RuntimeError('Setup has not been completed for NG911 Database!')
+    
+    log('preparing to register NENA Identifiers')
+    fd_path = os.path.join(ng_911_db.gdb_path, 'NENA_Identifiers')
+    if not arcpy.Exists(fd_path):
+        arcpy.management.CreateFeatureDataset(*os.path.split(fd_path))
+        log(f'Created "NENA_Identifiers" Feature Dataset: "{fd_path}"')
+    else:
+        print('fd exists: ', fd_path)
+
+    # create all tables
+    print(ng_911_db.types)
+    for ftype in ng_911_db.types.__props__:
+        log(f'checking NENA Idenfiers in "{ftype}"')
+        
+        # populate all rows
+        ngTab = ng_911_db.get_911_table(ftype)
+        guid_pat = re.compile('\S*(_nguid)$', re.I)
+        try:
+            guid_field = [f.name for f in arcpy.ListFields(ngTab) if guid_pat.match(f.name)][0]
+        except:
+            guid_field = None
+
+        if guid_field:
+            # need to create table
+            nenaTab = os.path.join(fd_path, ftype)
+            if not arcpy.Exists(nenaTab):
+                desc = arcpy.Describe(ngTab)
+                arcpy.CreateFeatureclass_management(fd_path, ftype, desc.shapeType.upper(), spatial_reference=desc.spatialReference)
+                arcpy.management.AddField(nenaTab, 'FieldName', 'TEXT', field_length=64, field_alias='Field Name')
+                arcpy.management.AddField(nenaTab, 'UniqueID', 'LONG', field_alias='Unique ID')
+                arcpy.management.AddField(nenaTab, 'NENAID', 'TEXT', field_length=254, field_alias='NENA ID')
+                log(f'Created "NENA_Identifiers" table: "{ftype}"')
+                
+                # populate rows
+                where = f'{guid_field} is not null'
+                with InsertCursor(nenaTab, ['FieldName', 'UniqueID', 'NENAID', 'SHAPE@']) as irows:
+                    count = 0
+                    with arcpy.da.SearchCursor(ngTab, [guid_field, 'SHAPE@'], where_clause=where) as rows:
+                        for r in rows:
+                            try:
+                                guid = int(''.join([t for t in r[0].split('@')[0] if t.isdigit()]))
+                            except:
+                                guid = 0
+                                log(f'failed to parse nena identifier: "{r[0]}"')
+
+                            if guid:
+                                irows.insertRow([guid_field, guid] + list(r))
+                                count += 1
+                
+                    log(f'pouplated {count} NENA Identifiers for "{ftype}"')
+
+                    
