@@ -57,6 +57,12 @@
         }
       },
       {
+        "name": "GUID_Field",
+        "alias": "NENA GUID Field",
+        "type": "esriFieldTypeString",
+        "length": 64
+      },
+      {
         "name": "NENA_Prefix",
         "alias": "NENA Prefix",
         "type": "esriFieldTypeString",
