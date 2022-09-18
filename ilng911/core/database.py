@@ -3,6 +3,7 @@ import arcpy
 from ..support.munch import munchify, Munch
 # from ..schemas import load_schema, DataType
 from ..utils import lazyprop, PropIterator, Singleton
+from ..utils.cursors import InsertCursor, UpdateCursor
 from ..logging import log
 from ..config import load_config
 
@@ -17,6 +18,7 @@ class NG911LayerTypes(PropIterator):
         'ROAD_CENTERLINE',
         'PROVISIONING_BOUNDARY'
     ]
+
     PSAP = 'PSAP'
     ESB = 'ESB'
     ESB_EMS = 'ESB_EMS'
@@ -51,8 +53,8 @@ class NG911Data(metaclass=Singleton):
     county = None
     country = 'US'
     agencyID = None
-    types = NG911LayerTypes
-    schemaTables = NG911SchemaTables
+    types = NG911LayerTypes()
+    schemaTables = NG911SchemaTables()
     config = Munch()
 
     __tables__ = NG911SchemaTables.__props__
@@ -66,6 +68,8 @@ class NG911Data(metaclass=Singleton):
         self.config_file = config_file
         self.setupComplete = False
         self.gdb_path = None
+        self.nena_id_table = None
+        self.new_nena_ids = Munch()
         self.setup()
         
     def setup(self):
@@ -96,6 +100,18 @@ class NG911Data(metaclass=Singleton):
                     for r in rows:
                         self.county, self.state, self.agencyID = r
                         break
+
+            self.nena_id_table = os.path.join(self.gdb_path, 'NENA_IDs')
+            if arcpy.Exists(self.nena_id_table):
+                fields = self.types.__props__
+                with arcpy.da.SearchCursor(self.nena_id_table, fields) as rows:
+                    for r in rows:
+                        self.new_nena_ids = munchify(dict(zip(fields, r)))
+                        print(self.new_nena_ids)
+                        break
+            else:
+                log('NENA IDs table does not exist, make sure to run the register_nena_identifiers() function', level='warn')
+
 
             if schemaExists and agencyTabExists and self.agencyID and self.requiredTables:
                 self.setupComplete = True
@@ -209,26 +225,94 @@ class NG911Data(metaclass=Singleton):
             except:
                 return None
 
-    # def has_911_table(self, name: str) -> str:
-    #     """checks to see if a layer exists in the NG911 data by basename
+    def get_nena_ids_table(self, target: str) -> str:
+        """fetches the nena ids table for the given target
 
-    #     Args:
-    #         name (str): [description]
+        Args:
+            target (str): the target type (ADDRESS_POINTS, ROAD_CENTERLINE, etc)
 
-    #     Returns:
-    #         bool: [description]
-    #     """
-    #     fc = self.get_911_table(name)
-    #     if not fc:
-    #         return False
-    #     try:
-    #         schemaTab = self.get_table(self.schemaTables.NG911_TABLES)
-    #         where = f"Basename = '{name}'"
-    #         with arcpy.da.SearchCursor(schemaTab, ['BaseName', 'Path'], where) as rows:
-    #             fc = [r[1] for r in rows if r[0] == name][0]
-    #             return arcpy.Exists(fc)
-    #     except:
-    #         return False
+        Returns:
+            str: full path to the nena ids table
+        """
+        nenaTab = os.path.join(self.gdb_path, f'NENA_ID_{target}')
+        print('nena tab is?', nenaTab)
+        if arcpy.Exists(nenaTab):
+            return nenaTab
+
+    def get_next_nena_id(self, target: str) -> int:
+        """creates a newly incremented integer number for the new nena feature
+
+        Args:
+            target (str): the target type (ADDRESS_POINTS, ROAD_CENTERLINE, etc)
+
+        Returns:
+            int: next integer id
+        """
+        print('target for next nena id: ', target)
+        used_id = self.new_nena_ids.get(target)
+        if used_id:
+            # get new id and append to list of ids
+            new_id = used_id + 1
+            self.new_nena_ids[target] = new_id
+            log(f'using database cache to comput next NENA Identifier for "{target}": {new_id}')
+            return new_id
+
+        # no new ids yet, need to read from nena identifiers table
+        log('checking table')
+        nenaTab = self.get_nena_ids_table(target)
+        desc = arcpy.Describe(nenaTab)
+        sql_clause=(None, f'ORDER BY {desc.oidFieldName} DESC')
+        with arcpy.da.SearchCursor(nenaTab, ['UniqueID'], sql_clause=sql_clause) as rows:
+            for r in rows:
+                num = r[0]
+                if num:
+                    break
+        
+        # increment by 1
+        new_id = num + 1
+        self.new_nena_ids[target] = new_id
+        return new_id
+
+    
+    def save_nena_id(self, target: str, uid: int=None):
+        """updates the nena identifiers table with a given unique ID
+
+        Args:
+            target (str): _description_
+            uid (int, optional): _description_. Defaults to None.
+        """
+        if uid and uid <= self.new_nena_ids.get(target, 0):
+            uid += 1
+            self.new_nena_ids[target] = uid
+
+        elif not uid:
+            # don't need to auto increment?
+            # uid = self.get_next_nena_id(target) 
+            # instead use cache, or attempt to auto increment
+            uid = self.new_nena_ids.get(target, 0) or self.get_next_nena_id(target)
+
+        count = int(arcpy.management.GetCount(self.nena_id_table).getOutput(0))
+        if not count:
+            with InsertCursor(self.nena_id_table, [target]) as irows:
+                irows.insertRow([uid])
+                log(f'created NENA Identifiers row')
+        else:
+            # record already exists, just update it
+            with UpdateCursor(self.nena_id_table, [target]) as rows:
+                for i, r in enumerate(rows):
+                    if i == 0:
+                        rows.updateRow([uid])
+                        log(f'found MAX NENA Identifier for "{target}": {uid}')
+                    else:
+                        rows.deleteRow()
+                        log(f'removed NENA IDs row at index: {i}')
+
+        log(f'set maximum NENA Identifier for "{target}": {uid}')
+
+
+    def valiate_nena_id_fields(self):
+        # TODO - check for IDs that were maybe added outside of these tools
+        pass
 
     def get_table_type(self, path):
         """get the table type from a given path

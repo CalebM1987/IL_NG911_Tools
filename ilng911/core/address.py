@@ -184,29 +184,30 @@ def merge_street_segment_attributes(address: Feature, centerline: Union[int, Fea
 
     # if OBJECTID is provided for centerline, fetch attributes and merge
     if isinstance(centerline, int):
-        oidField = [f.name for f in fields if f.type == 'OID'][0]
-        where = f'{oidField} = {centerline}'
-        log(f'matchFields: {matchFields}')
-        otherAttrs = [v['ln'] for v in POINT_SIDE_MAPPING]
-        addtlFields = []
-        for attr in otherAttrs:
-            addtlFields.append(f'{attr}_L')
-            addtlFields.append(f'{attr}_R')
+        centerline = centerlineSchema.find_feature_from_oid(centerline)
+        # oidField = [f.name for f in fields if f.type == 'OID'][0]
+        # where = f'{oidField} = {centerline}'
+        # log(f'matchFields: {matchFields}')
+        # otherAttrs = [v['ln'] for v in POINT_SIDE_MAPPING]
+        # addtlFields = []
+        # for attr in otherAttrs:
+        #     addtlFields.append(f'{attr}_L')
+        #     addtlFields.append(f'{attr}_R')
 
-        with arcpy.da.SearchCursor(centerlineTab, ['SHAPE@'] + matchFields + addtlFields, where) as rows:
-            try:
-                row = [r for r in rows][0]
+        # with arcpy.da.SearchCursor(centerlineTab, ['SHAPE@'] + matchFields + addtlFields, where) as rows:
+        #     try:
+        #         row = [r for r in rows][0]
 
-                # extract Feature using OID
-                centerline = centerlineSchema.create_feature(row[0], **dict(zip(matchFields + addtlFields, row[1:])))
-                log(f'Created Feature for Road Centerline from OID:')
-                centerline.prettyPrint()
+        #         # extract Feature using OID
+        #         centerline = centerlineSchema.create_feature(row[0], **dict(zip(matchFields + addtlFields, row[1:])))
+        #         log(f'Created Feature for Road Centerline from OID:')
+        #         centerline.prettyPrint()
 
-            except IndexError:
-                msg = f'WARNING: Road Centerline with {oidField} {centerline} does not exist, failed to merge street attributes.'
-                log(msg, 'warn')
-                arcpy.Error(msg)
-                raise RuntimeError(msg)
+        #     except IndexError:
+        #         msg = f'WARNING: Road Centerline with {oidField} {centerline} does not exist, failed to merge street attributes.'
+        #         log(msg, 'warn')
+        #         arcpy.Error(msg)
+        #         raise RuntimeError(msg)
 
     # merge from Feature
     if isinstance(centerline, Feature):

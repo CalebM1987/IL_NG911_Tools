@@ -145,3 +145,10 @@ def parameter_from_json(d: Dict) -> arcpy.Parameter:
 
 def params_to_kwargs(parameters: List[arcpy.Parameter]):
     return { p.name: p for p in parameters }
+
+def find_nena_guid_field(table: str) -> str:
+    guid_pat = re.compile('\S*(_?nguid)$', re.I)
+    try:
+        return [f.name for f in arcpy.ListFields(table) if guid_pat.match(f.name)][0]
+    except:
+        return None

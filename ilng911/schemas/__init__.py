@@ -13,6 +13,7 @@ from typing import List, Dict
 from ..utils import cursors, copy_schema, is_arc, PropIterator
 from functools import partial
 from ..logging import log
+from ..utils.helpers import find_nena_guid_field
 
 schemasDir = os.path.join(os.path.dirname(__file__), '_schemas')
 
@@ -76,6 +77,10 @@ class DataSchema(FeatureBase):
         self._features = []
         self._commited = []
 
+    @property
+    def name(self):
+        return (self._schema or {}).get('featureType')
+
     @lazyprop
     def reservedFields(self):
         return [f.name for f in self._schema.get('fieldInfos', []) if f.category == FieldCategory.RESERVED]
@@ -117,9 +122,10 @@ class DataSchema(FeatureBase):
 
     @lazyprop
     def nenaIdentifier(self):
-        try:
-            return [f.name for f in self.fields if f.name.endswith('_NGUID')][0]
-        except IndexError:
+        guid_field = find_nena_guid_field(self.table)
+        if guid_field:
+            return guid_field
+        else:
             log('could not get nena identifier field...', 'warn')
             return 'Site_NGUID'
 
@@ -135,7 +141,7 @@ class DataSchema(FeatureBase):
                 pass
         return prefix
 
-    def create_identifier(self, oid: int=None) -> str:
+    def create_identifier(self) -> str:
         """form a unique NENA compliant identifier
 
         Args:
@@ -146,37 +152,9 @@ class DataSchema(FeatureBase):
         Returns:
             str: the NENA identifier
         """
-        if not oid:
-            log('no id for NENA identifier provided, calculating value now')
-            count = len(self._features) + 1
-            sql_clause=(None, f'ORDER BY {self.oidField} DESC')
-            pat = re.compile(f'{self.agencyPrefix}([0-9]+){ng911_db.agencyID}', re.I)
-            ids = []
-            with arcpy.da.SearchCursor(self.table, [self.oidField, self.nenaIdentifier], sql_clause=sql_clause) as rows:
-                for i,r in enumerate(rows):
-                    m = pat.match(r[1])
-                    if m:
-                        groups = m.groups()
-                        try:
-                            ids.append(int(groups[0]))
-
-                        except IndexError:
-                            ids.append(r[0])
-                    else:
-                        ids.append(r[0])
-                    if i > 5:
-                        break
-            log(f'ids for creating identifiers: {ids}')
-            if ids:
-                oid = max(ids) + count
-                max(f'max id: {oid}')
-            else:
-                oid = int(arcpy.management.GetCount(self.table).getOutput(0)) + count
-
-        else:
-            log(f'creating NENA identifier from provided OBJECTID {oid}') 
-
-        return f'{self.agencyPrefix}{oid}{ng911_db.agencyID}'
+        new_id = ng911_db.get_next_nena_id(self.name) 
+        return f'{self.agencyPrefix}{new_id}{ng911_db.agencyID}'
+        
 
     def calculate_custom_fields(self, ft: Feature):
         for field in self.customFields:
@@ -207,8 +185,11 @@ class DataSchema(FeatureBase):
                 LOCATION_FIELDS.COUNTY: f'{ng911_db.county} COUNTY'
             })
     
-        kwargs[self.nenaIdentifier] = self.create_identifier()
-        kwargs['DateUpdate'] = datetime.datetime.now().date()
+        if self.nenaIdentifier not in kwargs:
+            kwargs[self.nenaIdentifier] = self.create_identifier()
+        if not 'DateUpdate' in kwargs:
+            kwargs['DateUpdate'] = datetime.datetime.now().date()
+
         ft = Feature(self.fields, geometry, **kwargs)
         self._features.append(ft)
         return ft
@@ -311,21 +292,17 @@ class DataSchema(FeatureBase):
             with cursors.UpdateCursor(self.table, ['OID@', self.nenaIdentifier, 'DateUpdate'], where) as rows:
                 for r in rows:
                     log(f'attempting to create NENA identifier with OBJECTID: {r[0]}')
-                    r[1] = self.create_identifier(r[0])
+                    r[1] = self.create_identifier()
                     r[2] = datetime.datetime.now().date()
                     rows.updateRow(r)
                     nenaCount += 1
+
         log(f"Committed {count} features in {self._schema.layer} table.")
+
         if nenaCount:
             log(f"Created NENA Identifier for {count} features in {self._schema.layer} table.")
 
+        # now register new nena highest id with identifiers table
+        ng911_db.save_nena_id(self.name)
+        log(f'registered new NENA Identifier in "{self.name}" table for numeric id {ng911_db.new_nena_ids.get(self.name)}')
         return count
-
-
-
-
-
-
- 
-
-    

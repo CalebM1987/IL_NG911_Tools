@@ -1,3 +1,4 @@
+import enum
 import os
 import re
 import arcpy
@@ -8,7 +9,7 @@ from ..env import NG_911_DIR, get_ng911_db
 from ..logging import log
 from ..utils.cursors import find_ws, UpdateCursor, InsertCursor
 from ..utils.json_helpers import load_json
-from ..utils.helpers import field_types
+from ..utils.helpers import field_types, find_nena_guid_field
 from ..support.munch import munchify
 from ..config import write_config
 from ..core.database import NG911SchemaTables
@@ -183,13 +184,14 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
     toAdd = [p for p in DATA_TYPES if p not in existing]
 
     # walk through gdb
-    with InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix']) as rows:
+    with InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix', 'GUID_Field']) as rows:
         for root, fds, tables in arcpy.da.Walk(ng911_gdb):
             for tab in tables:
                 target = DATA_TYPES_LOOKUP.get(tab)
+                full_path = os.path.join(root, tab)
+                guid_field = find_nena_guid_field(full_path)
                 if target and target in toAdd:
-                    full_path = os.path.join(root, tab)
-                    rows.insertRow((tab, full_path, target, DEFAULT_NENA_PREFIXES.get(target)))
+                    rows.insertRow((tab, full_path, target, DEFAULT_NENA_PREFIXES.get(target), guid_field))
                     log(f'Found Schema for "{target}" -> "{tab}"')
 
 
@@ -237,53 +239,57 @@ def register_nena_identifiers():
         raise RuntimeError('Setup has not been completed for NG911 Database!')
     
     log('preparing to register NENA Identifiers')
-    fd_path = os.path.join(ng_911_db.gdb_path, 'NENA_Identifiers')
-    if not arcpy.Exists(fd_path):
-        arcpy.management.CreateFeatureDataset(*os.path.split(fd_path))
-        log(f'Created "NENA_Identifiers" Feature Dataset: "{fd_path}"')
-    else:
-        print('fd exists: ', fd_path)
 
-    # create all tables
-    print(ng_911_db.types)
-    for ftype in ng_911_db.types.__props__:
+    # validate nena identifier table
+    ng_911_db.valiate_nena_id_fields()
+    nenaTab = os.path.join(ng_911_db.gdb_path, 'NENA_IDs')
+    if not arcpy.Exists(nenaTab):
+        arcpy.CreateTable_management(*os.path.split(nenaTab))
+        log(f'Created "NENA_Identifiers" table"')
+
+    fields = [f.name for f in arcpy.ListFields(nenaTab)]
+    for ftype in ng_911_db.types:
         log(f'checking NENA Idenfiers in "{ftype}"')
         
-        # populate all rows
         ngTab = ng_911_db.get_911_table(ftype)
-        guid_pat = re.compile('\S*(_nguid)$', re.I)
-        try:
-            guid_field = [f.name for f in arcpy.ListFields(ngTab) if guid_pat.match(f.name)][0]
-        except:
-            guid_field = None
+        
+        # check for guid field
+        guid_field = find_nena_guid_field(ngTab)
 
+        # default uid to 1
+        uid = 1
         if guid_field:
-            # need to create table
-            nenaTab = os.path.join(fd_path, ftype)
-            if not arcpy.Exists(nenaTab):
-                desc = arcpy.Describe(ngTab)
-                arcpy.CreateFeatureclass_management(fd_path, ftype, desc.shapeType.upper(), spatial_reference=desc.spatialReference)
-                arcpy.management.AddField(nenaTab, 'FieldName', 'TEXT', field_length=64, field_alias='Field Name')
-                arcpy.management.AddField(nenaTab, 'UniqueID', 'LONG', field_alias='Unique ID')
-                arcpy.management.AddField(nenaTab, 'NENAID', 'TEXT', field_length=254, field_alias='NENA ID')
-                log(f'Created "NENA_Identifiers" table: "{ftype}"')
-                
-                # populate rows
-                where = f'{guid_field} is not null'
-                with InsertCursor(nenaTab, ['FieldName', 'UniqueID', 'NENAID', 'SHAPE@']) as irows:
-                    count = 0
-                    with arcpy.da.SearchCursor(ngTab, [guid_field, 'SHAPE@'], where_clause=where) as rows:
-                        for r in rows:
-                            try:
-                                guid = int(''.join([t for t in r[0].split('@')[0] if t.isdigit()]))
-                            except:
-                                guid = 0
-                                log(f'failed to parse nena identifier: "{r[0]}"')
+            if ftype not in fields:
 
-                            if guid:
-                                irows.insertRow([guid_field, guid] + list(r))
-                                count += 1
+                # add field
+                arcpy.management.AddField(nenaTab, ftype, 'LONG')
+                log(f'added NENA Identifier field "{ftype}')
                 
-                    log(f'pouplated {count} NENA Identifiers for "{ftype}"')
+            # find max id
+            where = f'{guid_field} is not null'
+            with arcpy.da.SearchCursor(ngTab, [guid_field], where_clause=where) as rows:
+                for r in rows:
+                    try:
+                        guid = int(''.join([t for t in r[0].split('@')[0] if t.isdigit()]))
+                    except:
+                        guid = 0
+                        log(f'failed to parse nena identifier: "{r[0]}"')
 
-                    
+                    if guid and guid > uid:
+                        uid = guid
+
+            count = int(arcpy.management.GetCount(nenaTab).getOutput(0))
+            if not count:
+                with InsertCursor(nenaTab, [ftype]) as irows:
+                    irows.insertRow([uid])
+                    log(f'found MAX NENA Identifier for "{ftype}": {uid}')
+            else:
+                # record already exists, just update it
+                with UpdateCursor(nenaTab, [ftype]) as rows:
+                    for i, r in enumerate(rows):
+                        if i == 0:
+                            rows.updateRow([uid])
+                            log(f'found MAX NENA Identifier for "{ftype}": {uid}')
+                        else:
+                            rows.deleteRow()
+                            log(f'removed NENA IDs row at index: {i}')
