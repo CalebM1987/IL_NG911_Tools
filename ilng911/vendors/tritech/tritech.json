@@ -1,0 +1,98 @@
+{
+    "schemas": [
+        {
+            "featureType": "ROAD_CENTERLINE",
+            "fieldMap": [
+                {
+                    "name": "StreetName",
+                    "expression": "{St_PreDir} {St_Name} {St_PosTyp}",
+                    "type": "TEXT",
+                    "length": 100
+                },
+                {
+                    "name": "LeftFromAddress",
+                    "expression": "{FromAddr_L}",
+                    "type": "LONG"
+                },
+                {
+                    "name": "LeftToAddress",
+                    "expression": "{ToAddr_L}",
+                    "type": "LONG"
+                },
+                {
+                    "name": "RightFromAddress",
+                    "expression": "{FromAddr_R}",
+                    "type": "LONG"
+                },
+                {
+                    "name": "RightToAddress",
+                    "expression": "{ToAddr_R}",
+                    "type": "LONG"
+                },
+                {
+                    "name": "RightParity",
+                    "expression": "{Parity_R}",
+                    "type": "TEXT",
+                    "length": 1
+                },
+                {
+                    "name": "LeftParity",
+                    "expression": "{Parity_L}",
+                    "type": "TEXT",
+                    "length": 1
+                },
+                {
+                    "name": "RightState",
+                    "expression": "{State_R}",
+                    "type": "TEXT",
+                    "length": 3
+                },
+                {
+                    "name": "SpeedLimit",
+                    "expression": "{SpeedLimit}",
+                    "type": "SHORT"
+                },
+                {
+                    "name": "LeftState",
+                    "expression": "{State_L}",
+                    "type": "TEXT",
+                    "length": 3
+                },
+                {
+                    "name": "LeftZipCode",
+                    "expression": "PostCode_L",
+                    "type": "TEXT",
+                    "length": 10
+                },
+                {
+                    "name": "RightZipCode",
+                    "expression": "PostCode_R",
+                    "type": "TEXT",
+                    "length": 10
+                }
+            ]
+        },
+        {
+            "featureType": "ADDRESS_POINTS",
+            "fieldMap": [
+                {
+                    "name": "StreetName",
+                    "expression": "{St_PreDir} {St_Name} {St_PosTyp}",
+                    "type": "TEXT",
+                    "length": 100
+                },
+                {
+                    "name": "Address",
+                    "expression": "{Add_Number}",
+                    "type": "LONG"
+                },
+                {
+                    "name": "Building",
+                    "expression": "{Add_Number}",
+                    "type": "TEXT",
+                    "length": 10
+                }
+            ]
+        }
+    ]
+}

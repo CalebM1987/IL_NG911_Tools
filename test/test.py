@@ -19,7 +19,7 @@ if __name__ == '__main__':
     testStr = 'this is a test with house number {Add_Number}, and street name {St_Name}'
 
     with log_context() as lc:
-        gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'BROWN')
+        # gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'BROWN')
         # ng911_db = get_ng911_db()
         # log(f'setup is complete? {ng911_db.setupComplete}')
         # if not ng911_db.setupComplete:
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         # feature = centerlineSchema.find_feature_from_oid(238)
         # feature.prettyPrint()
         
-        # sample: 144 main
+        # sample: 142 main
         pg = arcpy.AsShape({
             "x": -90.76689954799997,
             "y": 39.98611309700004,
@@ -68,7 +68,7 @@ if __name__ == '__main__':
             "AddDataURI": null,
             "Nbrhd_Comm": null,
             "AddNum_Pre": null,
-            "Add_Number": 144,
+            "Add_Number": 142,
             "AddNum_Suf": null,
             "ESN": null,
             "Building": null,
@@ -83,16 +83,16 @@ if __name__ == '__main__':
             "Placement": null
         }
 
-        # ft, schema = create_address_point(pg, **kwargs)
+        ft, schema = create_address_point(pg, **kwargs)
         # schema = DataSchema(DataType.ADDRESS_POINTS)
         # ft = schema.create_feature(pg, **kwargs)
         # schema.calculate_custom_fields(ft)
         # ft.calculate_custom_field('DemoField', testStr)
         # print('demo field: ', ft.get('DemoField'))
-        # ft.prettyPrint()
+        ft.prettyPrint()
 
-        roads = find_closest_centerlines(pg)
-        print(json.dumps(roads, indent=2))
-        # log('done??')
+        # roads = find_closest_centerlines(pg)
+        # print(json.dumps(roads, indent=2))
+        log('done??')
 
         
