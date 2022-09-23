@@ -15,6 +15,7 @@ class VALIDATION_FLAGS(PropIterator):
         "DUPLICATE_ADDRESS",
         "DUPLICATE_NENA_IDENTIFIER",
         "INVALID_COUNTY",
+        'INVALID_STATE',
         "INVALID_ESN",
         "INVALID_INCORPORATED_MUNICIPALITY",
         "INVALID_MSAG",
@@ -24,7 +25,7 @@ class VALIDATION_FLAGS(PropIterator):
         "MISSING_NENA_IDENTIFIER",
         "MISSING_STREET_NAME",
         "MISSING_ADDRESS_NUMBER",
-        'INVALID_POSTAL_CODE'
+        'INVALID_POSTAL_CODE',
         'INVALID_NEIGHBORHOOD',
         'INVALID_ADDITIONAL_CODE'
     ]
@@ -33,6 +34,7 @@ class VALIDATION_FLAGS(PropIterator):
     DUPLICATE_ADDRESS = 'DUPLICATE_ADDRESS'
     DUPLICATE_NENA_IDENTIFIER = 'DUPLICATE_NENA_IDENTIFIER'
     INVALID_COUNTY = 'INVALID_COUNTY'
+    INVALID_STATE='INVALID_STATE'
     INVALID_ESN = 'INVALID_ESN'
     INVALID_INCORPORATED_MUNICIPALITY = 'INVALID_INCORPORATED_MUNICIPALITY'
     INVALID_MSAG = 'INVALID_MSAG'
@@ -136,7 +138,7 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
     addSearchAttrs = []
 
     # set up address layer
-    addLyr = arcpy.management.MakeFeatureLayer(ng911_db.addresPoints, 'AddressPoints')
+    addLyr = arcpy.management.MakeFeatureLayer(ng911_db.addressPoints, 'AddressPoints')
     
     for attr in addressAttrs:
         v = pt.get(attr)
@@ -255,6 +257,8 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
         [getattr(STREET_FIELDS, f'MSAG_COM_{info.side}'), ADDRESS_FIELDS.MSAG_COM, 'INVALID_MSAG'],
         [getattr(STREET_FIELDS, f'NEIGHBORHOOD_COM_{info.side}'), ADDRESS_FIELDS.NEIGHBORHOOD_COM, 'INVALID_NEIGHBORHOOD'],
         [getattr(STREET_FIELDS, f'ADD_CODE_{info.side}'), ADDRESS_FIELDS.CODE, 'INVALID_ADDITIONAL_CODE'],
+        [getattr(STREET_FIELDS, f'COUNTY_{info.side}'), ADDRESS_FIELDS.COUNTY, 'INVALID_COUNTY'],
+        [getattr(STREET_FIELDS, f'STATE_{info.side}'), ADDRESS_FIELDS.STATE, 'INVALID_STATE'],
     ]
 
     for (roadAttr, addAttr, vf) in parity_checks:
@@ -264,6 +268,8 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
         if rv != av:
             validators[vf] = 1
             log(f'\tset validation flag warning: "{vf}" to 1')
+    print(validators)
+    return validators
 
 
 
