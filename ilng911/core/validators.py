@@ -23,7 +23,10 @@ class VALIDATION_FLAGS(PropIterator):
         "INVALID_UNINCORPORATED_MUNICIPALITY",
         "MISSING_NENA_IDENTIFIER",
         "MISSING_STREET_NAME",
-        "MISSING_ADDRESS_NUMBER"
+        "MISSING_ADDRESS_NUMBER",
+        'INVALID_POSTAL_CODE'
+        'INVALID_NEIGHBORHOOD',
+        'INVALID_ADDITIONAL_CODE'
     ]
 
     ADDRESS_OUTSIDE_RANGE = 'ADDRESS_OUTSIDE_RANGE'
@@ -39,6 +42,9 @@ class VALIDATION_FLAGS(PropIterator):
     MISSING_NENA_IDENTIFIER = 'MISSING_NENA_IDENTIFIER'
     MISSING_STREET_NAME = 'MISSING_STREET_NAME'
     MISSING_ADDRESS_NUMBER = "MISSING_ADDRESS_NUMBER"
+    INVALID_POSTAL_CODE = 'INVALID_POSTAL_CODE'
+    INVALID_NEIGHBORHOOD='INVALID_NEIGHBORHOOD'
+    INVALID_ADDITIONAL_CODE='INVALID_ADDITIONAL_CODE'
 
 
 # Address Validation workflow psuedo code:
@@ -128,6 +134,9 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
 
     ]
     addSearchAttrs = []
+
+    # set up address layer
+    addLyr = arcpy.management.MakeFeatureLayer(ng911_db.addresPoints, 'AddressPoints')
     
     for attr in addressAttrs:
         v = pt.get(attr)
@@ -142,12 +151,22 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
         validators[VALIDATION_FLAGS.MISSING_ADDRESS_NUMBER]
 
     else:
+        # check for duplicate
         dup_where = ' AND '.join(addSearchAttrs)
-        addLyr = arcpy.management.MakeFeatureLayer(ng911_db.addresPoints)
+        arcpy.management.SelectLayerByAttribute(addLyr, 'NEW_SELECTION', dup_where)
+        if int(arcpy.management.GetCount(addLyr).getOutput(0)) > 1:
+            validators[VALIDATION_FLAGS.DUPLICATE_ADDRESS] = 1
 
     # check for missing nena identifier
-    if not pt.get(ADDRESS_FIELDS.GUID):
+    nena_id = pt.get(ADDRESS_FIELDS.GUID)
+    if not nena_id:
         validators[VALIDATION_FLAGS.MISSING_NENA_IDENTIFIER]
+    else:
+        # check for duplicate nena identifier
+        nena_where = f"{ADDRESS_FIELDS.GUID} = '{nena_id}'"
+        arcpy.management.SelectLayerByAttribute(addLyr, 'NEW_SELECTION', nena_where)
+        if int(arcpy.management.GetCount(addLyr).getOutput(0)) > 1:
+            validators[VALIDATION_FLAGS.DUPLICATE_NENA_IDENTIFIER] = 1
     
     st_attrs = [
         STREET_FIELDS.PRE_TYPE,
@@ -157,26 +176,15 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
         STREET_FIELDS.POST_MODIFIER
     ]
 
-    # range_bases = ['ToAddr_', 'FromAddr_']
-    # range_attrs = [f'{b}{p}' for p in ['L', 'R'] for b in range_bases]
-
     # get block range for given point
     addNum = pt.get('Add_Number', 0)
 
-    # blockFloor = math.floor(addNum / 100.0) * 100
-    # blockCeil = math.ceil(addNum / 100.0) * 100
+    # create where clause
     atts = []
     for a in st_attrs:
         v = pt.get(a)
         if v:
             atts.append(f"{a} = '{v}'")
-
-    # make sure to only query this block
-    # for a in range_attrs:
-    #     if a.startswith('To'):
-    #         atts.append(f'{a} >= {blockFloor}')
-    #     else:
-    #         atts.append(f'{a} < {blockCeil}')
 
     where_clause = ' AND '.join(atts)
     print('where clause: ', where_clause)
@@ -225,21 +233,13 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
             raise RuntimeError(f'Invalid Type for Road Centerline input: "{type(road)}"')
     
     print(road.get('St_Name'), road.get('MSAGComm_R'))
-    
-    # DUPLICATE_ADDRESS = 1
-    # ADDRESS_OUTSIDE_RANGE = 2
-    # INVALID_PARITY = 3
-    # DUPLICATE_NENA_IDENTIFIER = 4
-    # MISSING_NENA_IDENTIFIER = 5
-    # INVALID_STREET_NAME = 6
-    # INVALID_MSAG = 7
-    # INVALID_INCORPORATED_MUNICIPALITY = 8
-    # INVALID_UNINCORPORATED_MUNICIPALITY = 9
-    # INVALID_COUNTY = 10
-    # INVALID_ESN = 11
-    # MISSING_STREET_NAME = 12
 
+    # get parity and range info
     info = get_range_and_parity(pt.geometry, road)
+
+    if addNum < info.get('from_address') or addNum > info.get('to_address'):
+        log(f'address is outside of range: {addNum} ({info.get("from_address")}-{info.get("to_address")})')
+        validators.ADDRESS_OUTSIDE_RANGE = 1
 
     # check parity
     isEven = pt.get('Add_Number', 0) % 2 == 0
@@ -247,13 +247,25 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
         validators.INVALID_PARITY = 1
 
     # check parity based attributes
-    par_attr_bases = [
-        'MSAGComm_',
-        'IncMuni_',
-        'UnincCom_',
-        'PostCode_'
+    parity_checks = [
+        [getattr(STREET_FIELDS, f'ESN_{info.side}'), ADDRESS_FIELDS.ESN, 'INVALID_ESN'],
+        [getattr(STREET_FIELDS, f'INC_MUNI_{info.side}'), ADDRESS_FIELDS.INC_MUNI, 'INVALID_INCORPORATED_MUNICIPALITY'],
+        [getattr(STREET_FIELDS, f'UNINC_MUNI_{info.side}'), ADDRESS_FIELDS.UNINC_MUNI, 'INVALID_UNINCORPORATED_MUNICIPALITY'],
+        [getattr(STREET_FIELDS, f'POST_CODE_{info.side}'), ADDRESS_FIELDS.POST_CODE, 'INVALID_POSTAL_CODE'],
+        [getattr(STREET_FIELDS, f'MSAG_COM_{info.side}'), ADDRESS_FIELDS.MSAG_COM, 'INVALID_MSAG'],
+        [getattr(STREET_FIELDS, f'NEIGHBORHOOD_COM_{info.side}'), ADDRESS_FIELDS.NEIGHBORHOOD_COM, 'INVALID_NEIGHBORHOOD'],
+        [getattr(STREET_FIELDS, f'ADD_CODE_{info.side}'), ADDRESS_FIELDS.CODE, 'INVALID_ADDITIONAL_CODE'],
     ]
-    par_attrs = [f'{p}{info.get("side")}' for p in par_attr_bases]
+
+    for (roadAttr, addAttr, vf) in parity_checks:
+        rv = road.get(roadAttr)
+        av = pt.get(addAttr)
+        log(f'log address parity check for {addAttr} based on side "{info.side}": {rv} -> {av}')
+        if rv != av:
+            validators[vf] = 1
+            log(f'\tset validation flag warning: "{vf}" to 1')
+
+
 
     
     

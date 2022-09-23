@@ -80,54 +80,8 @@ DATE_FIELDS = [
 ]
 
 
-
 # get ng911_db helper
 ng911_db = get_ng911_db()
-
-# def get_range_and_parity(pt: Union[arcpy.PointGeometry, Feature], centerline: Union[int, Feature]) -> Munch:
-#     """finds address range and parity from a given street centerline Feature or OID
-
-#     Args:
-#         pt (Union[arcpy.PointGeometry, Feature]): a point geometry or address Feature
-#         centerline (Union[int, Feature]): an OBJECTID of the street centerline or centerline Feature
-
-#     Returns:
-#         Munch: a d
-#     """
-#     log('parity and range args: ', pt, centerline)
-#     attrs = dict(
-#         parity = None,
-#         to_address=None,
-#         from_address=None,
-#         address_prefix=None,
-#         side=None
-#     )
-#     flds = FIELDS.STREET
-    
-#     if isinstance(pt, Feature):
-#         pt = pt.geometry
-#         log(f'parity and range, point geometry is: {pt}')
-
-#     if isinstance(centerline, int):
-#         schema = DataSchema(DataType.ROAD_CENTERLINE)
-#         centerline = schema.find_feature_from_oid(centerline)
-        
-#     # make sure we have a valid feature
-#     if isinstance(centerline, Feature):
-#         log('range and parity, centerline is a Feature')
-#         # angle = get_angle(centerline.geometry)
-#         line = centerline.geometry
-#         log(f'parity and range, centerline geometry is: {pt}')
-#         pq = line.queryPointAndDistance(pt)
-#         side = 'R' if pq[-1] else 'L'
-#         parity = centerline.get(f'Parity_{side}')
-#         attrs['parity'] = parity
-#         attrs['side'] = side
-#         attrs['address_prefix'] = centerline.get(flds.ADDRESS_PREFIX_RIGHT if side == 'R' else flds.ADDRESS_PREFIX_LEFT)
-#         attrs['to_address'] = centerline.get(flds.TO_ADDRESS_RIGHT if side == 'R' else flds.TO_ADDRESS_LEFT)
-#         attrs['from_address'] = centerline.get(flds.FROM_ADDRESS_RIGHT if side == 'R' else flds.FROM_ADDRESS_LEFT)
-    
-#     return munchify(attrs)
 
 def merge_street_segment_attributes(address: Feature, centerline: Union[int, Feature]):
     """merge street segment attributes into address point feature
@@ -153,29 +107,6 @@ def merge_street_segment_attributes(address: Feature, centerline: Union[int, Fea
     # if OBJECTID is provided for centerline, fetch attributes and merge
     if isinstance(centerline, int):
         centerline = centerlineSchema.find_feature_from_oid(centerline)
-        # oidField = [f.name for f in fields if f.type == 'OID'][0]
-        # where = f'{oidField} = {centerline}'
-        # log(f'matchFields: {matchFields}')
-        # otherAttrs = [v['ln'] for v in POINT_SIDE_MAPPING]
-        # addtlFields = []
-        # for attr in otherAttrs:
-        #     addtlFields.append(f'{attr}_L')
-        #     addtlFields.append(f'{attr}_R')
-
-        # with arcpy.da.SearchCursor(centerlineTab, ['SHAPE@'] + matchFields + addtlFields, where) as rows:
-        #     try:
-        #         row = [r for r in rows][0]
-
-        #         # extract Feature using OID
-        #         centerline = centerlineSchema.create_feature(row[0], **dict(zip(matchFields + addtlFields, row[1:])))
-        #         log(f'Created Feature for Road Centerline from OID:')
-        #         centerline.prettyPrint()
-
-        #     except IndexError:
-        #         msg = f'WARNING: Road Centerline with {oidField} {centerline} does not exist, failed to merge street attributes.'
-        #         log(msg, 'warn')
-        #         arcpy.Error(msg)
-        #         raise RuntimeError(msg)
 
     # merge from Feature
     if isinstance(centerline, Feature):
