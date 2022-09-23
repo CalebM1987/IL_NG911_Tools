@@ -27,6 +27,9 @@ class PropIterator:
         for p in (self.__props__ or [p for p in dir(self) if not p.startswith('__')]):
             yield p
 
+    def __len__(self):
+        return len(self.__props__)
+
 class lazyprop:
     """Based on code from David Beazley's "Python Cookbook".
     

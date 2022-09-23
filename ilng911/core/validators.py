@@ -268,6 +268,13 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
         if rv != av:
             validators[vf] = 1
             log(f'\tset validation flag warning: "{vf}" to 1')
+
+    # calculate flag count and score
+    flagCount = sum(validators.values())
+    flagCheckCount = len(VALIDATION_FLAGS.__props__)
+    validators['FLAG_COUNT'] = flagCount
+    validators['VALIDATION_SCORE'] = flagCount / flagCheckCount
+
     print(validators)
     return validators
 
