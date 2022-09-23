@@ -118,7 +118,7 @@ class Feature(FeatureBase):
         return munchify(
             dict(
                 attributes=self.attributes,
-                geometry=json.loads(self.geometry.JSON)
+                geometry=json.loads(self.geometry.JSON) if self.geometry else None
             )
         )
 
