@@ -123,6 +123,14 @@ class Feature(FeatureBase):
         )
 
     def create_from_expression(self, expression: str='') -> str:
+        """creates a string from a given expression
+
+        Args:
+            expression (str, optional): the string expression with field tokens. Defaults to ''.
+
+        Returns:
+            str: the result of the calculated expression
+        """
         tokens = get_string_tokens(expression)
         val = expression[:]
         for token in tokens:
@@ -136,6 +144,15 @@ class Feature(FeatureBase):
         return ' '.join(val.split()) or None
 
     def calculate_custom_field(self, field: str, expression: str) -> str:
+        """calculates a custom field from a given expression
+
+        Args:
+            field (str)
+            expression (str): the string expression with field tokens. Defaults to ''.
+
+        Returns:
+            str: the result of the calculated expression
+        """
         log(f'calculate custom expression is: "{expression}"')
         expr = self.create_from_expression(expression)
         self.attributes[field] = expr
