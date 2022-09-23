@@ -133,7 +133,7 @@ class Feature(FeatureBase):
                  val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.PRE_DIRECTION) or ''), val, flags=re.I)
             elif raw == CUSTOM_TOKENS.PostDirectionAbbr:
                 val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.POST_DIRECTION) or ''), val, flags=re.I)
-        return ' '.join(val.split())
+        return ' '.join(val.split()) or None
 
     def calculate_custom_field(self, field: str, expression: str) -> str:
         log(f'calculate custom expression is: "{expression}"')

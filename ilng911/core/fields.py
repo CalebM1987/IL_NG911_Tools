@@ -15,6 +15,7 @@ class STREET_BASE:
     LEGACY_POST_DIR='LSt_PosDir'
 
 class STREET_FIELDS(STREET_BASE):
+    GUID = 'RCL_NGUID'
     ADDRESS_PREFIX_LEFT='AdNumPre_L'
     ADDRESS_PREFIX_RIGHT='AdNumPre_R'
     FROM_ADDRESS_LEFT='FromAddr_L'
@@ -26,8 +27,8 @@ class STREET_FIELDS(STREET_BASE):
     PRE_DIRECTION='St_PreDir'
     POST_DIRECTION='St_PosDir'
 
-class ADDRESS_FIELDS:
-    STREET = STREET_BASE
+class ADDRESS_FIELDS(STREET_BASE):
+    GUID = 'Site_NGUID'
     CODE='AddCode' 
     DATA_URI='AddDataURI' 
     NEIGHBORHOOD_COMMUNITY='Nbrhd_Comm' 
@@ -45,6 +46,41 @@ class ADDRESS_FIELDS:
     MILE_POST='Mile_Post' 
     TYPE='Place_Type' 
     PLACEMENT='Placement'
+
+POINT_SIDE_MAPPING = [
+    {
+        'pt': 'MSAGComm', 
+        'ln': 'MSAGComm'
+    }, 
+    {
+        'pt': 'Inc_Muni',
+        'ln': 'IncMuni'
+    },
+    {
+        'pt': 'Uninc_Comm',
+        'ln': 'UnincCom'
+    },
+    {
+        'pt': 'ESN', 
+        'ln': 'ESN', 
+    },
+    { 
+        'pt': 'Nbrhd_Comm',
+        'ln': 'NbrhdCom',
+    },
+    { 
+        'pt': 'Post_Code',
+        'ln': 'PostCode',
+    },
+    { 
+        'pt': 'Post_Comm',
+        'ln': 'PostComm',
+    },
+    { 
+        'pt': 'AddCode',
+        'ln': 'AddCode',
+    },
+]
 
 # important fields
 class FIELDS:

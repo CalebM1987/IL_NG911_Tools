@@ -11,7 +11,7 @@ from ..schemas import DataType, DataSchema
 from .validators import get_range_and_parity, validate_address
 from warnings import warn
 from itertools import zip_longest
-from .fields import FIELDS
+from .fields import FIELDS, POINT_SIDE_MAPPING
 from ..logging import log
 
 thisDir = os.path.abspath(os.path.dirname(__file__))
@@ -79,40 +79,7 @@ DATE_FIELDS = [
     'Expire'
 ]
 
-POINT_SIDE_MAPPING = [
-    {
-        'pt': 'MSAGComm', 
-        'ln': 'MSAGComm'
-    }, 
-    {
-        'pt': 'Inc_Muni',
-        'ln': 'IncMuni'
-    },
-    {
-        'pt': 'Uninc_Comm',
-        'ln': 'UnincCom'
-    },
-    {
-        'pt': 'ESN', 
-        'ln': 'ESN', 
-    },
-    { 
-        'pt': 'Nbrhd_Comm',
-        'ln': 'NbrhdCom',
-    },
-    { 
-        'pt': 'Post_Code',
-        'ln': 'PostCode',
-    },
-    { 
-        'pt': 'Post_Comm',
-        'ln': 'PostComm',
-    },
-    { 
-        'pt': 'AddCode',
-        'ln': 'AddCode',
-    },
-]
+
 
 # get ng911_db helper
 ng911_db = get_ng911_db()

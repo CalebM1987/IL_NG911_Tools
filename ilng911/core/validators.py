@@ -1,27 +1,44 @@
 import math
 import arcpy
-from enum import Enum
 from ilng911.support.munch import munchify, Munch
-from ilng911.schemas import DataSchema
+from ilng911.schemas import DataSchema, DataType
 from ilng911.core.common import Feature
 from ilng911.env import get_ng911_db
 from ilng911.logging import log
+from ilng911.core.fields import FIELDS, STREET_FIELDS, ADDRESS_FIELDS
+from ilng911.utils import PropIterator
+from typing import Union, List
 
-class VALIDATION_FLAGS(Enum):
-    DUPLICATE_ADDRESS = 1
-    ADDRESS_OUTSIDE_RANGE = 2
-    INVALID_PARITY = 3
-    DUPLICATE_NENA_IDENTIFIER = 4
-    MISSING_NENA_IDENTIFIER = 5
-    INVALID_STREET_NAME = 6
-    INVALID_MSAG = 7
-    INVALID_INCORPORATED_MUNICIPALITY = 8
-    INVALID_UNINCORPORATED_MUNICIPALITY = 9
-    INVALID_COUNTY = 10
-    INVALID_ESN = 11
-    MISSING_STREET_NAME = 12
+class VALIDATION_FLAGS(PropIterator):
+    __props__ = [
+        "ADDRESS_OUTSIDE_RANGE",
+        "DUPLICATE_ADDRESS",
+        "DUPLICATE_NENA_IDENTIFIER",
+        "INVALID_COUNTY",
+        "INVALID_ESN",
+        "INVALID_INCORPORATED_MUNICIPALITY",
+        "INVALID_MSAG",
+        "INVALID_PARITY",
+        "INVALID_STREET_NAME",
+        "INVALID_UNINCORPORATED_MUNICIPALITY",
+        "MISSING_NENA_IDENTIFIER",
+        "MISSING_STREET_NAME",
+        "MISSING_ADDRESS_NUMBER"
+    ]
 
-
+    ADDRESS_OUTSIDE_RANGE = 'ADDRESS_OUTSIDE_RANGE'
+    DUPLICATE_ADDRESS = 'DUPLICATE_ADDRESS'
+    DUPLICATE_NENA_IDENTIFIER = 'DUPLICATE_NENA_IDENTIFIER'
+    INVALID_COUNTY = 'INVALID_COUNTY'
+    INVALID_ESN = 'INVALID_ESN'
+    INVALID_INCORPORATED_MUNICIPALITY = 'INVALID_INCORPORATED_MUNICIPALITY'
+    INVALID_MSAG = 'INVALID_MSAG'
+    INVALID_PARITY = 'INVALID_PARITY'
+    INVALID_STREET_NAME = 'INVALID_STREET_NAME'
+    INVALID_UNINCORPORATED_MUNICIPALITY = 'INVALID_UNINCORPORATED_MUNICIPALITY'
+    MISSING_NENA_IDENTIFIER = 'MISSING_NENA_IDENTIFIER'
+    MISSING_STREET_NAME = 'MISSING_STREET_NAME'
+    MISSING_ADDRESS_NUMBER = "MISSING_ADDRESS_NUMBER"
 
 
 # Address Validation workflow psuedo code:
@@ -35,18 +52,10 @@ class VALIDATION_FLAGS(Enum):
 
 def get_validation_template() -> Munch:
     return munchify(dict(
-        DUPLICATE_ADDRESS = 0,
-        ADDRESS_OUTSIDE_RANGE = 0,
-        INVALID_PARITY = 0,
-        DUPLICATE_NENA_IDENTIFIER = 0,
-        MISSING_NENA_IDENTIFIER = 0,
-        INVALID_STREET_NAME = 0,
-        INVALID_MSAG = 0,
-        INVALID_INCORPORATED_MUNICIPALITY = 0,
-        INVALID_UNINCORPORATED_MUNICIPALITY = 0,
-        INVALID_COUNTY = 0,
-        INVALID_ESN = 0,
-        MISSING_STREET_NAME = 0,
+        zip(
+            VALIDATION_FLAGS.__props__, 
+            [0] * len(VALIDATION_FLAGS.__props__)
+        )  
     ))
 
 def get_range_and_parity(pt: Union[arcpy.PointGeometry, Feature], centerline: Union[int, Feature]) -> Munch:
@@ -94,27 +103,68 @@ def get_range_and_parity(pt: Union[arcpy.PointGeometry, Feature], centerline: Un
     
     return munchify(attrs)
 
-def validate_address(pt: Feature):
+def validate_address(pt: Feature, road: Union[Feature, int]=None):
     validators = get_validation_template()
+
+    ng911_db = get_ng911_db()
+
+    # 1. check for duplicate address
+    addressAttrs = [
+        ADDRESS_FIELDS.NUMBER_PREFIX,
+        ADDRESS_FIELDS.NUMBER,
+        ADDRESS_FIELDS.NUMBER_SUFFIX,
+        ADDRESS_FIELDS.PRE_MOD,
+        ADDRESS_FIELDS.PRE_DIRECTION,
+        ADDRESS_FIELDS.PRE_TYPE,
+        ADDRESS_FIELDS.PRE_TYPE_SEPERATOR,
+        ADDRESS_FIELDS.NAME,
+        ADDRESS_FIELDS.POST_TYPE,
+        ADDRESS_FIELDS.POST_DIRECTION,
+        ADDRESS_FIELDS.POST_MODIFIER,
+        ADDRESS_FIELDS.BUILDING,
+        ADDRESS_FIELDS.FLOOR,
+        ADDRESS_FIELDS.UNIT,
+        ADDRESS_FIELDS.SEAT,
+
+    ]
+    addSearchAttrs = []
+    
+    for attr in addressAttrs:
+        v = pt.get(attr)
+        if v:
+            if isinstance(v, str):
+                addSearchAttrs.append(f"{attr} = '{v}'")
+            else:
+                addSearchAttrs.append(f"{attr} = {v}")
+
+    if not addSearchAttrs:
+        validators[VALIDATION_FLAGS.MISSING_STREET_NAME] = 1
+        validators[VALIDATION_FLAGS.MISSING_ADDRESS_NUMBER]
+
+    else:
+        dup_where = ' AND '.join(addSearchAttrs)
+        addLyr = arcpy.management.MakeFeatureLayer(ng911_db.addresPoints)
+
+    # check for missing nena identifier
+    if not pt.get(ADDRESS_FIELDS.GUID):
+        validators[VALIDATION_FLAGS.MISSING_NENA_IDENTIFIER]
     
     st_attrs = [
-        'St_PreMod', 
-        'St_PreDir', 
-        'St_PreTyp', 
-        'St_PreSep', 
-        'St_Name', 
-        'St_PosTyp', 
-        'St_PosDir', 
-        'St_PosMod', 
+        STREET_FIELDS.PRE_TYPE,
+        STREET_FIELDS.PRE_TYPE_SEPERATOR,
+        STREET_FIELDS.NAME,
+        STREET_FIELDS.POST_TYPE,
+        STREET_FIELDS.POST_MODIFIER
     ]
-    range_bases = ['ToAddr_', 'FromAddr_']
-    range_attrs = [f'{b}{p}' for p in ['L', 'R'] for b in range_bases]
+
+    # range_bases = ['ToAddr_', 'FromAddr_']
+    # range_attrs = [f'{b}{p}' for p in ['L', 'R'] for b in range_bases]
 
     # get block range for given point
     addNum = pt.get('Add_Number', 0)
 
-    blockFloor = math.floor(addNum / 100.0) * 100
-    blockCeil = math.ceil(addNum / 100.0) * 100
+    # blockFloor = math.floor(addNum / 100.0) * 100
+    # blockCeil = math.ceil(addNum / 100.0) * 100
     atts = []
     for a in st_attrs:
         v = pt.get(a)
@@ -122,41 +172,58 @@ def validate_address(pt: Feature):
             atts.append(f"{a} = '{v}'")
 
     # make sure to only query this block
-    for a in range_attrs:
-        if a.startswith('To'):
-            atts.append(f'{a} >= {blockFloor}')
-        else:
-            atts.append(f'{a} < {blockCeil}')
+    # for a in range_attrs:
+    #     if a.startswith('To'):
+    #         atts.append(f'{a} >= {blockFloor}')
+    #     else:
+    #         atts.append(f'{a} < {blockCeil}')
 
     where_clause = ' AND '.join(atts)
     print('where clause: ', where_clause)
 
-    # get roads layer
-    ng911_db = get_ng911_db()
-    print('got gdb')
-    roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines, 'RoadCenterlines', where_clause)
-    # arcpy.management.SelectLayerByAttribute(roads, 'NEW_SELECTION', where_clause)
-    print('got layer')
+    if not road:
 
-    count = int(arcpy.management.GetCount(roads).getOutput(0))
-    print(f'count of roads matching search criteria: {count}')
-    if not count:
-        # no matching roads?
-        return # for now...
+        # get roads layer
+        print('got gdb')
+        roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines, 'RoadCenterlines', where_clause)
+        # arcpy.management.SelectLayerByAttribute(roads, 'NEW_SELECTION', where_clause)
+        print('got layer')
 
-    if count > 1:
-        # first select by location
-        arcpy.management.SelectLayerByLocation(roads, 'WITHIN_A_DISTANCE', pt.geometry, '700 FEET', 'SUBSET_SELECTION')
-        print('selected by location')
+        count = int(arcpy.management.GetCount(roads).getOutput(0))
+        print(f'count of roads matching search criteria: {count}')
+        if not count:
+            # no matching roads?
+            return # for now...
+
+        if count > 1:
+            # first select by location
+            arcpy.management.SelectLayerByLocation(roads, 'WITHIN_A_DISTANCE', pt.geometry, '600 FEET', 'SUBSET_SELECTION')
+            print('selected by location')
+        
+        count = int(arcpy.management.GetCount(roads).getOutput(0))
+        print(f'count of roads after location search: {count}')
+        
+        desc = arcpy.Describe(roads)
+        fields = [desc.oidFieldName, 'SHAPE@'] + [f.name for f in desc.fields]
+        distances = {}
+        with arcpy.da.SearchCursor(roads, fields) as rows:
+            for r in rows:
+                distances[pt.geometry.distanceTo(r[1])] = r
+
+        if not distances:
+            raise RuntimeError('No roads found within search radius')
+
+        shortest = min(distances.keys())  
+        road = DataSchema(ng911_db.types.ROAD_CENTERLINE).fromRow(fields, distances.get(shortest))
+        road.prettyPrint()
+                
+
+    else:
+        if isinstance(road, int):
+            road = DataSchema(DataType.ROAD_CENTERLINE).find_feature_from_oid(road)
+        if not isinstance(road, Feature):
+            raise RuntimeError(f'Invalid Type for Road Centerline input: "{type(road)}"')
     
-    desc = arcpy.Describe(roads)
-    fields = [desc.oidFieldName, 'SHAPE@'] + [f.name for f in desc.fields]
-    with arcpy.da.SearchCursor(roads, fields) as rows:
-        for r in rows:
-            road = DataSchema(ng911_db.types.ROAD_CENTERLINE).fromRow(fields, r)
-            road.prettyPrint()
-            break
-
     print(road.get('St_Name'), road.get('MSAGComm_R'))
     
     # DUPLICATE_ADDRESS = 1
@@ -187,5 +254,7 @@ def validate_address(pt: Feature):
         'PostCode_'
     ]
     par_attrs = [f'{p}{info.get("side")}' for p in par_attr_bases]
+
+    
     
     
