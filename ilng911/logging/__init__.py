@@ -56,6 +56,7 @@ def log(msg, *args, level=None):
         import arcpy
     for m in [msg] + _args:
         func(m)
+        print(m)
         if is_arc:
             arcpy.AddMessage(m)
 

@@ -1,0 +1,353 @@
+{
+    "geometryType": "esriGeometryPoint",
+    "spatialReference": {
+      "wkid": 4326
+    },
+    "fields": [
+      {
+        "name": "NENA_GUID",
+        "alias": "NENA GUID",
+        "type": "esriFieldTypeString",
+        "length": 64
+      },
+      {
+        "name": "POINT_OID",
+        "alias": "Point OID",
+        "type": "esriFieldTypeInteger"
+      },
+      {
+        "name": "ADDRESS_OUTSIDE_RANGE",
+        "alias": "ADDRESS_OUTSIDE_RANGE",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "DUPLICATE_ADDRESS",
+        "alias": "DUPLICATE_ADDRESS",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "DUPLICATE_NENA_IDENTIFIER",
+        "alias": "DUPLICATE_NENA_IDENTIFIER",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_COUNTY",
+        "alias": "INVALID_COUNTY",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_STATE",
+        "alias": "INVALID_STATE",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_ESN",
+        "alias": "INVALID_ESN",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_INCORPORATED_MUNICIPALITY",
+        "alias": "INVALID_INCORPORATED_MUNICIPALITY",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_MSAG",
+        "alias": "INVALID_MSAG",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_PARITY",
+        "alias": "INVALID_PARITY",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_STREET_NAME",
+        "alias": "INVALID_STREET_NAME",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_UNINCORPORATED_MUNICIPALITY",
+        "alias": "INVALID_UNINCORPORATED_MUNICIPALITY",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "MISSING_NENA_IDENTIFIER",
+        "alias": "MISSING_NENA_IDENTIFIER",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "MISSING_STREET_NAME",
+        "alias": "MISSING_STREET_NAME",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "MISSING_ADDRESS_NUMBER",
+        "alias": "MISSING_ADDRESS_NUMBER",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_POSTAL_CODE",
+        "alias": "INVALID_POSTAL_CODE",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_NEIGHBORHOOD",
+        "alias": "INVALID_NEIGHBORHOOD",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "INVALID_ADDITIONAL_CODE",
+        "alias": "INVALID_ADDITIONAL_CODE",
+        "type": "esriFieldTypeSmallInteger",
+        "domain": {
+          "type": "codedValue",
+          "name": "YES_NO_INT",
+          "codedValues": [
+            {
+              "name": "NO",
+              "code": 0
+            },
+            {
+              "name": "YES",
+              "code": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "FLAG_COUNT",
+        "alias": "Flag Count",
+        "type": "esriFieldTypeSmallInteger"
+      },
+      {
+        "name": "VALIDATION_SCORE",
+        "alias": "Validation Score",
+        "type": "esriFieldTypeDouble"
+      }
+    ],
+    "features": []
+}

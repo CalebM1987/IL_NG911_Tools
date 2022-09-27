@@ -1,0 +1,20 @@
+{
+    "geometryType": "esriGeometryPoint",
+    "spatialReference": {
+      "wkid": 4326
+    },
+    "fields": [
+      {
+        "name": "NENA_GUID",
+        "alias": "NENA GUID",
+        "type": "esriFieldTypeString",
+        "length": 64
+      },
+      {
+        "name": "POINT_OID",
+        "alias": "Point OID",
+        "type": "esriFieldTypeInteger"
+      }
+    ],
+    "features": []
+}

@@ -14,6 +14,7 @@ from ..support.munch import munchify
 from ..config import write_config
 from ..core.database import NG911SchemaTables
 from ..schemas import DATA_TYPES, DATA_TYPES_LOOKUP, DEFAULT_NENA_PREFIXES
+from ..core.validators import VALIDATION_FLAGS
 
 def features_from_json(json_file: str, out_path: str):
     """create features from a json file, will also add
@@ -197,6 +198,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
 
     # populate nena ids
     register_nena_identifiers()
+
 
 def register_spatial_join_fields(target_table: str, target_field: str, join_table: str, fields: List[str]):
     """registers spatial join fields

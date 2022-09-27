@@ -38,6 +38,8 @@ class NG911SchemaTables(PropIterator):
         'CADVendorFeatures',
         'SpatialJoinFields',
         'SpatialJoinFeatures',
+        'ValidatedAddresses',
+        'AddressFlags'
     ]
 
     NG911_TABLES = 'NG911_Tables'
@@ -47,6 +49,8 @@ class NG911SchemaTables(PropIterator):
     CAD_VENDOR_FEATURES = 'CADVendorFeatures'
     SPATIAL_JOIN_FIELDS = 'SpatialJoinFields'
     SPATIAL_JOIN_FEATURES = 'SpatialJoinFeatures'
+    VALIDATED_ADDRESSES = 'ValidatedAddresses'
+    ADDRESS_FLAGS = 'AddressFlags'
 
 class NG911Data(metaclass=Singleton): 
     state = None
@@ -111,7 +115,6 @@ class NG911Data(metaclass=Singleton):
                         break
             else:
                 log('NENA IDs table does not exist, make sure to run the register_nena_identifiers() function', level='warn')
-
 
             if schemaExists and agencyTabExists and self.agencyID and self.requiredTables:
                 self.setupComplete = True
@@ -178,6 +181,14 @@ class NG911Data(metaclass=Singleton):
             return [t for t in self.requiredTables if t.type == self.types.PROVISIONING_BOUNDARY][0]
         except IndexError:
             return None
+
+    @property
+    def addressFlags(self) -> str:
+        return os.path.join(self.gdb_path, 'AddressFlags') if self.gdb_path else None
+    
+    @property
+    def validatedAddresses(self) -> str:
+        return os.path.join(self.gdb_path, 'ValidatedAddresses') if self.gdb_path else None
 
     @staticmethod
     def get_basename(path: str) -> str:

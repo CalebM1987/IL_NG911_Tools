@@ -6,7 +6,7 @@ from ilng911.core.common import Feature
 from ilng911.env import get_ng911_db
 from ilng911.logging import log
 from ilng911.core.fields import FIELDS, STREET_FIELDS, ADDRESS_FIELDS
-from ilng911.utils import PropIterator
+from ilng911.utils import PropIterator, cursors
 from typing import Union, List
 
 class VALIDATION_FLAGS(PropIterator):
@@ -273,8 +273,22 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
     flagCount = sum(validators.values())
     flagCheckCount = len(VALIDATION_FLAGS.__props__)
     validators['FLAG_COUNT'] = flagCount
-    validators['VALIDATION_SCORE'] = flagCount / flagCheckCount
+    validators['VALIDATION_SCORE'] = (flagCount / flagCheckCount) * 100
 
+    # update validation tables
+    base_fields = ['NENA_GUID', 'POINT_OID', 'SHAPE@']
+    if flagCount > 0:
+        # found some flags, update flags table
+        keys = list(validators.keys())
+        flag_fields = base_fields + keys  
+        with cursors.InsertCursor(ng911_db.addressFlags, flag_fields) as irows:
+            r = [nena_id, pt.get(pt.oidField), pt.geometry] + [validators.get(f) for f in keys]
+            irows.insertRow(r)
+            log(f'added record to addresses flags: {pt.get(pt.oidField)} with flag count of {flagCount}')
+
+    with cursors.InsertCursor(ng911_db.validatedAddresses, base_fields) as irows:
+        irows.insertRow([nena_id, pt.get(pt.oidField), pt.geometry])
+        log(f'added record to validated addresses: {pt.get(pt.oidField)}')
     print(validators)
     return validators
 
