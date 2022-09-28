@@ -302,7 +302,7 @@ def run_address_validation():
     desc = arcpy.Describe(ng911_db.addressPoints)
 
     # get all checked nena identifiers
-    with arcpy.da.SearchCursor(ng911_db.addressPoints, [addressSchema.nenaIdentifier]) as rows:
+    with arcpy.da.SearchCursor(ng911_db.validatedAddresses, ['NENA_GUID']) as rows:
         checkedIds = [r[0] for r in rows]
 
     count = int(arcpy.management.GetCount(ng911_db.addressPoints).getOutput(0))
@@ -343,7 +343,7 @@ def run_address_validation():
                 break
             # search for oids to check
             with arcpy.da.SearchCursor(ng911_db.addressPoints, addrFields, where) as rows:
-                checkFeats = [addressSchema.fromRow(r) for r in rows if r[nenaIdx] not in checkedIds]
+                checkFeats = [addressSchema.fromRow(addrFields, r) for r in rows if r[nenaIdx] not in checkedIds]
 
             print('checkFeats count: ', len(checkFeats))
             if checkFeats:

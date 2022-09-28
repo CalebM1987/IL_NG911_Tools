@@ -70,14 +70,18 @@ class Feature(FeatureBase):
         self.geometry = geometry
         self.attributes = {}
         
+        oid = None
         for fld, val in kwargs.items():
             if is_shape_field(fld):
                 if not self.geometry and isinstance(val, arcpy.Geometry):
                     self.geometry = val
                 
             elif fld.lower() == 'oid@':
-                kwargs[self.oidField] = val
+                oid = val
 
+        if oid:
+            kwargs[self.oidField] = oid
+            
         # set attributes
         if (LOCATION_FIELDS.LATITUDE in self.fieldNames and LOCATION_FIELDS.LONGITUDE in self.fieldNames) and geometry:
             if geometry.spatialReference.factoryCode != WGS_84_WKID:
@@ -87,9 +91,9 @@ class Feature(FeatureBase):
             kwargs[LOCATION_FIELDS.LATITUDE] = wgs84.centroid.Y
             kwargs[LOCATION_FIELDS.LONGITUDE] = wgs84.centroid.X
 
-        log(f'kwargs before filtering:\n{json.dumps(kwargs, indent=4, cls=NG911Encoder)}')
+        # log(f'kwargs before filtering:\n{json.dumps(kwargs, indent=4, cls=NG911Encoder)}')
         self.attributes.update(self.filter_attrs(kwargs))
-        log(f'filtered kwargs:\n{json.dumps(self.filter_attrs(kwargs), indent=4, cls=NG911Encoder)}')
+        # log(f'filtered kwargs:\n{json.dumps(self.filter_attrs(kwargs), indent=4, cls=NG911Encoder)}')
 
     @lazyprop
     def _writable(self):
