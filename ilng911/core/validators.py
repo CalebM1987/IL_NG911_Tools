@@ -1,12 +1,14 @@
+import os
 import math
 import arcpy
 from ilng911.support.munch import munchify, Munch
 from ilng911.schemas import DataSchema, DataType
 from ilng911.core.common import Feature
 from ilng911.env import get_ng911_db
-from ilng911.logging import log
+from ilng911.logging import log, timeit
 from ilng911.core.fields import FIELDS, STREET_FIELDS, ADDRESS_FIELDS
-from ilng911.utils import PropIterator, cursors
+from ilng911.utils import PropIterator, cursors, iter_chunks
+from multiprocessing.pool import ThreadPool
 from typing import Union, List
 
 class VALIDATION_FLAGS(PropIterator):
@@ -110,6 +112,9 @@ def get_range_and_parity(pt: Union[arcpy.PointGeometry, Feature], centerline: Un
         attrs['from_address'] = centerline.get(flds.FROM_ADDRESS_RIGHT if side == 'R' else flds.FROM_ADDRESS_LEFT)
     
     return munchify(attrs)
+
+roadSchema = DataSchema(DataType.ROAD_CENTERLINE)
+addressSchema = DataSchema(DataType.ADDRESS_POINTS)
 
 def validate_address(pt: Feature, road: Union[Feature, int]=None):
     validators = get_validation_template()
@@ -224,13 +229,12 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
             raise RuntimeError('No roads found within search radius')
 
         shortest = min(distances.keys())  
-        road = DataSchema(ng911_db.types.ROAD_CENTERLINE).fromRow(fields, distances.get(shortest))
+        road = roadSchema.fromRow(fields, distances.get(shortest))
         road.prettyPrint()
                 
-
     else:
         if isinstance(road, int):
-            road = DataSchema(DataType.ROAD_CENTERLINE).find_feature_from_oid(road)
+            road = roadSchema.find_feature_from_oid(road)
         if not isinstance(road, Feature):
             raise RuntimeError(f'Invalid Type for Road Centerline input: "{type(road)}"')
     
@@ -292,7 +296,66 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
     print(validators)
     return validators
 
+@timeit
+def run_address_validation():
+    ng911_db = get_ng911_db()
+    desc = arcpy.Describe(ng911_db.addressPoints)
 
+    # get all checked nena identifiers
+    with arcpy.da.SearchCursor(ng911_db.addressPoints, [addressSchema.nenaIdentifier]) as rows:
+        checkedIds = [r[0] for r in rows]
+
+    count = int(arcpy.management.GetCount(ng911_db.addressPoints).getOutput(0))
+    
+    if count > 1000:
+
+        minMax = r'in_memory\minMaxOIDs'
+        arcpy.analysis.Statistics(ng911_db.addressPoints, minMax, [[desc.oidFieldName, 'MIN'], [desc.oidFieldName, 'MAX']])
+
+        # get min and max OIDs
+        minOid, maxOid = 0, 0
+        with arcpy.da.SearchCursor(minMax, [f'MIN_{desc.oidFieldName}', f'MAX_{desc.oidFieldName}']) as rows:
+            for r in rows:
+                minOid, maxOid = r
+                break
+
+        diff = maxOid - minOid
+
+        chunkSize = min([1000, math.ceil(diff / 10)])
+        chunkCount = math.ceil(count / chunkSize)
+        log(f'found min and max OID: {minOid} -> {maxOid}, using a chunksize of {chunkSize}')
+
+        stOid = minOid
+        addrFields = [f.name for f in desc.fields if f.type not in ('OID', 'Geometry')] + ['OID@', 'SHAPE@']
+        nenaIdx = addrFields.index(addressSchema.nenaIdentifier)
+        processes = min([chunkSize, os.cpu_count() * 2])
+        log(addrFields)
+        log(nenaIdx)
+
+        # iterate in chunks to keep memory manageble
+        for i in range(chunkCount):
+            checkFeats = []
+            endRange = int(stOid + chunkSize)
+            where = f'{desc.oidFieldName} >= {int(stOid)} AND {desc.oidFieldName} < {endRange}'
+            log(i, where)
+
+            if i > 2:
+                break
+            # search for oids to check
+            with arcpy.da.SearchCursor(ng911_db.addressPoints, addrFields, where) as rows:
+                checkFeats = [addressSchema.fromRow(r) for r in rows if r[nenaIdx] not in checkedIds]
+
+            print('checkFeats count: ', len(checkFeats))
+            if checkFeats:
+                # processes
+                chunks = iter_chunks(checkFeats, processes)
+                for chunk in chunks:
+                    groups = ThreadPool(processes=processes).map(validate_address, chunk)
+            
+            stOid += chunkSize
+
+    
+    
 
     
     

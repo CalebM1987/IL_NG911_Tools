@@ -9,7 +9,7 @@ from ilng911.schemas import DataSchema, DataType
 from ilng911.admin.schemas import features_from_json, create_ng911_admin_gdb
 from ilng911.env import NG_911_DIR, get_ng911_db
 from ilng911.logging import log_context, log
-from ilng911.core.validators import validate_address
+from ilng911.core.validators import validate_address, run_address_validation
 
 if __name__ == '__main__':
     schemas_dir = os.path.join(NG_911_DIR, 'admin', 'data_structures')
@@ -85,15 +85,17 @@ if __name__ == '__main__':
         }
 
         # ft, schema = create_address_point(pg, **kwargs)
-        schema = DataSchema(DataType.ADDRESS_POINTS)
+        # schema = DataSchema(DataType.ADDRESS_POINTS)
         # ft = schema.create_feature(pg, **kwargs)
         # schema.calculate_custom_fields(ft)
         # ft.calculate_custom_field('DemoField', testStr)
         # print('demo field: ', ft.get('DemoField'))
         # ft.prettyPrint()
 
-        ft = schema.find_feature_from_oid(3029)
-        validate_address(ft)
+        # ft = schema.find_feature_from_oid(3029)
+        # validate_address(ft)
+
+        run_address_validation()
 
         # roads = find_closest_centerlines(pg)
         # print(json.dumps(roads, indent=2))

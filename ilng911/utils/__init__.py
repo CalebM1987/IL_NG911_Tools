@@ -3,6 +3,7 @@ import sys
 import arcpy
 import datetime
 import warnings
+from itertools import zip_longest
 
 is_arc = os.path.basename(sys.executable).startswith('Arc')
 
@@ -113,3 +114,9 @@ def copy_schema(template: str, output: str, sr: arcpy.SpatialReference=None, sha
             sr = desc.spatialReference
         arcpy.management.CreateFeatureclass(path, name, shapeType, template, sm, sm, sr)
     return output
+
+
+def iter_chunks(iterable, n):
+    args = [iter(iterable)] * n
+    for group in zip_longest(*args, fillvalue=None):
+        yield list(filter(lambda x: x != None, group))

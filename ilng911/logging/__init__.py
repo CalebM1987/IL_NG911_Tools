@@ -3,6 +3,7 @@ import sys
 import logging
 import contextlib
 import logging
+import datetime
 import time
 import traceback as tb
 from io import StringIO
@@ -117,3 +118,17 @@ def log_context(prefix='NG911_', format=default_format, datefmt=date_format, lev
         yield
     except Exception as e:
         log_exception(e)
+
+
+def timeit(function):
+    def wrapper(*args, **kwargs):
+        st = datetime.datetime.now()
+        output = function(*args, **kwargs)
+        elapsed = str(datetime.datetime.now() - st)
+        if hasattr(function, 'im_class'):
+            fname = '.'.join([function.im_class.__name__, function.__name__])
+        else:
+            fname = function.__name__
+        log(f'function {fname} from {sys.modules[function.__module__]} completed - elapsed time: {elapsed}')
+        return output
+    return wrapper
