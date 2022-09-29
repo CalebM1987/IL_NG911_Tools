@@ -1,11 +1,13 @@
 import os
 import math
 import arcpy
+import warnings
+from functools import partial
 from ilng911.support.munch import munchify, Munch
 from ilng911.schemas import DataSchema, DataType
 from ilng911.core.common import Feature
 from ilng911.env import get_ng911_db
-from ilng911.logging import log, timeit
+from ilng911.logging import log, timeit, timestamp
 from ilng911.core.fields import FIELDS, STREET_FIELDS, ADDRESS_FIELDS
 from ilng911.utils import PropIterator, cursors, iter_chunks
 from multiprocessing.pool import ThreadPool
@@ -116,7 +118,7 @@ def get_range_and_parity(pt: Union[arcpy.PointGeometry, Feature], centerline: Un
 roadSchema = DataSchema(DataType.ROAD_CENTERLINE)
 addressSchema = DataSchema(DataType.ADDRESS_POINTS)
 
-def validate_address(pt: Feature, road: Union[Feature, int]=None):
+def validate_address(pt: Feature, road: Union[Feature, int]=None, addresses=None, roads=None):
     validators = get_validation_template()
 
     ng911_db = get_ng911_db()
@@ -142,8 +144,9 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
     ]
     addSearchAttrs = []
 
-    # set up address layer
-    addLyr = arcpy.management.MakeFeatureLayer(ng911_db.addressPoints, 'AddressPoints')
+    # check for address layer
+    if not addresses:
+        addresses = arcpy.management.MakeFeatureLayer(ng911_db.addressPoints, 'AddressPoints')
     
     for attr in addressAttrs:
         v = pt.get(attr)
@@ -160,8 +163,8 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
     else:
         # check for duplicate
         dup_where = ' AND '.join(addSearchAttrs)
-        arcpy.management.SelectLayerByAttribute(addLyr, 'NEW_SELECTION', dup_where)
-        if int(arcpy.management.GetCount(addLyr).getOutput(0)) > 1:
+        arcpy.management.SelectLayerByAttribute(addresses, 'NEW_SELECTION', dup_where)
+        if int(arcpy.management.GetCount(addresses).getOutput(0)) > 1:
             validators[VALIDATION_FLAGS.DUPLICATE_ADDRESS] = 1
 
     # check for missing nena identifier
@@ -171,8 +174,8 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
     else:
         # check for duplicate nena identifier
         nena_where = f"{ADDRESS_FIELDS.GUID} = '{nena_id}'"
-        arcpy.management.SelectLayerByAttribute(addLyr, 'NEW_SELECTION', nena_where)
-        if int(arcpy.management.GetCount(addLyr).getOutput(0)) > 1:
+        arcpy.management.SelectLayerByAttribute(addresses, 'NEW_SELECTION', nena_where)
+        if int(arcpy.management.GetCount(addresses).getOutput(0)) > 1:
             validators[VALIDATION_FLAGS.DUPLICATE_NENA_IDENTIFIER] = 1
     
     st_attrs = [
@@ -194,18 +197,18 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
             atts.append(f"{a} = '{v}'")
 
     where_clause = ' AND '.join(atts)
-    print('where clause: ', where_clause)
+    log(f'where clause for address validation chunk: "{where_clause}"')
 
     if not road:
 
         # get roads layer
-        print('got gdb')
-        roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines, 'RoadCenterlines', where_clause)
-        # arcpy.management.SelectLayerByAttribute(roads, 'NEW_SELECTION', where_clause)
-        print('got layer')
+        if not roads:
+            roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines,  'RoadCenterlines', where_clause)
+        else:
+            arcpy.management.SelectLayerByAttribute(roads, 'NEW_SELECTION', where_clause)
 
         count = int(arcpy.management.GetCount(roads).getOutput(0))
-        print(f'count of roads matching search criteria: {count}')
+        # log(f'count of roads matching search criteria: {count}')
         if not count:
             # no matching roads?
             return # for now...
@@ -213,11 +216,20 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
         if count > 1:
             # first select by location
             arcpy.management.SelectLayerByLocation(roads, 'WITHIN_A_DISTANCE', pt.geometry, '600 FEET', 'SUBSET_SELECTION')
-            print('selected by location')
         
         count = int(arcpy.management.GetCount(roads).getOutput(0))
-        print(f'count of roads after location search: {count}')
-        
+        # print(f'count of roads after location search: {count}')
+        if not count:
+            log(f'Address Point with NENA ID "{nena_id}" ({pt.get(addressSchema.oidField)}) found no roads within search radius, trying a larger area')
+            radii = [1000, 1500, 2000]
+            for dist in radii:
+                arcpy.management.SelectLayerByLocation(roads, 'WITHIN_A_DISTANCE', pt.geometry, f'{dist} FEET', 'SUBSET_SELECTION')
+                count = int(arcpy.management.GetCount(roads).getOutput(0))
+                if count:
+                    break
+            warnings.warn('No roads found in vicinity')
+            return
+
         desc = arcpy.Describe(roads)
         fields = [desc.oidFieldName, 'SHAPE@'] + [f.name for f in desc.fields]
         distances = {}
@@ -237,8 +249,6 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
             road = roadSchema.find_feature_from_oid(road)
         if not isinstance(road, Feature):
             raise RuntimeError(f'Invalid Type for Road Centerline input: "{type(road)}"')
-    
-    print(road.get('St_Name'), road.get('MSAGComm_R'))
 
     # get parity and range info
     info = get_range_and_parity(pt.geometry, road)
@@ -268,10 +278,10 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
     for (roadAttr, addAttr, vf) in parity_checks:
         rv = road.get(roadAttr)
         av = pt.get(addAttr)
-        log(f'log address parity check for {addAttr} based on side "{info.side}": {rv} -> {av}')
+        # log(f'address parity check for {addAttr} based on side "{info.side}": {rv} -> {av}')
         if rv != av:
             validators[vf] = 1
-            log(f'\tset validation flag warning: "{vf}" to 1')
+            log(f'\t"{nena_id}" - set validation flag warning: "{vf}" to 1')
 
     # calculate flag count and score
     flagCount = sum(validators.values())
@@ -293,13 +303,16 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None):
     with cursors.InsertCursor(ng911_db.validatedAddresses, base_fields) as irows:
         irows.insertRow([nena_id, pt.get(pt.oidField), pt.geometry])
         log(f'added record to validated addresses: {pt.get(pt.oidField)}')
-    print(validators)
+  
     return validators
 
 @timeit
 def run_address_validation():
     ng911_db = get_ng911_db()
     desc = arcpy.Describe(ng911_db.addressPoints)
+
+    addresses = arcpy.management.MakeFeatureLayer(ng911_db.addressPoints, f'AddressPoints')
+    roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines,  f'RoadCenterlines')
 
     # get all checked nena identifiers
     with arcpy.da.SearchCursor(ng911_db.validatedAddresses, ['NENA_GUID']) as rows:
@@ -345,12 +358,16 @@ def run_address_validation():
             with arcpy.da.SearchCursor(ng911_db.addressPoints, addrFields, where) as rows:
                 checkFeats = [addressSchema.fromRow(addrFields, r) for r in rows if r[nenaIdx] not in checkedIds]
 
-            print('checkFeats count: ', len(checkFeats))
-            if checkFeats:
-                # processes
-                chunks = iter_chunks(checkFeats, processes)
-                for chunk in chunks:
-                    groups = ThreadPool(processes=processes).map(validate_address, chunk)
+            for ft in checkFeats:
+                try:
+                    validate_address(ft, addresses=addresses, roads=roads)
+                except Exception as e:
+                    log('validate_address failed: ', e)
+            # if checkFeats:
+            #     # processes
+            #     chunks = iter_chunks(checkFeats, processes)
+            #     for chunk in chunks:
+            #         groups = ThreadPool(processes=processes).map(address_validator, chunk)
             
             stOid += chunkSize
 
