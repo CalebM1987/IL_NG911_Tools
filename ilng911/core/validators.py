@@ -287,7 +287,7 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None, addresses=None
     flagCount = sum(validators.values())
     flagCheckCount = len(VALIDATION_FLAGS.__props__)
     validators['FLAG_COUNT'] = flagCount
-    validators['VALIDATION_SCORE'] = (flagCount / flagCheckCount) * 100
+    validators['VALIDATION_SCORE'] = (flagCount / flagCheckCount) * 100 if flagCount else 100
 
     # update validation tables
     base_fields = ['NENA_GUID', 'POINT_OID', 'SHAPE@']
