@@ -60,13 +60,13 @@
                 },
                 {
                     "name": "LeftZipCode",
-                    "expression": "PostCode_L",
+                    "expression": "{PostCode_L}",
                     "type": "TEXT",
                     "length": 10
                 },
                 {
                     "name": "RightZipCode",
-                    "expression": "PostCode_R",
+                    "expression": "{PostCode_R}",
                     "type": "TEXT",
                     "length": 10
                 }
@@ -88,9 +88,27 @@
                 },
                 {
                     "name": "Building",
-                    "expression": "{Add_Number}",
+                    "expression": "{Building}",
                     "type": "TEXT",
                     "length": 10
+                },
+                {
+                    "name": "Apartment",
+                    "expression": "{Unit}",
+                    "type": "TEXT",
+                    "length": 10
+                },
+                {
+                    "name": "ZipCode",
+                    "expression": "{Post_Code}",
+                    "type": "TEXT",
+                    "length": 10
+                },
+                {
+                    "name": "State",
+                    "expression": "{State}",
+                    "type": "TEXT",
+                    "length": 3
                 }
             ]
         }
