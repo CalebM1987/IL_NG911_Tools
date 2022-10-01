@@ -2,7 +2,7 @@ import os
 import arcpy
 from ..support.munch import munchify, Munch
 # from ..schemas import load_schema, DataType
-from ..utils import lazyprop, PropIterator, Singleton
+from ..utils import lazyprop, PropIterator, Singleton, date_to_mil
 from ..utils.cursors import InsertCursor, UpdateCursor
 from ..logging import log
 from ..config import load_config
@@ -362,6 +362,24 @@ class NG911Data(metaclass=Singleton):
                     return full_path
 
         return None
+
+
+    def get_table_view(self, name: str=NG911SchemaTables.NG911_TABLES, where: str=None, view_name: str=None):
+        """creates a table view
+
+        Args:
+            name (str, optional): _description_. Defaults to NG911SchemaTables.NG911_TABLES.
+            where (str, optional): _description_. Defaults to None.
+            view_name (str, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
+        tab = self.get_table(name)
+        if not view_name:
+            view_name = f'{name}_{date_to_mil()}'
+
+        return arcpy.management.MakeTableView(tab, view_name, where)
 
     # def load_911_schema(self, name: str) -> Munch:
     #     return load_schema(name)      

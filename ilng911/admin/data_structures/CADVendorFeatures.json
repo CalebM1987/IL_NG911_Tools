@@ -8,33 +8,59 @@
       },
       {
         "name": "TableName",
-        "alias": "Table Name",
+        "alias": "CAD Table Name",
         "type": "esriFieldTypeString",
         "length": 64
+      },
+      {
+        "name": "FeatureType",
+        "alias": "911 Feature Type",
+        "type": "esriFieldTypeString",
+        "length": 30,
+        "domain": {
+          "type": "codedValue",
+          "name": "NG911_FeatureTypes",
+          "codedValues": [
+            {
+              "name": "ADDRESS_POINTS",
+              "code": "ADDRESS_POINTS"
+            },
+            {
+              "name": "ESB",
+              "code": "ESB"
+            },
+            {
+              "name": "ESB_ESM",
+              "code": "ESB_ESM"
+            },
+            {
+              "name": "ESB_FIRE",
+              "code": "ESB_FIRE"
+            },
+            {
+              "name": "ESB_LAW",
+              "code": "ESB_LAW"
+            },
+            {
+              "name": "PROVISIONING_BOUNDARY",
+              "code": "PROVISIONING_BOUNDARY"
+            },
+            {
+              "name": "PSAP",
+              "code": "PSAP"
+            },
+            {
+              "name": "ROAD_CENTERLINE",
+              "code": "ROAD_CENTERLINE"
+            }
+          ]
+        }
       },
       {
         "name": "CADVendor",
         "alias": "CAD Vendor",
         "type": "esriFieldTypeString",
-        "length": 100,
-        "domain": {
-          "type": "codedValue",
-          "name": "CADVendors",
-          "codedValues": [
-            {
-              "name": "TRITECH",
-              "code": "TRITECH"
-            },
-            {
-              "name": "TYLER",
-              "code": "TYLER"
-            },
-            {
-              "name": "WTH",
-              "code": "WTH"
-            }
-          ]
-        }
+        "length": 100
       }
     ],
     "features": []

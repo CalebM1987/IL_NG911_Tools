@@ -1,10 +1,13 @@
 import enum
+from operator import ge
 import os
 import re
 import arcpy
 import glob
 import datetime
 from typing import List
+
+from attr import field
 from ..env import NG_911_DIR, get_ng911_db
 from ..logging import log
 from ..utils.cursors import find_ws, UpdateCursor, InsertCursor
@@ -295,3 +298,39 @@ def register_nena_identifiers():
                         else:
                             rows.deleteRow()
                             log(f'removed NENA IDs row at index: {i}')
+
+
+def add_cad_vendor_fields(cad_path: str, table: str, vendor: str, cad_fields: List[List[str]]):
+    ng911_db = get_ng911_db()
+
+    vendorFeats = ng911_db.schemaTables.CAD_VENDOR_FEATURES
+    vendorFields = ng911_db.schemaTables.CAD_VENDOR_FIELDS
+
+    where = f"CADFeatureTable = '{cad_path}'"
+    tab = ng911_db.get_table_view(vendorFeats, where)
+    table_name = os.path.basename(cad_path)
+
+    if not int(arcpy.management.GetCount(tab).getOutput(0)):
+        # add record
+        with InsertCursor(vendorFeats, ['CADFeatureTable', 'TableName', 'FeatureType', 'CADVendor']) as irows:
+            irows.insertRow([cad_path, table_name, table, vendor])
+            log(f'registered new CAD Feature "{table_name}"-> {table}')
+
+    # populate fields
+    field_expressions = {f[0]: f[1] for f in cad_fields}
+
+    # first check for updates
+    where = f"TableName = '{table_name}'"
+    with UpdateCursor(vendorFields, ['FieldName', 'Expression', 'TableName'], where) as rows:
+        for r in rows:
+            if r[0] in field_expressions:
+                r[1] = field_expressions[r[0]]
+                del field_expressions[r[0]]
+                rows.updateRow(r)
+                log(f'updated Custom CAD Field for "{table_name}": {fld} -> {exp}')
+
+    # now insert new fields
+    with InsertCursor(vendorFields, ['FieldName', 'Expression', 'TableName']) as irows:
+        for fld, exp in sorted(field_expressions.items()):
+            irows.insertRow([fld, exp, table_name])
+            log(f'inserted new Custom CAD Field for "{table_name}": {fld} -> {exp}')

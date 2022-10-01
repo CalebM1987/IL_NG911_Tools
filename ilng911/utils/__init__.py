@@ -77,7 +77,8 @@ def date_to_mil(date=None):
     Returns:
         Time in milliseconds.
     """
-
+    if not date:
+        date = datetime.datetime.utcnow()
     if isinstance(date, datetime.datetime):
         epoch = datetime.datetime.utcfromtimestamp(0)
         return int((date - epoch).total_seconds() * 1000.0)
