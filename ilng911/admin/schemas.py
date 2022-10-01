@@ -334,3 +334,9 @@ def add_cad_vendor_fields(cad_path: str, table: str, vendor: str, cad_fields: Li
         for fld, exp in sorted(field_expressions.items()):
             irows.insertRow([fld, exp, table_name])
             log(f'inserted new Custom CAD Field for "{table_name}": {fld} -> {exp}')
+
+
+def add_preconfigured_cad_vendor_fields(cad_path, vendor='TRITECH'):
+    allowed_vendors = ['TRITECH', 'TYLER', 'WTH']
+    if vendor.upper() not in allowed_vendors:
+        raise RuntimeError(f'Invalid Vendor Name Supplied: "{vendor}"')
