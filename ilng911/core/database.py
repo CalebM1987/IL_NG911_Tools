@@ -375,9 +375,13 @@ class NG911Data(metaclass=Singleton):
         Returns:
             _type_: _description_
         """
-        tab = self.get_table(name)
+        if not os.path.sep in name:
+            tab = self.get_table(name)
+        else:
+            tab = name
+        print('tab is::::', tab)
         if not view_name:
-            view_name = f'{name}_{date_to_mil()}'
+            view_name = f'{os.path.basename(name)}_{date_to_mil()}'
 
         return arcpy.management.MakeTableView(tab, view_name, where)
 

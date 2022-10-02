@@ -8,6 +8,8 @@ import datetime
 from typing import List
 
 from attr import field
+
+from ilng911.vendors import load_vendor_config
 from ..env import NG_911_DIR, get_ng911_db
 from ..logging import log
 from ..utils.cursors import find_ws, UpdateCursor, InsertCursor
@@ -301,10 +303,18 @@ def register_nena_identifiers():
 
 
 def add_cad_vendor_fields(cad_path: str, table: str, vendor: str, cad_fields: List[List[str]]):
+    """adds CAD Vendor fields
+
+    Args:
+        cad_path (str): path to CAD Vendor table
+        table (str): the 911 Feature Type
+        vendor (str): the Vendor Name
+        cad_fields (List[List[str]]): the CAD Fields and their mapped field expression [['CadFieldName', '{Expression}'] ]
+    """
     ng911_db = get_ng911_db()
 
-    vendorFeats = ng911_db.schemaTables.CAD_VENDOR_FEATURES
-    vendorFields = ng911_db.schemaTables.CAD_VENDOR_FIELDS
+    vendorFeats = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FEATURES)
+    vendorFields = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FIELDS)
 
     where = f"CADFeatureTable = '{cad_path}'"
     tab = ng911_db.get_table_view(vendorFeats, where)
@@ -327,7 +337,7 @@ def add_cad_vendor_fields(cad_path: str, table: str, vendor: str, cad_fields: Li
                 r[1] = field_expressions[r[0]]
                 del field_expressions[r[0]]
                 rows.updateRow(r)
-                log(f'updated Custom CAD Field for "{table_name}": {fld} -> {exp}')
+                log(f'updated Custom CAD Field for "{table_name}": {r[0]} -> {r[1]}')
 
     # now insert new fields
     with InsertCursor(vendorFields, ['FieldName', 'Expression', 'TableName']) as irows:
@@ -336,7 +346,17 @@ def add_cad_vendor_fields(cad_path: str, table: str, vendor: str, cad_fields: Li
             log(f'inserted new Custom CAD Field for "{table_name}": {fld} -> {exp}')
 
 
-def add_preconfigured_cad_vendor_fields(cad_path, vendor='TRITECH'):
+def add_preconfigured_cad_vendor_fields(cad_path, featureType= 'ADDRESS_POINTS', vendor='TRITECH'):
+    print('cad vendor path: ', cad_path)
     allowed_vendors = ['TRITECH', 'TYLER', 'WTH']
     if vendor.upper() not in allowed_vendors:
         raise RuntimeError(f'Invalid Vendor Name Supplied: "{vendor}"')
+
+    config = load_vendor_config(vendor)
+
+    try:
+        schema = [s for s in config.schemas if s.get('featureType').upper() == featureType][0]
+        cad_fields = [[f.name, f.expression] for f in schema.fieldMap]
+        add_cad_vendor_fields(cad_path, schema.featureType, vendor, cad_fields)
+    except IndexError:
+        raise RuntimeError(f'Invalid Feature Type provided: "{featureType}"')

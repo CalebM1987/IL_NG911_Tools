@@ -7,6 +7,7 @@ from ..utils import lazyprop
 from ..utils.json_helpers import load_json
 from ..support.munch import Munch, munchify
 from .enums import FieldCategory
+from ..core.fields import TYPE_MAPPING
 from ..core.common import Feature, FeatureBase, LOCATION_FIELDS, is_shape_field
 from ..env import get_ng911_db, DEBUG_WS
 from typing import List, Dict
@@ -102,6 +103,46 @@ class DataSchema(FeatureBase):
         return arcpy.ListFields(self.table)
 
     @lazyprop
+    def fieldTypings(self):
+        return munchify({
+            f.name: TYPE_MAPPING.get(f.type, str)
+        } for f in self.fields)
+
+    @lazyprop
+    def vendorFields(self):
+        where = f"FeatureType = '{self.name}'"
+        print('vendor fields where: ', where)
+        table = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FEATURES)
+
+        feats = {}
+        with arcpy.da.SearchCursor(table, ['TableName', 'CADFeatureTable', 'FeatureType'], where) as rows:
+            feats = {r[0]: {'path': r[1], 'fields': []} for r in rows}
+
+        typing_dict = {}
+        for tab, info in feats.items():
+            path = info.get('path')
+            if path:
+                fd = {}
+                for fld in arcpy.ListFields(path):
+                    fd[fld.name] = TYPE_MAPPING.get(fld.type)
+                typing_dict[tab] = fd
+
+        print('typing dict: ', typing_dict)
+        if feats:
+            fields_where = ' OR '.join([f"TableName = '{k}'" for k in feats.keys()])
+            print('fields where: ', fields_where)
+            fields_tab = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FIELDS)
+            with arcpy.da.SearchCursor(fields_tab, ['FieldName', 'Expression', 'TableName'], fields_where) as rows:
+                for r in rows:
+                    if r[2] in feats:
+                        feats[r[2]]['fields'].append({ 
+                            'name': r[0], 
+                            'expression': r[1], 
+                            'type': typing_dict.get(r[2], {}).get(r[0]) 
+                        })
+        return munchify(feats)
+
+    @lazyprop
     def customFields(self):
         table = ng911_db.get_table(ng911_db.schemaTables.CUSTOM_FIELDS)
         log(f'table for custom fields is: {table}')
@@ -109,6 +150,9 @@ class DataSchema(FeatureBase):
         # fieldNames = [f.name for f in arcpy.ListFields(table)]
         # print(fieldNames)
         fields = ['FieldName', 'TargetTable',  'Expression']
+        flookup, ftypings = {}, {}
+        for f in self.fields:
+            flookup
         flookup = { f.name: f for f in self.fields }
         custFields = []
 
@@ -117,6 +161,7 @@ class DataSchema(FeatureBase):
                 if r[0] in self.fieldNames:
                     fld = flookup[r[0]]
                     fld.expression = r[2]
+
                     custFields.append(fld)
         return custFields
 
@@ -158,8 +203,23 @@ class DataSchema(FeatureBase):
 
     def calculate_custom_fields(self, ft: Feature):
         for field in self.customFields:
-            expr = ft.calculate_custom_field(field.name, field.expression)
-            log(f'calculatd {field}: {expr}')
+            expr = ft.calculate_custom_field(field.name, field.expression, self.fieldTypings(field))
+            log(f'calculated {field}: {expr}')
+
+    def calculate_vendor_fields(self, ft: Feature):
+        for tab, vendorInfo in self.vendorFields.items():
+            log(f'calculating CAD Vendor fields for table: "{tab}"')
+            fields = [v.name for v in vendorInfo.fields]
+
+            # get type lookup
+            vl = {v.name: v for v in vendorInfo.fields}
+           
+            if fields:
+                with cursors.InsertCursor(vendorInfo.path, fields) as irows:
+                    try:
+                        irows.insertRow([ft.create_from_expression(vl.get(f).expression, vl.get(f).get('type')) for f in fields])
+                    except Exception as e:
+                        log(f'failed to insert CAD Vendor Record', e, level='warn')
 
     def get_layer(self) -> arcpy._mp.Layer:
         """will fetch an arcpy._mp.Layer for the parent feature class

@@ -1,4 +1,17 @@
+from sqlalchemy import SmallInteger
 from ..support.munch import munchify
+# from decimal import Decimal
+import datetime
+
+TYPE_MAPPING = munchify(dict(
+    String=str,
+    Single=float,
+    Double=float,
+    SmallInteger=int,
+    Integer=int,
+    Date=datetime.datetime,
+    OID=int
+))
 
 class STREET_BASE:
     PRE_MOD='St_PreMod' 

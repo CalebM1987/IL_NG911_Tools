@@ -144,7 +144,7 @@
           },
           {
             "name": "PreDirectional",
-            "expression": "{St_PreDir}",
+            "expression": "{PreDirectionAbbr}",
             "type": "TEXT",
             "length": 2
           },
@@ -168,7 +168,7 @@
           },
           {
             "name": "PostDirectional",
-            "expression": "{St_PosDir}",
+            "expression": "{PostDirectionAbbr}",
             "type": "TEXT",
             "length": 2
           },
@@ -220,7 +220,7 @@
           },
           {
             "name": "PreDirectional",
-            "expression": "{St_PreDir}",
+            "expression": "{PreDirectionAbbr}",
             "type": "TEXT",
             "length": 2
           },
@@ -244,7 +244,7 @@
           },
           {
             "name": "PostDirectional",
-            "expression": "{St_PosDir}",
+            "expression": "{PostDirectionAbbr}",
             "type": "TEXT",
             "length": 2
           },

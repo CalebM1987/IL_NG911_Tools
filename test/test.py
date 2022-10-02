@@ -6,10 +6,11 @@ import json
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from ilng911.core.address import create_address_point, get_range_and_parity, find_closest_centerlines
 from ilng911.schemas import DataSchema, DataType
-from ilng911.admin.schemas import features_from_json, create_ng911_admin_gdb
+from ilng911.admin.schemas import add_preconfigured_cad_vendor_fields, features_from_json, create_ng911_admin_gdb, add_preconfigured_cad_vendor_fields
 from ilng911.env import NG_911_DIR, get_ng911_db
 from ilng911.logging import log_context, log
 from ilng911.core.validators import validate_address, run_address_validation
+from ilng911.vendors import load_vendor_config
 
 if __name__ == '__main__':
     schemas_dir = os.path.join(NG_911_DIR, 'admin', 'data_structures')
@@ -85,17 +86,40 @@ if __name__ == '__main__':
         }
 
         # ft, schema = create_address_point(pg, **kwargs)
-        # schema = DataSchema(DataType.ADDRESS_POINTS)
+        schema = DataSchema(DataType.ADDRESS_POINTS)
         # ft = schema.create_feature(pg, **kwargs)
         # schema.calculate_custom_fields(ft)
         # ft.calculate_custom_field('DemoField', testStr)
         # print('demo field: ', ft.get('DemoField'))
         # ft.prettyPrint()
 
-        # ft = schema.find_feature_from_oid(3029)
+        ft = schema.find_feature_from_oid(3029)
+       
+        schema.calculate_vendor_fields(ft)
         # validate_address(ft)
 
-        run_address_validation()
+        # run_address_validation()
+
+        # tritech = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\Tritech_Test.gdb'
+        # tyler = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\Tyler_Test.gdb'
+
+        # # create testing vendor features
+        # for vendor_gdb in [tritech, tyler]:
+        #     vendor = os.path.basename(vendor_gdb).split('_')[0]
+        #     print('vendor: ', vendor)
+        #     config = load_vendor_config(vendor)
+
+        #     # add fields
+        #     for schema in config.schemas:
+        #         print('checking schema type: ', schema.featureType)
+        #         cad_path = os.path.join(vendor_gdb, f'{vendor}_{schema.featureType.title()}')
+        #         if not arcpy.Exists(cad_path):
+        #             arcpy.CreateTable_management(*os.path.split(cad_path))
+        #             for fmap in schema.fieldMap:
+        #                 arcpy.AddField_management(cad_path, fmap.name, fmap.type, field_length=fmap.get('length'))
+
+        #         # add pre-configured CAD Vendor Fields
+        #         add_preconfigured_cad_vendor_fields(cad_path, schema.featureType,  vendor)
 
         # roads = find_closest_centerlines(pg)
         # print(json.dumps(roads, indent=2))

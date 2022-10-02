@@ -1,3 +1,4 @@
+from ast import expr_context
 import re
 import arcpy
 import json
@@ -126,7 +127,7 @@ class Feature(FeatureBase):
             )
         )
 
-    def create_from_expression(self, expression: str='') -> str:
+    def create_from_expression(self, expression: str='', cast=None) -> str:
         """creates a string from a given expression
 
         Args:
@@ -142,12 +143,20 @@ class Feature(FeatureBase):
             if raw in self.fieldNames:
                 val = re.sub(token, str(self.get(raw) or ''), val, flags=re.I)
             elif raw == CUSTOM_TOKENS.PreDirectionAbbr:
-                 val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.PRE_DIRECTION) or ''), val, flags=re.I)
+                if self.get(FIELDS.STREET.PRE_DIRECTION):
+                    val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.PRE_DIRECTION) or ''), val, flags=re.I)
+                else:
+                    val = val.replace(token, '')
             elif raw == CUSTOM_TOKENS.PostDirectionAbbr:
-                val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.POST_DIRECTION) or ''), val, flags=re.I)
-        return ' '.join(val.split()) or None
+                if self.get(FIELDS.STREET.POST_DIRECTION):
+                    val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.POST_DIRECTION) or ''), val, flags=re.I)
+                else:
+                    val = val.replace(token, '')
+                    
+        val = ' '.join(val.split()) or None
+        return cast(val) if (cast and val) else val
 
-    def calculate_custom_field(self, field: str, expression: str) -> str:
+    def calculate_custom_field(self, field: str, expression: str, cast=None) -> str:
         """calculates a custom field from a given expression
 
         Args:
@@ -158,9 +167,9 @@ class Feature(FeatureBase):
             str: the result of the calculated expression
         """
         log(f'calculate custom expression is: "{expression}"')
-        expr = self.create_from_expression(expression)
-        self.attributes[field] = expr
-        return expr
+        val = self.create_from_expression(expression, cast)
+        self.attributes[field] = val
+        return val
 
     def prettyPrint(self):
         """ pretty prints the json feature"""
