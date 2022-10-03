@@ -123,33 +123,33 @@ class CreateNG911SchemaTables(object):
             name='required_features',
             displayName='Required Features',
             datatype='GPValueTable',
-            category='Required Features',
+            # category='Required Features',
             parameterType='Required'
         )
         
-        custom_fields = arcpy.Parameter(
-            name='custom_fields',
-            displayName='Custom Fields',
-            datatype='GPValueTable',
-            category='Required Features',
-            parameterType='Optional'
-        )
+        # custom_fields = arcpy.Parameter(
+        #     name='custom_fields',
+        #     displayName='Custom Fields',
+        #     datatype='GPValueTable',
+        #     category='Required Features',
+        #     parameterType='Optional'
+        # )
         
-        cad_vendor_features = arcpy.Parameter(
-            name='cad_feature_vendors',
-            displayName='CAD Vendor Features',
-            datatype='GPValueTable',
-            category='CAD Features',
-            parameterType='Optional'
-        )
+        # cad_vendor_features = arcpy.Parameter(
+        #     name='cad_feature_vendors',
+        #     displayName='CAD Vendor Features',
+        #     datatype='GPValueTable',
+        #     category='CAD Features',
+        #     parameterType='Optional'
+        # )
 
-        cad_vendor_fields = arcpy.Parameter(
-            name='cad_vendor_fields',
-            displayName='CAD Vendor Fields',
-            datatype='GPValueTable',
-            category='CAD Features',
-            parameterType='Optional'
-        )
+        # cad_vendor_fields = arcpy.Parameter(
+        #     name='cad_vendor_fields',
+        #     displayName='CAD Vendor Fields',
+        #     datatype='GPValueTable',
+        #     category='CAD Features',
+        #     parameterType='Optional'
+        # )
 
         # required fields vt
         required_features.columns = [['GPString', '911 Feature Type'], ['GPFeatureLayer', '911 Layer'], ['GPString', 'NENA Prefix']]
@@ -162,29 +162,29 @@ class CreateNG911SchemaTables(object):
                 with arcpy.da.SearchCursor(table, ['FeatureType', 'Path', 'NENA_Prefix']) as rows:
                     required_features.values = [list(r) for r in rows]
 
-        # set dropdowns for feature type
-        featureTypes = list(iter(DATA_TYPES))
-        required_features.filters[0].type = 'ValueList'
-        required_features.filters[0].list = featureTypes
+        # # set dropdowns for feature type
+        # featureTypes = list(iter(DATA_TYPES))
+        # required_features.filters[0].type = 'ValueList'
+        # required_features.filters[0].list = featureTypes
         
-        # custom fields
-        custom_fields.columns = [['GPString', '911 Feature Type'], ['GPString', 'Field'], ['GPString', 'Expression']]
-        custom_fields.filters[0].type = 'ValueList'
-        custom_fields.filters[0].list = featureTypes
+        # # custom fields
+        # custom_fields.columns = [['GPString', '911 Feature Type'], ['GPString', 'Field'], ['GPString', 'Expression']]
+        # custom_fields.filters[0].type = 'ValueList'
+        # custom_fields.filters[0].list = featureTypes
 
-        # create dropdowns from address + centerline fields
-        if ng911_db.addressPoints and arcpy.Exists(ng911_db.addressPoints):
-            flds = [f.name for f in arcpy.ListFields(ng911_db.addressPoints) if f.type == 'String']
-            custom_fields.filters[1].type = 'ValueList'
-            custom_fields.filters[1].list = flds
+        # # create dropdowns from address + centerline fields
+        # if ng911_db.addressPoints and arcpy.Exists(ng911_db.addressPoints):
+        #     flds = [f.name for f in arcpy.ListFields(ng911_db.addressPoints) if f.type == 'String']
+        #     custom_fields.filters[1].type = 'ValueList'
+        #     custom_fields.filters[1].list = flds
 
-        # cad vendor features
-        cad_vendor_features.columns = [['GPString', 'CAD Vendor'], ['GPFeatureLayer', 'CAD Table']]    
+        # # cad vendor features
+        # cad_vendor_features.columns = [['GPString', 'CAD Vendor'], ['GPFeatureLayer', 'CAD Table']]    
 
-        # cad vendor fields
-        cad_vendor_fields.columns = [['GPString', 'CAD Table'], ['GPString', 'Field'], ['GPString', 'Expression']]
+        # # cad vendor fields
+        # cad_vendor_fields.columns = [['GPString', 'CAD Table'], ['GPString', 'Field'], ['GPString', 'Expression']]
 
-        return [ required_features, custom_fields, cad_vendor_features, cad_vendor_fields ]
+        return [ required_features] #, custom_fields, cad_vendor_features, cad_vendor_fields ]
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""

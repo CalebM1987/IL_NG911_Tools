@@ -290,8 +290,8 @@ class CreateAddressPoint(object):
 class RunAddressValidation(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "Tool"
-        self.description = ""
+        self.label = "Run Address Validation"
+        self.description = "Will run Address Validation Checks and flag any address with issues"
         self.canRunInBackground = False
         self.category = 'Validation'
 

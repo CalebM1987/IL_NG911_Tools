@@ -12,21 +12,13 @@
                     "name": "featureType",
                     "displayName": "911 Feature Type",
                     "datatype": "GPString",
-                    "filters": [
-                        { 
-                            "list": ["ADDRESS_POINTS", "ROAD_CENTERLINE" ]
-                        }
-                    ]
+                    "filterList": ["ADDRESS_POINTS", "ROAD_CENTERLINE" ]
                 },
                 {
                     "name": "vendor",
                     "displayName": "CAD Vendor",
                     "datatype": "GPString",
-                    "filters": [
-                        { 
-                            "list": [ "TRITECH", "TYLER", "WTH" ]
-                        }
-                    ]
+                    "filterList": [ "TRITECH", "TYLER", "WTH" ]
                 }
             ]
         },
@@ -42,21 +34,22 @@
                     "name": "featureType",
                     "displayName": "911 Feature Type",
                     "datatype": "GPString",
-                    "filters": [
-                        { 
-                            "list": ["ADDRESS_POINTS", "ROAD_CENTERLINE" ]
-                        }
+                    "filterList": [
+                        "ADDRESS_POINTS", 
+                        "ROAD_CENTERLINE",
+                        "PSAP",
+                        "ESB",
+                        "ESB_EMS",
+                        "ESB_FIRE",
+                        "ESB_LAW",
+                        "PROVISIONING_BOUNDARY"
                     ]
                 },
                 {
                     "name": "vendor",
                     "displayName": "CAD Vendor",
                     "datatype": "GPString",
-                    "filters": [
-                        { 
-                            "list": [ "TRITECH", "TYLER", "WTH" ]
-                        }
-                    ]
+                    "filterList": [ "TRITECH", "TYLER", "WTH" ]
                 },
                 {
                     "name": "cad_fields",

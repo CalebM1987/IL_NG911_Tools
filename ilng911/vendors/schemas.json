@@ -269,5 +269,16 @@
         ]
       }
     ]
+  },
+  {
+    "vendor": "WTH",
+    "schemas": [
+      {
+        "featureType": "ROAD_CENTERLINE",
+        "fieldMap": [
+          
+        ]
+      }
+    ]
   }
 ]
