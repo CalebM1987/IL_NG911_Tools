@@ -1,6 +1,6 @@
 {
   "name": "il_ng911_tools",
-  "version": "1.0.0",
+  "version": "1.1.0-alpha.0",
   "description": "repo for IL NextGen 911 tools",
   "main": "index.js",
   "scripts": {
