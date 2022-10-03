@@ -203,6 +203,7 @@ def create_address_point(pg: arcpy.PointGeometry, centerlineOID: int, **kwargs):
     ft = schema.create_feature(pg, **kwargs)
     merge_street_segment_attributes(ft, centerlineOID)
     schema.calculate_custom_fields(ft)
+    schema.calculate_vendor_fields(ft)
     schema.commit_features()
     return ft, schema
 

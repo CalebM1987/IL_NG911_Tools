@@ -154,11 +154,11 @@ class CreateAddressPoint(object):
         try:
             with arcpy.da.SearchCursor("RoadCenterline", ['OID@']) as rows:
                 roadOID = [r[0] for r in rows][0]
-                debug_window(f'oid is? {roadOID}')
+                # debug_window(f'oid is? {roadOID}')
                 log(f'fetched road oid from selection: {roadOID}')
         except IndexError:
             roadOID = 208
-            debug_window(f'using hard coded oid: {roadOID}')
+            # debug_window(f'using hard coded oid: {roadOID}')
             log('could not fetch road oid, defaulting to 208')
         centerlineOID.value = roadOID
         
