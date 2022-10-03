@@ -7,10 +7,10 @@ import arcpy
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from ilng911.config import load_config
 from ilng911.env import NG_911_DIR, get_ng911_db
-from ilng911.admin.schemas import create_ng911_admin_gdb, register_spatial_join_fields
+from ilng911.admin.schemas import create_ng911_admin_gdb, register_spatial_join_fields, add_cad_vendor_fields, add_preconfigured_cad_vendor_fields
 from ilng911.core.fields import FIELDS
 from ilng911.utils.json_helpers import load_json
-from ilng911.utils.helpers import parameter_from_json, parse_value_table
+from ilng911.utils.helpers import parameter_from_json, params_to_kwargs, parse_value_table, find_nena_guid_field
 from ilng911.logging import log, log_context
 from ilng911.utils.cursors import UpdateCursor, InsertCursor
 from ilng911.schemas import DATA_TYPES, DATA_TYPES_LOOKUP, DEFAULT_NENA_PREFIXES
@@ -32,6 +32,8 @@ class Toolbox(object):
             CreateNG911SchemaTables,
             AddOverlayAttributes,
             AddCustomFields,
+            AddCADVendorFields,
+            AddPreConfiguredCADVendorFields
         ]
 
 class CreateNG911SchemaGeoDatabase(object):
@@ -111,7 +113,7 @@ class CreateNG911SchemaGeoDatabase(object):
 
 class CreateNG911SchemaTables(object):
     def __init__(self):
-        self.label = "2. Create NG911 Schema Tables"
+        self.label = "2. Create NG911 Schema Tables (Optional)"
         self.description = "creates the NG911 Schema Tables database"
         self.canRunInBackground = False
         self.category = 'Setup'
@@ -216,12 +218,13 @@ class CreateNG911SchemaTables(object):
 
                 # add missing features
                 if toAdd:
-                    with arcpy.da.InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix']) as rows:
+                    with arcpy.da.InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix', 'GUID_Field']) as rows:
                         for target, row in toAdd.items():
                             log(f'checking for required type: "{target}": {row[1:]}')
                             full_path = row[1]
                             basename = os.path.basename(full_path)
-                            rows.insertRow((basename, full_path, target, row[2] or DEFAULT_NENA_PREFIXES.get(target)))
+                            guid_field = find_nena_guid_field(full_path)
+                            rows.insertRow((basename, full_path, target, row[2] or DEFAULT_NENA_PREFIXES.get(target), guid_field))
                             log(f'Found Schema for "{target}" -> "{basename}"')
 
             # add custom fields
@@ -335,7 +338,82 @@ class AddCustomFields(object):
                         irows.insertRow([tableType, field, exp])
                         log(f'added new expression for field "{field}": "{exp}"')
 
-            
+class AddPreConfiguredCADVendorFields(object):
+    def __init__(self):
+        self.label = "Add Pre-Configured CAD Vendors"
+        self.description = "add pre-configured CAD Vendors"
+        self.canRunInBackground = False
+        self.category = 'CAD Vendors'
+    
+    def getParameterInfo(self):
+        
+        try:
+            log('Attempting to get parameters from json')
+            tool = [t for t in helpers_json.tools if t.name == self.__class__.__name__][0]
+            return [parameter_from_json(p) for p in tool.params]
+        except IndexError:
+            return []
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        with log_context(self.__class__.__name__ + '_') as lc:
+            params = params_to_kwargs(parameters)
+            add_preconfigured_cad_vendor_fields(**params)
+
+class AddCADVendorFields(object):
+    def __init__(self):
+        self.label = "Add CAD Vendor Fields"
+        self.description = "add CAD Vendor Fields"
+        self.canRunInBackground = False
+        self.category = 'CAD Vendors'
+    
+    def getParameterInfo(self):
+        
+        try:
+            log('Attempting to get parameters from json')
+            tool = [t for t in helpers_json.tools if t.name == self.__class__.__name__][0]
+            return [parameter_from_json(p) for p in tool.params]
+        except IndexError:
+            return []
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        with log_context(self.__class__.__name__ + '_') as lc:
+            cad_path = parameters[0].value
+            featureType = parameters[1].valueAsText
+            vendor = parameters[1].valueAsText
+            vt = parse_value_table(parameters[3].valueAsText)
+            add_cad_vendor_fields(cad_path, featureType, vendor, vt)
 
 if __name__ == '__main__':
     tbx = Toolbox()

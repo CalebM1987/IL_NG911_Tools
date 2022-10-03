@@ -1,6 +1,90 @@
 {
     "tools": [
         {
+            "name": "AddPreConfiguredCADVendorFields",
+            "params": [
+                {
+                    "name": "cad_path",
+                    "displayName": "CAD Table Path",
+                    "datatype": "GPTableView"
+                },
+                {
+                    "name": "featureType",
+                    "displayName": "911 Feature Type",
+                    "datatype": "GPString",
+                    "filters": [
+                        { 
+                            "list": ["ADDRESS_POINTS", "ROAD_CENTERLINE" ]
+                        }
+                    ]
+                },
+                {
+                    "name": "vendor",
+                    "displayName": "CAD Vendor",
+                    "datatype": "GPString",
+                    "filters": [
+                        { 
+                            "list": [ "TRITECH", "TYLER", "WTH" ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "AddCADVendorFields", 
+            "params": [
+                {
+                    "name": "cad_path",
+                    "displayName": "CAD Table Path",
+                    "datatype": "GPTableView"
+                },
+                {
+                    "name": "featureType",
+                    "displayName": "911 Feature Type",
+                    "datatype": "GPString",
+                    "filters": [
+                        { 
+                            "list": ["ADDRESS_POINTS", "ROAD_CENTERLINE" ]
+                        }
+                    ]
+                },
+                {
+                    "name": "vendor",
+                    "displayName": "CAD Vendor",
+                    "datatype": "GPString",
+                    "filters": [
+                        { 
+                            "list": [ "TRITECH", "TYLER", "WTH" ]
+                        }
+                    ]
+                },
+                {
+                    "name": "cad_fields",
+                    "displayName": "CAD Fields",
+                    "datatype": "GPValueTable",
+                    "parameterDependencies": ["cad_path"],
+                    "valueTable": {
+                        "fields": [
+                            {
+                                "name": "Field",
+                                "datatype": "Field"
+                            },
+                            {
+                                "name": "Expression",
+                                "datatype": "GPString"
+                            }
+                        ],
+                        "filters": [
+                            { 
+                                "type": "Field",
+                                "list": ["Text", "Short", "Long" ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "name": "AddOverlayAttributes",
             "params": [
                 {

@@ -14,6 +14,7 @@ from ilng911.schemas import DataType, DataSchema
 from ilng911.support.munch import munchify
 from ilng911.core.address import STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES, create_address_point, get_range_and_parity, find_closest_centerlines
 from ilng911.core.fields import FIELDS
+from ilng911.core.validators import run_address_validation
 from ilng911.utils.json_helpers import load_json
 from ilng911.logging import log, log_context
 thisDir = os.path.abspath(os.path.dirname(__file__))
@@ -32,6 +33,7 @@ class Toolbox(object):
         self.tools = [
             CreateRoadCenterline,
             CreateAddressPoint,
+            RunAddressValidation
             # TestTool
         ]
 
@@ -85,6 +87,7 @@ class CreateRoadCenterline(object):
         self.label = "Create Road Centerline"
         self.description = ""
         self.canRunInBackground = False
+        self.category = 'Create Features'
         self.paramLookup = {}
 
     def getParameterInfo(self):
@@ -118,6 +121,7 @@ class CreateAddressPoint(object):
         self.label = "Create Address Point"
         self.description = ""
         self.canRunInBackground = False
+        self.category = 'Create Features'
 
     def getParameterInfo(self):
         """Define parameter definitions"""
@@ -282,6 +286,45 @@ class CreateAddressPoint(object):
                 log(f'failed to remove temporary draw layer: {e}', 'warn')
                 pass
             return
+
+class RunAddressValidation(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Tool"
+        self.description = ""
+        self.canRunInBackground = False
+        self.category = 'Validation'
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        params = None
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        with log_context(self.__class__.__name__ + '_') as lc:
+            run_address_validation()
+        return
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are outputs are processed and
+        added to the display."""
+        return
 
 if __name__ == '__main__':
     tbx = Toolbox()
