@@ -104,9 +104,7 @@ class DataSchema(FeatureBase):
 
     @lazyprop
     def fieldTypings(self):
-        return munchify({
-            f.name: TYPE_MAPPING.get(f.type, str)
-        } for f in self.fields)
+        return munchify({f.name: TYPE_MAPPING.get(f.type, str) for f in self.fields})
 
     @lazyprop
     def vendorFields(self):
@@ -161,8 +159,8 @@ class DataSchema(FeatureBase):
                 if r[0] in self.fieldNames:
                     fld = flookup[r[0]]
                     fld.expression = r[2]
-
                     custFields.append(fld)
+
         return custFields
 
     @lazyprop
@@ -203,7 +201,7 @@ class DataSchema(FeatureBase):
 
     def calculate_custom_fields(self, ft: Feature):
         for field in self.customFields:
-            expr = ft.calculate_custom_field(field.name, field.expression, self.fieldTypings(field))
+            expr = ft.calculate_custom_field(field.name, field.expression, self.fieldTypings.get(field.name))
             log(f'calculated {field}: {expr}')
 
     def calculate_vendor_fields(self, ft: Feature):
