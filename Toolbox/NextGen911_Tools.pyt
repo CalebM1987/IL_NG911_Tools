@@ -134,6 +134,8 @@ class CreateAddressPoint(object):
         # featureSet.schema.geometryType = 'Point'
 
         fs = arcpy.FeatureSet()
+        # get ng911_db helper
+        ng911_db = get_ng911_db()
         points = ng911_db.get_911_table(ng911_db.types.ADDRESS_POINTS)
         desc = arcpy.Describe(points)
         where = f"{desc.oidFieldName} IS NULL"

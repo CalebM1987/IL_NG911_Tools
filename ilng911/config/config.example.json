@@ -1,0 +1,9 @@
+{
+  "ng911GDBPath": "L:\\Users\\some-user\\Documents\\GIS_Data\\IL_NG911\\IL_NG911_Brown_Master_v3.2.5.gdb",
+  "ng911GDBSchemasPath": "L:\\Users\\some-user\\Documents\\GIS_Data\\IL_NG911\\NG911_Schemas.gdb",
+  "createdBy": "some-user",
+  "created": "2022-10-02T15:08:23.869155",
+  "county": "BROWN",
+  "psap": "BROWN",
+  "agencyId": "@browncoil.org"
+}
