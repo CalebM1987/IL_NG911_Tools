@@ -31,8 +31,6 @@ SKIP_TYPES = ('OID', 'Geometry', 'Blob', 'GUID', 'Raster')
 
 SHAPE_FIELD_REGEX = re.compile('^(shape)[.|_]', re.IGNORECASE)
 
-# get ng911_db helper
-ng911_db = get_ng911_db()
 
 def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[]):
     """creates tool parameters for fields from a given table
@@ -60,6 +58,9 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
         #     parameterType='Required'
         # )
     ]
+    # get ng911_db helper
+    ng911_db = get_ng911_db()
+    
     fields = [f for f in arcpy.ListFields(table) if f.type not in SKIP_TYPES and f.name not in SKIP_NAMES]
     # filters.extend(f.name for f in schema.customFields)
     for field in fields:

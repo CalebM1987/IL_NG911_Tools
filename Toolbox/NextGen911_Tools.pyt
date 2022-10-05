@@ -20,8 +20,6 @@ from ilng911.logging import log, log_context
 thisDir = os.path.abspath(os.path.dirname(__file__))
 helpersDir = os.path.join(thisDir, 'helpers')
 
-ng911_db = get_ng911_db()
-
 class Toolbox(object):
     def __init__(self):
         """Define the toolbox (the name of the toolbox is the name of the

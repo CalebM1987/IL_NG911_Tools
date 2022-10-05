@@ -80,8 +80,7 @@ DATE_FIELDS = [
 ]
 
 
-# get ng911_db helper
-ng911_db = get_ng911_db()
+
 
 def merge_street_segment_attributes(address: Feature, centerline: Union[int, Feature]):
     """merge street segment attributes into address point feature
@@ -144,6 +143,8 @@ def get_zip_code(pt: arcpy.PointGeometry) -> Dict[str, str]:
     Returns:
         str: the intersecting zip code used by the USPS
     """
+    # get ng911_db helper
+    ng911_db = get_ng911_db()
     zipLyr = ng911_db.get_911_layer(DataType.ZIP_CODES)
     arcpy.management.SelectLayerByLocation(zipLyr, 'INTERSECT', pt)
     count = arcpy.management.GetCount(zipLyr).getOutput(0)
@@ -173,6 +174,8 @@ def get_city_limits(pt: arcpy.PointGeometry) -> Dict[str, str]:
     Returns:
         Dict[str, str]: [description]
     """
+    # get ng911_db helper
+    ng911_db = get_ng911_db()
     incLyr = ng911_db.get_911_layer(DataType.INCORPORATED_MUNICIPAL)
     uniLyr = ng911_db.get_911_layer(DataType.UNINCORPORATED_MUNICIPAL)
     attrs = dict(
@@ -219,6 +222,8 @@ def find_closest_centerlines(pg: Union[arcpy.Geometry, Feature]) -> Dict:
     if isinstance(pg, Feature):
         pg = pg.geometry
 
+    # get ng911_db helper
+    ng911_db = get_ng911_db()
     roads_lyr = ng911_db.get_911_layer(DataType.ROAD_CENTERLINE)
     distances = [200, 500, 1000, 3000]
     for dist in distances:
