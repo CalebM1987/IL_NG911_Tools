@@ -421,8 +421,8 @@
             }
         },
         {
-            "name": "PSAP",
-            "alias": "PSAP",
+            "name": "Agency",
+            "alias": "Agency",
             "type": "esriFieldTypeString",
             "length": 100
         },
@@ -450,7 +450,7 @@
             "attributes": {
                 "OBJECTID": 1,
                 "County": null,
-                "PSAP": null,
+                "Agency ": null,
                 "State": "IL",
                 "Country": "US",
                 "AgencyID": null
