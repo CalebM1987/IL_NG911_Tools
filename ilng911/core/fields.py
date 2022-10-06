@@ -1,7 +1,18 @@
-from sqlalchemy import SmallInteger
 from ..support.munch import munchify
 # from decimal import Decimal
 import datetime
+
+INTEGER_FIELDS = [
+    'SmallInteger',
+    'Integer'
+]
+
+FLOAT_FIELDS = [
+    'Single',
+    'Double',
+]
+
+NUMERIC_FIELDS = INTEGER_FIELDS + FLOAT_FIELDS
 
 TYPE_MAPPING = munchify(dict(
     String=str,

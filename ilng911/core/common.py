@@ -1,4 +1,3 @@
-from ast import expr_context
 import re
 import arcpy
 import json
@@ -10,6 +9,7 @@ from ..utils import lazyprop, date_to_mil
 from typing import List
 from .parser import *
 from ..logging import log
+from .fields import NUMERIC_FIELDS, INTEGER_FIELDS, FLOAT_FIELDS
 
 SHAPE_PAT = re.compile('^(shape)[@]?', re.I)
 SHAPE_ATTR_PAT = re.compile('^(shape)[@._](\w+)', re.I)
@@ -40,6 +40,18 @@ class FeatureBase:
         return [f.name for f in self.fields if f.type != 'Geometry']
 
     @lazyprop
+    def numericFields(self) -> List[str]:
+        return [f.name for f in self.fields if f.type in NUMERIC_FIELDS]
+
+    @lazyprop
+    def integerFields(self) -> List[str]:
+        return [f.name for f in self.fields if f.type in INTEGER_FIELDS]
+    
+    @lazyprop
+    def floatFields(self) -> List[str]:
+        return [f.name for f in self.fields if f.type in FLOAT_FIELDS]
+
+    @lazyprop
     def oidField(self):
         return [f.name for f in self.fields if f.type == 'OID'][0]
 
@@ -65,7 +77,7 @@ class NG911Encoder(json.JSONEncoder):
             return o.__class__.__name__ #{}
 
 class Feature(FeatureBase):
-    def __init__(self, fields: List[str], geometry: arcpy.Geometry=None, **kwargs):
+    def __init__(self, fields: List[arcpy.Field], geometry: arcpy.Geometry=None, **kwargs):
         
         self.fields = fields
         self.geometry = geometry
@@ -141,7 +153,9 @@ class Feature(FeatureBase):
         for token in tokens:
             raw = token.strip('{}') 
             if raw in self.fieldNames:
-                val = re.sub(token, str(self.get(raw) or ''), val, flags=re.I)
+                # replace None with 0 if numeric
+                rep = 0 if raw in self.numericFields else ''
+                val = re.sub(token, str(self.get(raw) or rep), val, flags=re.I)
             elif raw == CUSTOM_TOKENS.PreDirectionAbbr:
                 if self.get(FIELDS.STREET.PRE_DIRECTION):
                     val = re.sub(token, STREET_DIRECTIONS_ABBR.get(self.get(FIELDS.STREET.PRE_DIRECTION) or ''), val, flags=re.I)
@@ -154,6 +168,13 @@ class Feature(FeatureBase):
                     val = val.replace(token, '')
                     
         val = ' '.join(val.split()) or None
+
+        # really loose check for 
+        if any(map(lambda o: o in val, '*/+-')):
+            try:
+                return safe_eval(val)
+            except Exception as e:
+                log(f'failed to process expression: "{expression}"')
         return cast(val) if (cast and val) else val
 
     def calculate_custom_field(self, field: str, expression: str, cast=None) -> str:
@@ -167,6 +188,11 @@ class Feature(FeatureBase):
             str: the result of the calculated expression
         """
         log(f'calculate custom expression is: "{expression}"')
+
+        # check for numeric and cast
+        if not cast and field in self.numericFields:
+            cast = float if field in self.floatFields else int
+
         val = self.create_from_expression(expression, cast)
         self.attributes[field] = val
         return val
