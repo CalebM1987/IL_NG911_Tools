@@ -3,7 +3,6 @@
   "ng911GDBSchemasPath": "L:\\Users\\some-user\\Documents\\GIS_Data\\IL_NG911\\NG911_Schemas.gdb",
   "createdBy": "some-user",
   "created": "2022-10-02T15:08:23.869155",
-  "county": "BROWN",
-  "psap": "BROWN",
+  "agencyName": "Brown",
   "agencyId": "@browncoil.org"
 }

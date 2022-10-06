@@ -1,8 +1,8 @@
 {
-  "ng911GDBPath": "L:\\Users\\caleb.mackey\\Documents\\GIS_Data\\IL_NG911\\IL_NG911_Brown_Master_v3.2.5.gdb",
-  "ng911GDBSchemasPath": "L:\\Users\\caleb.mackey\\Documents\\GIS_Data\\IL_NG911\\NG911_Schemas.gdb",
+  "ng911GDBPath": "C:\\Users\\caleb.mackey\\Documents\\Testing\\addressing\\data\\IL_NG911_Brown_Master_v3.2.5.gdb",
+  "ng911GDBSchemasPath": "C:\\Users\\caleb.mackey\\Documents\\Testing\\addressing\\data\\NG911_Schemas.gdb",
   "createdBy": "caleb.mackey",
-  "created": "2022-10-02T15:08:23.869155",
-  "county": "BROWN",
-  "agencyId": "@browncoil.org"
+  "created": "2022-10-06T02:09:21.040927",
+  "agencyName": "Brown",
+  "agencyId": "browncoil.org"
 }

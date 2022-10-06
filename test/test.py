@@ -4,6 +4,7 @@ import arcpy
 import json
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from ilng911.config import load_config
 from ilng911.core.address import create_address_point, get_range_and_parity, find_closest_centerlines
 from ilng911.schemas import DataSchema, DataType
 from ilng911.admin.schemas import add_preconfigured_cad_vendor_fields, features_from_json, create_ng911_admin_gdb, add_preconfigured_cad_vendor_fields
@@ -20,8 +21,19 @@ if __name__ == '__main__':
 
     testStr = 'this is a test with house number {Add_Number}, and street name {St_Name}'
 
+    # use config file to create gdb
+    config = load_config()
+    gdbPath = config.ng911GDBPath
+    schemaPath = os.path.dirname(config.ng911GDBSchemasPath)
+    gdb = os.path.join(schemaPath, 'NG911_Schemas.gdb')
+    print('gdb???', gdb)
+
+    if arcpy.Exists(gdb):
+        arcpy.management.Delete(gdb)
+        print('deleted gdb')
+
     with log_context() as lc:
-        # gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'BROWN')
+        gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'Brown')
         # ng911_db = get_ng911_db()
         # log(f'setup is complete? {ng911_db.setupComplete}')
         # if not ng911_db.setupComplete:
@@ -93,9 +105,9 @@ if __name__ == '__main__':
         # print('demo field: ', ft.get('DemoField'))
         # ft.prettyPrint()
 
-        ft = schema.find_feature_from_oid(3029)
+        # ft = schema.find_feature_from_oid(3029)
        
-        schema.calculate_vendor_fields(ft)
+        # schema.calculate_vendor_fields(ft)
         # validate_address(ft)
 
         # run_address_validation()

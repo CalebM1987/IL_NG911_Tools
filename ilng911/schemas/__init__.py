@@ -196,7 +196,7 @@ class DataSchema(FeatureBase):
             str: the NENA identifier
         """
         new_id = ng911_db.get_next_nena_id(self.name) 
-        return f'{self.agencyPrefix}{new_id}{ng911_db.agencyID}'
+        return f'{self.agencyPrefix}{new_id}@{ng911_db.agencyID}'
         
 
     def calculate_custom_fields(self, ft: Feature):

@@ -12,6 +12,8 @@ def load_json(json_file: str):
     Returns:
         Munch: the munchified dict of JSON data
     """
+    if not json_file.endswith('.json'):
+        json_file += '.json'
     if os.path.exists(json_file):
         with open(json_file, 'r') as f:
             return munchify(json.load(f))

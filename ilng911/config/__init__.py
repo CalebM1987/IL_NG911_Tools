@@ -20,6 +20,8 @@ def load_config(file_name='config.json') -> Munch:
     if not os.path.exists(config_file):
         try:
             config_file = glob.glob(os.path.join(thisDir, '*.json'))[0]
+            if os.path.basename(config_file) == 'config.example.json':
+                return None
         except IndexError:
             return None
 

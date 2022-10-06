@@ -2,6 +2,7 @@ import enum
 from operator import ge
 import os
 import re
+import time
 import arcpy
 import glob
 import datetime
@@ -11,7 +12,7 @@ from attr import field
 
 from ilng911.vendors import load_vendor_config
 from ..env import NG_911_DIR, get_ng911_db
-from ..logging import log
+from ..logging import log, timeit
 from ..utils.cursors import find_ws, UpdateCursor, InsertCursor
 from ..utils.json_helpers import load_json
 from ..utils.helpers import field_types, find_nena_guid_field
@@ -19,7 +20,6 @@ from ..support.munch import munchify
 from ..config import write_config
 from ..core.database import NG911SchemaTables
 from ..schemas import DATA_TYPES, DATA_TYPES_LOOKUP, DEFAULT_NENA_PREFIXES
-from ..core.validators import VALIDATION_FLAGS
 
 def features_from_json(json_file: str, out_path: str):
     """create features from a json file, will also add
@@ -32,12 +32,12 @@ def features_from_json(json_file: str, out_path: str):
     # first check for domains in fields
     fs = load_json(json_file)
     domains = munchify([dict(field=f, **f.domain) for f in fs.fields if f.get('domain')])
-
+    addedDomains = []
     ws, ws_type = find_ws(out_path, return_type=True)
     if domains and ws_type in ('LocalDatabase', 'RemoteDatabase'):
         doms = {d.name: d for d in arcpy.da.ListDomains(ws)}
         for dom in domains:
-            if dom.name not in doms:
+            if dom.name not in doms and dom.name not in addedDomains:
                 # new domain detected, try adding it
                 dom_type = 'CODED' if dom.type == 'codedValue' else 'RANGE'
                 try:
@@ -48,6 +48,7 @@ def features_from_json(json_file: str, out_path: str):
                         field_type=field_types.get(dom.field.type, 'TEXT'), 
                         domain_type=dom_type
                     )
+                    addedDomains.append(dom.name)
 
                     log(f'created domain "{dom.name}" in workspace: "{ws}"')
 
@@ -75,13 +76,14 @@ def features_from_json(json_file: str, out_path: str):
     return out_path
     
 
-def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, config_file='config.json') -> str:
+@timeit
+def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, config_file='config.json') -> str:
     """creates the NG911_SchemaTables.gdb
 
     Args:
         ng911_gdb (str): the ng911 geodatabase path
         schemas_gdb_path (str): the geodatabase folder path
-        county (str): the county for 
+        agency (str): the agency name
         config_file (str, optional): _description_. Defaults to 'config.json'.
 
     Returns:
@@ -103,14 +105,20 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
         if not arcpy.Exists(table):
             features_from_json(fl, table)
 
+    # load agency infos
+    agency_file = os.path.join(NG_911_DIR, 'admin', 'agencyInfos')
+    agencyInfos = load_json(agency_file)
+    agencyInfo = [a for a in agencyInfos if agency == a.AgencyName][0]
+    agencyId = agencyInfo.AgencyID
+
     # write config file
-    agencyId = f'@{county.lower()}coil.org'
+    # agencyId = f'{county.lower()}coil.org'
     conf = {
         'ng911GDBPath': ng911_gdb,
         'ng911GDBSchemasPath': out_gdb,
         'createdBy': os.getenv('username'),
         'created': datetime.datetime.utcnow().isoformat(),
-        'county': county,
+        'agencyName': agency,
         'agencyId': agencyId
     }
 
@@ -175,9 +183,11 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
     # set agency info
     table = os.path.join(out_gdb, NG911SchemaTables.AGENCY_INFO)
 
-    with UpdateCursor(table, ['County', 'AgencyID']) as rows:
+    agencyFields = ['AgencyName', 'AgencyID', 'County', 'County2', 'County3', 'Region']
+    with UpdateCursor(table, agencyFields) as rows:
         for r in rows:
-            rows.updateRow([county, agencyId])
+            if r[1] != agencyInfo.get('AgencyID'):
+                rows.updateRow([agencyInfo.get(f) for f in agencyFields])
 
     log(f'set agency ID: "{agencyId}"')
 
@@ -202,6 +212,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, county: str, c
 
 
     # populate nena ids
+    time.sleep(1)
     register_nena_identifiers()
 
 
@@ -215,6 +226,7 @@ def register_spatial_join_fields(target_table: str, target_field: str, join_tabl
         fields (List[str]): _description_
     """
     ng_911_db = get_ng911_db()
+
     spatialFeatures = ng_911_db.get_table(NG911SchemaTables.SPATIAL_JOIN_FEATURES)
     spatialFields = ng_911_db.get_table(NG911SchemaTables.SPATIAL_JOIN_FIELDS)
     features_name = os.path.basename(spatialFeatures)
@@ -242,6 +254,10 @@ def register_spatial_join_fields(target_table: str, target_field: str, join_tabl
 
 def register_nena_identifiers():
     ng_911_db = get_ng911_db()
+    
+    # make sure this is all set up
+    ng_911_db.setup()
+
     if not ng_911_db.setupComplete:
         raise RuntimeError('Setup has not been completed for NG911 Database!')
     

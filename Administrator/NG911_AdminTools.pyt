@@ -56,9 +56,9 @@ class CreateNG911SchemaGeoDatabase(object):
             datatype='DEWorkspace'
         )
 
-        county = arcpy.Parameter(
-            name="county",
-            displayName="County",
+        agency = arcpy.Parameter(
+            name="agency",
+            displayName="Agency",
             datatype='GPString',
         )
 
@@ -75,10 +75,11 @@ class CreateNG911SchemaGeoDatabase(object):
         schemas_gdb_path.filter.list = ['FileSystem']
 
         # get list of counties
-        agency_file = os.path.join(NG_911_DIR, 'admin', 'data_structures', 'AgencyInfo.json')
-        agencyInfo = load_json(agency_file)
-        county_field = [f for f in agencyInfo.fields if f.name == 'County'][0]
-        county.filter.list = [cv.name for cv in county_field.domain.codedValues]
+        agency_file = os.path.join(NG_911_DIR, 'admin', 'agencyInfos')
+        agencyInfos = load_json(agency_file)
+        agency.filter.list = [r.get('AgencyName') for r in agencyInfos]
+        # agency_field = [f for f in agencyInfo.fields if f.name == 'AgencyName'][0]
+        # agency.filter.list = [cv.name for cv in agency_field.domain.codedValues]
         
         # check for existing config
         config = load_config(config_file.value)
@@ -86,9 +87,9 @@ class CreateNG911SchemaGeoDatabase(object):
             ng911_gdb.value = config.get("ng911GDBPath")
             schemasPathConf = config.get("ng911GDBSchemasPath")
             schemas_gdb_path.value = os.path.dirname(schemasPathConf) if schemasPathConf else None
-            county.value = config.get('county')
+            agency.value = config.get('agencyName')
 
-        return [ ng911_gdb, schemas_gdb_path, county, config_file ]
+        return [ ng911_gdb, schemas_gdb_path, agency, config_file ]
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -108,7 +109,7 @@ class CreateNG911SchemaGeoDatabase(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         with log_context(self.__class__.__name__ + '_') as lc:
-            create_ng911_admin_gdb(*[p.value for p in parameters])
+            create_ng911_admin_gdb(*[p.valueAsText for p in parameters])
         return
 
 class CreateNG911SchemaTables(object):

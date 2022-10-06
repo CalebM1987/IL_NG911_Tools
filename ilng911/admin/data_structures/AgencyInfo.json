@@ -1,430 +1,565 @@
 {
     "fields": [
         {
-            "name": "County",
-            "alias": "County",
+            "name": "AgencyName",
+            "alias": "Agency Name",
             "type": "esriFieldTypeString",
-            "length": 50,
+            "length": 100,
             "domain": {
+                "name": "AgencyInfos",
                 "type": "codedValue",
-                "name": "IL_Counties",
                 "codedValues": [
                     {
-                        "name": "ADAMS",
-                        "code": "ADAMS"
+                      "code": "Adams",
+                      "name": "Adams"
                     },
                     {
-                        "name": "ALEXANDER",
-                        "code": "ALEXANDER"
+                      "code": "Aurora",
+                      "name": "Aurora"
                     },
                     {
-                        "name": "BOND",
-                        "code": "BOND"
+                      "code": "Berwyn",
+                      "name": "Berwyn"
                     },
                     {
-                        "name": "BOONE",
-                        "code": "BOONE"
+                      "code": "Bond",
+                      "name": "Bond"
                     },
                     {
-                        "name": "BROWN",
-                        "code": "BROWN"
+                      "code": "Boone",
+                      "name": "Boone"
                     },
                     {
-                        "name": "BUREAU",
-                        "code": "BUREAU"
+                      "code": "Brown",
+                      "name": "Brown"
                     },
                     {
-                        "name": "CALHOUN",
-                        "code": "CALHOUN"
+                      "code": "Bureau",
+                      "name": "Bureau"
                     },
                     {
-                        "name": "CARROLL",
-                        "code": "CARROLL"
+                      "code": "CalComm",
+                      "name": "CalComm"
                     },
                     {
-                        "name": "CASS",
-                        "code": "CASS"
+                      "code": "Calumet City",
+                      "name": "Calumet City"
                     },
                     {
-                        "name": "CHAMPAIGN",
-                        "code": "CHAMPAIGN"
+                      "code": "Carroll",
+                      "name": "Carroll"
                     },
                     {
-                        "name": "CHRISTIAN",
-                        "code": "CHRISTIAN"
+                      "code": "Cass",
+                      "name": "Cass"
                     },
                     {
-                        "name": "CLARK",
-                        "code": "CLARK"
+                      "code": "Central Dispatch",
+                      "name": "Central Dispatch"
                     },
                     {
-                        "name": "CLAY",
-                        "code": "CLAY"
+                      "code": "CERCCC",
+                      "name": "CERCCC"
                     },
                     {
-                        "name": "CLINTON",
-                        "code": "CLINTON"
+                      "code": "Champaign",
+                      "name": "Champaign"
                     },
                     {
-                        "name": "COLES",
-                        "code": "COLES"
+                      "code": "Chicago",
+                      "name": "Chicago"
                     },
                     {
-                        "name": "COOK",
-                        "code": "COOK"
+                      "code": "Christian-Shelby",
+                      "name": "Christian-Shelby"
                     },
                     {
-                        "name": "CRAWFORD",
-                        "code": "CRAWFORD"
+                      "code": "Clark",
+                      "name": "Clark"
                     },
                     {
-                        "name": "CUMBERLAND",
-                        "code": "CUMBERLAND"
+                      "code": "Clay",
+                      "name": "Clay"
                     },
                     {
-                        "name": "DE WITT",
-                        "code": "DE WITT"
+                      "code": "Clinton",
+                      "name": "Clinton"
                     },
                     {
-                        "name": "DEKALB",
-                        "code": "DEKALB"
+                      "code": "Coles-Moultrie",
+                      "name": "Coles-Moultrie"
                     },
                     {
-                        "name": "DOUGLAS",
-                        "code": "DOUGLAS"
+                      "code": "Cook",
+                      "name": "Cook"
                     },
                     {
-                        "name": "DUPAGE",
-                        "code": "DUPAGE"
+                      "code": "Crawford",
+                      "name": "Crawford"
                     },
                     {
-                        "name": "EDGAR",
-                        "code": "EDGAR"
+                      "code": "Cumberland",
+                      "name": "Cumberland"
                     },
                     {
-                        "name": "EDWARDS",
-                        "code": "EDWARDS"
+                      "code": "Deerfield United",
+                      "name": "Deerfield United"
                     },
                     {
-                        "name": "EFFINGHAM",
-                        "code": "EFFINGHAM"
+                      "code": "DeKalb",
+                      "name": "DeKalb"
                     },
                     {
-                        "name": "FAYETTE",
-                        "code": "FAYETTE"
+                      "code": "DesPlaines Valley",
+                      "name": "DesPlaines Valley"
                     },
                     {
-                        "name": "FORD",
-                        "code": "FORD"
+                      "code": "DeWitt",
+                      "name": "DeWitt"
                     },
                     {
-                        "name": "FRANKLIN",
-                        "code": "FRANKLIN"
+                      "code": "Douglas",
+                      "name": "Douglas"
                     },
                     {
-                        "name": "FULTON",
-                        "code": "FULTON"
+                      "code": "DuPage",
+                      "name": "DuPage"
                     },
                     {
-                        "name": "GALLATIN",
-                        "code": "GALLATIN"
+                      "code": "E-COM",
+                      "name": "E-COM"
                     },
                     {
-                        "name": "GREENE",
-                        "code": "GREENE"
+                      "code": "Edgar",
+                      "name": "Edgar"
                     },
                     {
-                        "name": "GRUNDY",
-                        "code": "GRUNDY"
+                      "code": "Edwards ",
+                      "name": "Edwards "
                     },
                     {
-                        "name": "HAMILTON",
-                        "code": "HAMILTON"
+                      "code": "Effingham",
+                      "name": "Effingham"
                     },
                     {
-                        "name": "HANCOCK",
-                        "code": "HANCOCK"
+                      "code": "Eisenhower",
+                      "name": "Eisenhower"
                     },
                     {
-                        "name": "HARDIN",
-                        "code": "HARDIN"
+                      "code": "Elgin",
+                      "name": "Elgin"
                     },
                     {
-                        "name": "HENDERSON",
-                        "code": "HENDERSON"
+                      "code": "Evanston",
+                      "name": "Evanston"
                     },
                     {
-                        "name": "HENRY",
-                        "code": "HENRY"
+                      "code": "Fayette",
+                      "name": "Fayette"
                     },
                     {
-                        "name": "IROQUOIS",
-                        "code": "IROQUOIS"
+                      "code": "Ford",
+                      "name": "Ford"
                     },
                     {
-                        "name": "JACKSON",
-                        "code": "JACKSON"
+                      "code": "Franklin",
+                      "name": "Franklin"
                     },
                     {
-                        "name": "JASPER",
-                        "code": "JASPER"
+                      "code": "Fulton",
+                      "name": "Fulton"
                     },
                     {
-                        "name": "JEFFERSON",
-                        "code": "JEFFERSON"
+                      "code": "Glenview",
+                      "name": "Glenview"
                     },
                     {
-                        "name": "JERSEY",
-                        "code": "JERSEY"
+                      "code": "Grundy",
+                      "name": "Grundy"
                     },
                     {
-                        "name": "JO DAVIESS",
-                        "code": "JO DAVIESS"
+                      "code": "Hamilton",
+                      "name": "Hamilton"
                     },
                     {
-                        "name": "JOHNSON",
-                        "code": "JOHNSON"
+                      "code": "Hancock",
+                      "name": "Hancock"
                     },
                     {
-                        "name": "KANE",
-                        "code": "KANE"
+                      "code": "Henry",
+                      "name": "Henry"
                     },
                     {
-                        "name": "KANKAKEE",
-                        "code": "KANKAKEE"
+                      "code": "Iroquois",
+                      "name": "Iroquois"
                     },
                     {
-                        "name": "KENDALL",
-                        "code": "KENDALL"
+                      "code": "Jackson",
+                      "name": "Jackson"
                     },
                     {
-                        "name": "KNOX",
-                        "code": "KNOX"
+                      "code": "Jasper",
+                      "name": "Jasper"
                     },
                     {
-                        "name": "LAKE",
-                        "code": "LAKE"
+                      "code": "Jefferson",
+                      "name": "Jefferson"
                     },
                     {
-                        "name": "LASALLE",
-                        "code": "LASALLE"
+                      "code": "Jersey",
+                      "name": "Jersey"
                     },
                     {
-                        "name": "LAWRENCE",
-                        "code": "LAWRENCE"
+                      "code": "JoDaviess",
+                      "name": "JoDaviess"
                     },
                     {
-                        "name": "LEE",
-                        "code": "LEE"
+                      "code": "Johnson-Hardin-Pope",
+                      "name": "Johnson-Hardin-Pope"
                     },
                     {
-                        "name": "LIVINGSTON",
-                        "code": "LIVINGSTON"
+                      "code": "Kanecomm",
+                      "name": "Kanecomm"
                     },
                     {
-                        "name": "LOGAN",
-                        "code": "LOGAN"
+                      "code": "Kankakee",
+                      "name": "Kankakee"
                     },
                     {
-                        "name": "MACON",
-                        "code": "MACON"
+                      "code": "Kendall",
+                      "name": "Kendall"
                     },
                     {
-                        "name": "MACOUPIN",
-                        "code": "MACOUPIN"
+                      "code": "Knox",
+                      "name": "Knox"
                     },
                     {
-                        "name": "MADISON",
-                        "code": "MADISON"
+                      "code": "Lake",
+                      "name": "Lake"
                     },
                     {
-                        "name": "MARION",
-                        "code": "MARION"
+                      "code": "Lansing",
+                      "name": "Lansing"
                     },
                     {
-                        "name": "MARSHALL",
-                        "code": "MARSHALL"
+                      "code": "LaSalle",
+                      "name": "LaSalle"
                     },
                     {
-                        "name": "MASON",
-                        "code": "MASON"
+                      "code": "Lawrence",
+                      "name": "Lawrence"
                     },
                     {
-                        "name": "MASSAC",
-                        "code": "MASSAC"
+                      "code": "Lee",
+                      "name": "Lee"
                     },
                     {
-                        "name": "MCDONOUGH",
-                        "code": "MCDONOUGH"
+                      "code": "Logan",
+                      "name": "Logan"
                     },
                     {
-                        "name": "MCHENRY",
-                        "code": "MCHENRY"
+                      "code": "LTACC",
+                      "name": "LTACC"
                     },
                     {
-                        "name": "MCLEAN",
-                        "code": "MCLEAN"
+                      "code": "Macon",
+                      "name": "Macon"
                     },
                     {
-                        "name": "MENARD",
-                        "code": "MENARD"
+                      "code": "Macoupin",
+                      "name": "Macoupin"
                     },
                     {
-                        "name": "MERCER",
-                        "code": "MERCER"
+                      "code": "Madison",
+                      "name": "Madison"
                     },
                     {
-                        "name": "MONROE",
-                        "code": "MONROE"
+                      "code": "Marion",
+                      "name": "Marion"
                     },
                     {
-                        "name": "MONTGOMERY",
-                        "code": "MONTGOMERY"
+                      "code": "Marshall",
+                      "name": "Marshall"
                     },
                     {
-                        "name": "MORGAN",
-                        "code": "MORGAN"
+                      "code": "Mason",
+                      "name": "Mason"
                     },
                     {
-                        "name": "MOULTRIE",
-                        "code": "MOULTRIE"
+                      "code": "Massac",
+                      "name": "Massac"
                     },
                     {
-                        "name": "OGLE",
-                        "code": "OGLE"
+                      "code": "MCD",
+                      "name": "MCD"
                     },
                     {
-                        "name": "PEORIA",
-                        "code": "PEORIA"
+                      "code": "McDonough-Schuyler",
+                      "name": "McDonough-Schuyler"
                     },
                     {
-                        "name": "PERRY",
-                        "code": "PERRY"
+                      "code": "McHenry",
+                      "name": "McHenry"
                     },
                     {
-                        "name": "PIATT",
-                        "code": "PIATT"
+                      "code": "McLean",
+                      "name": "McLean"
                     },
                     {
-                        "name": "PIKE",
-                        "code": "PIKE"
+                      "code": "Menard",
+                      "name": "Menard"
                     },
                     {
-                        "name": "POPE",
-                        "code": "POPE"
+                      "code": "Mercer",
+                      "name": "Mercer"
                     },
                     {
-                        "name": "PULASKI",
-                        "code": "PULASKI"
+                      "code": "Monroe",
+                      "name": "Monroe"
                     },
                     {
-                        "name": "PUTNAM",
-                        "code": "PUTNAM"
+                      "code": "Montgomery",
+                      "name": "Montgomery"
                     },
                     {
-                        "name": "RANDOLPH",
-                        "code": "RANDOLPH"
+                      "code": "Naperville",
+                      "name": "Naperville"
                     },
                     {
-                        "name": "RICHLAND",
-                        "code": "RICHLAND"
+                      "code": "Northbrook",
+                      "name": "Northbrook"
                     },
                     {
-                        "name": "ROCK ISLAND",
-                        "code": "ROCK ISLAND"
+                      "code": "NWCDS",
+                      "name": "NWCDS"
                     },
                     {
-                        "name": "SALINE",
-                        "code": "SALINE"
+                      "code": "Oak Forest",
+                      "name": "Oak Forest"
                     },
                     {
-                        "name": "SANGAMON",
-                        "code": "SANGAMON"
+                      "code": "Oak Lawn",
+                      "name": "Oak Lawn"
                     },
                     {
-                        "name": "SCHUYLER",
-                        "code": "SCHUYLER"
+                      "code": "Ogle",
+                      "name": "Ogle"
                     },
                     {
-                        "name": "SCOTT",
-                        "code": "SCOTT"
+                      "code": "Orland",
+                      "name": "Orland"
                     },
                     {
-                        "name": "SHELBY",
-                        "code": "SHELBY"
+                      "code": "Peoria",
+                      "name": "Peoria"
                     },
                     {
-                        "name": "ST. CLAIR",
-                        "code": "ST. CLAIR"
+                      "code": "Perry",
+                      "name": "Perry"
                     },
                     {
-                        "name": "STARK",
-                        "code": "STARK"
+                      "code": "Piatt",
+                      "name": "Piatt"
                     },
                     {
-                        "name": "STEPHENSON",
-                        "code": "STEPHENSON"
+                      "code": "Pike",
+                      "name": "Pike"
                     },
                     {
-                        "name": "TAZEWELL",
-                        "code": "TAZEWELL"
+                      "code": "Proviso-Leyden",
+                      "name": "Proviso-Leyden"
                     },
                     {
-                        "name": "UNION",
-                        "code": "UNION"
+                      "code": "Pulaski",
+                      "name": "Pulaski"
                     },
                     {
-                        "name": "VERMILION",
-                        "code": "VERMILION"
+                      "code": "Putnam",
+                      "name": "Putnam"
                     },
                     {
-                        "name": "WABASH",
-                        "code": "WABASH"
+                      "code": "QuadCom",
+                      "name": "QuadCom"
                     },
                     {
-                        "name": "WARREN",
-                        "code": "WARREN"
+                      "code": "Randolph",
+                      "name": "Randolph"
                     },
                     {
-                        "name": "WASHINGTON",
-                        "code": "WASHINGTON"
+                      "code": "Richland",
+                      "name": "Richland"
                     },
                     {
-                        "name": "WAYNE",
-                        "code": "WAYNE"
+                      "code": "Rock Island",
+                      "name": "Rock Island"
                     },
                     {
-                        "name": "WHITE",
-                        "code": "WHITE"
+                      "code": "Saline-Gallatin",
+                      "name": "Saline-Gallatin"
                     },
                     {
-                        "name": "WHITESIDE",
-                        "code": "WHITESIDE"
+                      "code": "Sangamon",
+                      "name": "Sangamon"
                     },
                     {
-                        "name": "WILL",
-                        "code": "WILL"
+                      "code": "Scott",
+                      "name": "Scott"
                     },
                     {
-                        "name": "WILLIAMSON",
-                        "code": "WILLIAMSON"
+                      "code": "Skokie",
+                      "name": "Skokie"
                     },
                     {
-                        "name": "WINNEBAGO",
-                        "code": "WINNEBAGO"
+                      "code": "SouthCom",
+                      "name": "SouthCom"
                     },
                     {
-                        "name": "WOODFORD",
-                        "code": "WOODFORD"
+                      "code": "St. Clair",
+                      "name": "St. Clair"
+                    },
+                    {
+                      "code": "Stark",
+                      "name": "Stark"
+                    },
+                    {
+                      "code": "Stephenson",
+                      "name": "Stephenson"
+                    },
+                    {
+                      "code": "SW Cook",
+                      "name": "SW Cook"
+                    },
+                    {
+                      "code": "SWCD",
+                      "name": "SWCD"
+                    },
+                    {
+                      "code": "Tazewell",
+                      "name": "Tazewell"
+                    },
+                    {
+                      "code": "Tinley Park",
+                      "name": "Tinley Park"
+                    },
+                    {
+                      "code": "Tri-Com",
+                      "name": "Tri-Com"
+                    },
+                    {
+                      "code": "Union-Alexander",
+                      "name": "Union-Alexander"
+                    },
+                    {
+                      "code": "Vermilion",
+                      "name": "Vermilion"
+                    },
+                    {
+                      "code": "Vermilion Valley",
+                      "name": "Vermilion Valley"
+                    },
+                    {
+                      "code": "Wabash",
+                      "name": "Wabash"
+                    },
+                    {
+                      "code": "Warren",
+                      "name": "Warren"
+                    },
+                    {
+                      "code": "Washington",
+                      "name": "Washington"
+                    },
+                    {
+                      "code": "Wayne",
+                      "name": "Wayne"
+                    },
+                    {
+                      "code": "West Central CC",
+                      "name": "West Central CC"
+                    },
+                    {
+                      "code": "West Central Joint",
+                      "name": "West Central Joint"
+                    },
+                    {
+                      "code": "West Suburban",
+                      "name": "West Suburban"
+                    },
+                    {
+                      "code": "Wheeling-DesPlaines",
+                      "name": "Wheeling-DesPlaines"
+                    },
+                    {
+                      "code": "White",
+                      "name": "White"
+                    },
+                    {
+                      "code": "Whiteside",
+                      "name": "Whiteside"
+                    },
+                    {
+                      "code": "Will",
+                      "name": "Will"
+                    },
+                    {
+                      "code": "Williamson",
+                      "name": "Williamson"
+                    },
+                    {
+                      "code": "Wilmette",
+                      "name": "Wilmette"
+                    },
+                    {
+                      "code": "Winnebago",
+                      "name": "Winnebago"
+                    },
+                    {
+                      "code": "Woodford",
+                      "name": "Woodford"
+                    },
+                    {
+                      "code": "Great Lakes",
+                      "name": "Great Lakes"
+                    },
+                    {
+                      "code": "James Lovell VA Hospital",
+                      "name": "James Lovell VA Hospital"
+                    },
+                    {
+                      "code": "Fort Sheridan Army Reserve Center",
+                      "name": "Fort Sheridan Army Reserve Center"
                     }
-                ]
+                  ]
             }
         },
         {
-            "name": "Agency",
-            "alias": "Agency",
+            "name": "AgencyID",
+            "alias": "Agency ID",
             "type": "esriFieldTypeString",
             "length": 100
+        },
+        {
+            "name": "County",
+            "alias": "County",
+            "type": "esriFieldTypeString",
+            "length": 50
+        },
+        {
+            "name": "County2",
+            "alias": "County 2",
+            "type": "esriFieldTypeString",
+            "length": 50
+        },
+        {
+            "name": "County3",
+            "alias": "County 3",
+            "type": "esriFieldTypeString",
+            "length": 50
+        },
+        {
+            "name": "Region",
+            "alias": "Region",
+            "type": "esriFieldTypeSmallInteger"
         },
         {
             "name": "State",
@@ -437,23 +572,21 @@
             "alias": "Country",
             "type": "esriFieldTypeString",
             "length": 2
-        },
-        {
-            "name": "AgencyID",
-            "alias": "Agency ID",
-            "type": "esriFieldTypeString",
-            "length": 50
         }
+        
     ],
     "features": [
         {
             "attributes": {
                 "OBJECTID": 1,
+                "AgencyName ": null,
+                "AgencyID": null,
                 "County": null,
-                "Agency ": null,
+                "County2": null,
+                "County3": null,
                 "State": "IL",
-                "Country": "US",
-                "AgencyID": null
+                "Region": null,
+                "Country": "US"
             }
         }
     ]

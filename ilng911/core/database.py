@@ -111,7 +111,6 @@ class NG911Data(metaclass=Singleton):
                 with arcpy.da.SearchCursor(self.nena_id_table, fields) as rows:
                     for r in rows:
                         self.new_nena_ids = munchify(dict(zip(fields, r)))
-                        print(self.new_nena_ids)
                         break
             else:
                 log('NENA IDs table does not exist, make sure to run the register_nena_identifiers() function', level='warn')
@@ -357,7 +356,11 @@ class NG911Data(metaclass=Singleton):
                 # skip exists check if setup is complete
                 return full_path
             else:
-                self.setup()
+                try:
+                    self.setup()
+                except Exception as e:
+                    log(f'error on setup for path: "{full_path}"')
+                    raise e
                 if self.setupComplete and arcpy.Exists(full_path):
                     return full_path
 
