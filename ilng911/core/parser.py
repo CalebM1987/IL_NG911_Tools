@@ -4,6 +4,7 @@ import math
 import operator
 from .fields import FIELDS
 from ..support.munch import munchify
+from typing import Any
 
 
 STREET_DIRECTIONS_ABBR = munchify(dict(
@@ -26,13 +27,13 @@ def get_string_tokens(s: str):
     return re.findall(r"(\{.*?\})", s)
 
  
-def safe_eval(s):
+def safe_eval(s: str) -> Any:
     """safely evaluate an expression, particularly for mathematic expressions
 
     https://stackoverflow.com/a/68732605
-    
+
     Args:
-        s (_type_): the string to evaluate
+        s (str): the string to evaluate
     """
 
     def checkmath(x, *args):
