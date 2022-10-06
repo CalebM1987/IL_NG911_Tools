@@ -8,9 +8,8 @@
            },
            {
                "TargetTable": "ADDRESS_POINTS",
-               "FieldName": "GC_ADDRESS_wZIP",
+               "FieldName": "GC_Address_wMSAGCOMM",
                "Expression": "{Add_Number} {St_Name} {St_PosType} {MSAGComm}"
            }
        ]
-    
 }
