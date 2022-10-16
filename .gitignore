@@ -11,6 +11,9 @@ config.json
 
 NG911_Tables.gdb/
 
+# pyt helper files
+*.pyt.xml
+
 # custom stuff
 node_modules/
 # test_env/
