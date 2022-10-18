@@ -80,8 +80,6 @@ DATE_FIELDS = [
 ]
 
 
-
-
 def merge_street_segment_attributes(address: Feature, centerline: Union[int, Feature]):
     """merge street segment attributes into address point feature
 

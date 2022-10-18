@@ -115,8 +115,8 @@ def get_range_and_parity(pt: Union[arcpy.PointGeometry, Feature], centerline: Un
     
     return munchify(attrs)
 
-roadSchema = DataSchema(DataType.ROAD_CENTERLINE)
-addressSchema = DataSchema(DataType.ADDRESS_POINTS)
+# roadSchema = DataSchema(DataType.ROAD_CENTERLINE)
+# addressSchema = DataSchema(DataType.ADDRESS_POINTS)
 
 def validate_address(pt: Feature, road: Union[Feature, int]=None, addresses=None, roads=None):
     validators = get_validation_template()
@@ -198,6 +198,7 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None, addresses=None
 
     where_clause = ' AND '.join(atts)
     log(f'where clause for address validation chunk: "{where_clause}"')
+    roadSchema = DataSchema(DataType.ROAD_CENTERLINE)
 
     if not road:
 
@@ -337,8 +338,9 @@ def run_address_validation():
         chunkSize = min([1000, math.ceil(diff / 10)])
         chunkCount = math.ceil(count / chunkSize)
         log(f'found min and max OID: {minOid} -> {maxOid}, using a chunksize of {chunkSize}')
-
+       
         stOid = minOid
+        addressSchema = DataSchema(DataType.ADDRESS_POINTS)
         addrFields = [f.name for f in desc.fields if f.type not in ('OID', 'Geometry')] + ['OID@', 'SHAPE@']
         nenaIdx = addrFields.index(addressSchema.nenaIdentifier)
         processes = min([chunkSize, os.cpu_count() * 2])

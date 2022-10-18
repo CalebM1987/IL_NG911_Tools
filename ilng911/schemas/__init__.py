@@ -110,34 +110,21 @@ class DataSchema(FeatureBase):
     def vendorFields(self):
         where = f"FeatureType = '{self.name}'"
         print('vendor fields where: ', where)
-        table = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FEATURES)
+        table = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FIELDS)
 
         feats = {}
-        with arcpy.da.SearchCursor(table, ['TableName', 'CADFeatureTable', 'FeatureType'], where) as rows:
-            feats = {r[0]: {'path': r[1], 'fields': []} for r in rows}
+        with arcpy.da.SearchCursor(table, ['FeatureType', 'FieldName', 'Expression'], where) as rows:
+            for r in rows:
+                info = {
+                    'name': r[1],
+                    'expression': r[2],
+                    'type': self.fieldTypings.get(r[1])
+                }
+                if r[0] in feats:
+                    feats[r[0]].append(info) 
+                else:
+                    feats[r[0]] = [ info ]
 
-        typing_dict = {}
-        for tab, info in feats.items():
-            path = info.get('path')
-            if path:
-                fd = {}
-                for fld in arcpy.ListFields(path):
-                    fd[fld.name] = TYPE_MAPPING.get(fld.type)
-                typing_dict[tab] = fd
-
-        print('typing dict: ', typing_dict)
-        if feats:
-            fields_where = ' OR '.join([f"TableName = '{k}'" for k in feats.keys()])
-            print('fields where: ', fields_where)
-            fields_tab = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FIELDS)
-            with arcpy.da.SearchCursor(fields_tab, ['FieldName', 'Expression', 'TableName'], fields_where) as rows:
-                for r in rows:
-                    if r[2] in feats:
-                        feats[r[2]]['fields'].append({ 
-                            'name': r[0], 
-                            'expression': r[1], 
-                            'type': typing_dict.get(r[2], {}).get(r[0]) 
-                        })
         return munchify(feats)
 
     @lazyprop
@@ -200,20 +187,30 @@ class DataSchema(FeatureBase):
         
 
     def calculate_custom_fields(self, ft: Feature):
+        """calculate all custom fields for feature
+
+        Args:
+            ft (Feature): the feature to calculate fields for
+        """
         for field in self.customFields:
             expr = ft.calculate_custom_field(field.name, field.expression, self.fieldTypings.get(field.name))
             log(f'calculated {field}: {expr}')
 
     def calculate_vendor_fields(self, ft: Feature):
-        for tab, vendorInfo in self.vendorFields.items():
+        """calculate all custom CAD Vendor fields for feature
+
+        Args:
+            ft (Feature): the feature to calculate fields for
+        """
+        for tab, vendorFields in self.vendorFields.items():
             log(f'calculating CAD Vendor fields for table: "{tab}"')
-            fields = [v.name for v in vendorInfo.fields]
+            fields = [v.name for v in vendorFields]
 
             # get type lookup
-            vl = {v.name: v for v in vendorInfo.fields}
+            vl = {v.name: v for v in vendorFields}
            
             if fields:
-                with cursors.InsertCursor(vendorInfo.path, fields) as irows:
+                with cursors.InsertCursor(self.table, fields) as irows:
                     try:
                         irows.insertRow([ft.create_from_expression(vl.get(f).expression, vl.get(f).get('type')) for f in fields])
                     except Exception as e:

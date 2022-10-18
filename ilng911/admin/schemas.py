@@ -103,6 +103,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
 
         # create if missing
         if not arcpy.Exists(table):
+            log(f'creating table form JSON definnition: "{basename}"')
             features_from_json(fl, table)
 
     # load agency infos
@@ -128,38 +129,15 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
     write_config(conf, config_file)
 
     # check for relationship class for vendors to fields
-    hasVendorRel, hasSpatialRel = False, False
-    vendorRel = 'CADVendorsRel'
+    hasSpatialRel = False
     spatialRel = 'SpatailJoinFeaturesRel'
     for dirpath, dirnames, rels in arcpy.da.Walk(out_gdb, datatype='RelationshipClass'):
         for rel in rels:
             log(f'relationship class: "{rel}"')
-            if rel == vendorRel:
-                hasVendorRel = True
-                log('found existing CAD Vendors relationship')
                 
             if rel == spatialRel:
                 hasSpatialRel = True
                 log('found existing spatial join features relationship')
-
-    if not hasVendorRel:
-        # create relationship class
-        cadVendors = os.path.join(out_gdb, NG911SchemaTables.CAD_VENDOR_FEATURES)
-        cadFields = os.path.join(out_gdb, NG911SchemaTables.CAD_VENDOR_FIELDS)
-        arcpy.management.CreateRelationshipClass(
-            cadVendors, 
-            cadFields, 
-            os.path.join(out_gdb, vendorRel), 
-            'COMPOSITE', 
-            'VendorFields', 
-            'CADVendor', 
-            'BOTH', 
-            'ONE_TO_MANY', 
-            'ATTRIBUTED', 
-            'TableName',
-            'TableName',
-        )
-        log(f'created "{vendorRel}" relationship')
 
     if not hasSpatialRel:
         # create relationship class
@@ -318,52 +296,52 @@ def register_nena_identifiers():
                             log(f'removed NENA IDs row at index: {i}')
 
 
-def add_cad_vendor_fields(cad_path: str, table: str, vendor: str, cad_fields: List[List[str]]):
+def add_cad_vendor_fields(featureType: str, vendor: str, cad_fields: List[List[str]]):
     """adds CAD Vendor fields
 
     Args:
-        cad_path (str): path to CAD Vendor table
-        table (str): the 911 Feature Type
+        featureType (str): the 911 Feature Type
         vendor (str): the Vendor Name
         cad_fields (List[List[str]]): the CAD Fields and their mapped field expression [['CadFieldName', '{Expression}'] ]
     """
     ng911_db = get_ng911_db()
 
-    vendorFeats = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FEATURES)
     vendorFields = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FIELDS)
 
-    where = f"CADFeatureTable = '{cad_path}'"
-    tab = ng911_db.get_table_view(vendorFeats, where)
-    table_name = os.path.basename(cad_path)
-
-    if not int(arcpy.management.GetCount(tab).getOutput(0)):
-        # add record
-        with InsertCursor(vendorFeats, ['CADFeatureTable', 'TableName', 'FeatureType', 'CADVendor']) as irows:
-            irows.insertRow([cad_path, table_name, table, vendor])
-            log(f'registered new CAD Feature "{table_name}"-> {table}')
-
     # populate fields
-    field_expressions = {f[0]: f[1] for f in cad_fields}
+    existing = [f.name for f in vendorFields]
+    field_expressions = {f[0]: f[1] for f in cad_fields if f[0] in existing}
 
     # first check for updates
-    where = f"TableName = '{table_name}'"
-    with UpdateCursor(vendorFields, ['FieldName', 'Expression', 'TableName'], where) as rows:
+    where = f"FeatureType = '{featureType}'"
+    with UpdateCursor(vendorFields, ['FieldName', 'Expression', 'FeatureType'], where) as rows:
         for r in rows:
             if r[0] in field_expressions:
-                r[1] = field_expressions[r[0]]
+                if r[1] != field_expressions[r[0]]:
+                    r[1] = field_expressions[r[0]]
+                    rows.updateRow(r)
+                    log(f'updated Custom CAD Field for "{featureType}": {r[0]} -> {r[1]}')
+                    
                 del field_expressions[r[0]]
-                rows.updateRow(r)
-                log(f'updated Custom CAD Field for "{table_name}": {r[0]} -> {r[1]}')
 
     # now insert new fields
-    with InsertCursor(vendorFields, ['FieldName', 'Expression', 'TableName']) as irows:
+    with InsertCursor(vendorFields, ['FieldName', 'Expression', 'FeatureType', 'CADVendor']) as irows:
         for fld, exp in sorted(field_expressions.items()):
-            irows.insertRow([fld, exp, table_name])
-            log(f'inserted new Custom CAD Field for "{table_name}": {fld} -> {exp}')
+            irows.insertRow([fld, exp, featureType, vendor])
+            log(f'inserted new Custom CAD Field for "{featureType}": {fld} -> {exp}')
 
 
-def add_preconfigured_cad_vendor_fields(cad_path, featureType= 'ADDRESS_POINTS', vendor='TRITECH'):
-    print('cad vendor path: ', cad_path)
+def add_preconfigured_cad_vendor_fields(featureType= 'ADDRESS_POINTS', vendor='TRITECH'):
+    """adds preconfigured CAD vendor fields
+
+    Args:
+        featureType (str, optional): _description_. Defaults to 'ADDRESS_POINTS'.
+        vendor (str, optional): _description_. Defaults to 'TRITECH'.
+
+    Raises:
+        RuntimeError: Invalid Feature Type provided
+    """
+    
     allowed_vendors = ['TRITECH', 'TYLER', 'WTH']
     if vendor.upper() not in allowed_vendors:
         raise RuntimeError(f'Invalid Vendor Name Supplied: "{vendor}"')
@@ -372,7 +350,24 @@ def add_preconfigured_cad_vendor_fields(cad_path, featureType= 'ADDRESS_POINTS',
 
     try:
         schema = [s for s in config.schemas if s.get('featureType').upper() == featureType][0]
-        cad_fields = [[f.name, f.expression] for f in schema.fieldMap]
-        add_cad_vendor_fields(cad_path, schema.featureType, vendor, cad_fields)
+
     except IndexError:
         raise RuntimeError(f'Invalid Feature Type provided: "{featureType}"')
+
+    # check to make sure fields exist in table
+    ng911_db = get_ng911_db()
+    table = ng911_db.get_911_table(featureType)
+    existing = [f.name for f in arcpy.ListFields(table)]
+    for fmap in schema.fieldMap:
+        if fmap.name not in existing:
+            try:
+                arcpy.AddField_management(table, fmap.name, fmap.type, field_length=fmap.get('length'))
+                log(f'Added CAD Vendor field "{fmap.name}" to "{featureType}"')
+            except Exception as e:
+                log(f'Failed to CAD Vendor field "{fmap.name}" to "{featureType}": {e}', level='warn')
+    
+    # find cad fields from config
+    cad_fields = [[f.name, f.expression] for f in schema.fieldMap]
+    add_cad_vendor_fields(schema.featureType, vendor, cad_fields)
+
+  

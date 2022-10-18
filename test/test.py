@@ -16,8 +16,8 @@ from ilng911.vendors import load_vendor_config
 if __name__ == '__main__':
     schemas_dir = os.path.join(NG_911_DIR, 'admin', 'data_structures')
     tables = ['NG911_Tables', 'AgencyInfo', 'CustomFields', 'CustomFields']
-    schemaPath = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911'
-    gdbPath = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\IL_NG911_Brown_Master_v3.2.5.gdb'
+    schemaPath = r'C:\Users\caleb.mackey\Documents\Testing\addressing\data'
+    gdbPath = os.path.join(schemaPath, 'IL_NG911_Brown_Master_v3.2.5.gdb')
 
     testStr = 'this is a test with house number {Add_Number}, and street name {St_Name}'
 
@@ -28,12 +28,12 @@ if __name__ == '__main__':
     gdb = os.path.join(schemaPath, 'NG911_Schemas.gdb')
     print('gdb???', gdb)
 
-    if arcpy.Exists(gdb):
-        arcpy.management.Delete(gdb)
-        print('deleted gdb')
+    # if arcpy.Exists(gdb):
+    #     arcpy.management.Delete(gdb)
+    #     print('deleted gdb')
 
     with log_context() as lc:
-        gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'Brown')
+        # gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'Brown')
         # ng911_db = get_ng911_db()
         # log(f'setup is complete? {ng911_db.setupComplete}')
         # if not ng911_db.setupComplete:
@@ -115,23 +115,22 @@ if __name__ == '__main__':
         # tritech = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\Tritech_Test.gdb'
         # tyler = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\Tyler_Test.gdb'
 
-        # # create testing vendor features
-        # for vendor_gdb in [tritech, tyler]:
-        #     vendor = os.path.basename(vendor_gdb).split('_')[0]
-        #     print('vendor: ', vendor)
-        #     config = load_vendor_config(vendor)
+        # create testing vendor features
+        for vendor in ['Tyler']:
+            print('vendor: ', vendor)
+            config = load_vendor_config(vendor)
 
-        #     # add fields
-        #     for schema in config.schemas:
-        #         print('checking schema type: ', schema.featureType)
-        #         cad_path = os.path.join(vendor_gdb, f'{vendor}_{schema.featureType.title()}')
-        #         if not arcpy.Exists(cad_path):
-        #             arcpy.CreateTable_management(*os.path.split(cad_path))
-        #             for fmap in schema.fieldMap:
-        #                 arcpy.AddField_management(cad_path, fmap.name, fmap.type, field_length=fmap.get('length'))
+            # add fields
+            for schema in config.schemas:
+                print('checking schema type: ', schema.featureType)
+                # table = ng911_db.get_table(schema.featureType)
+                # existing = [f.name for f in arcpy.ListFields(table)]
+                # for fmap in schema.fieldMap:
+                #     if fmap.name not in existing:
+                #         arcpy.AddField_management(table, fmap.name, fmap.type, field_length=fmap.get('length'))
 
-        #         # add pre-configured CAD Vendor Fields
-        #         add_preconfigured_cad_vendor_fields(cad_path, schema.featureType,  vendor)
+                # add pre-configured CAD Vendor Fields
+                add_preconfigured_cad_vendor_fields(schema.featureType,  vendor)
 
         # roads = find_closest_centerlines(pg)
         # print(json.dumps(roads, indent=2))

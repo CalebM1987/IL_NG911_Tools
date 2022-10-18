@@ -35,7 +35,6 @@ class NG911SchemaTables(PropIterator):
         'AgencyInfo',
         'CustomFields',
         'CADVendorFields',
-        'CADVendorFeatures',
         'SpatialJoinFields',
         'SpatialJoinFeatures',
         'ValidatedAddresses',
@@ -46,7 +45,6 @@ class NG911SchemaTables(PropIterator):
     AGENCY_INFO = 'AgencyInfo'
     CUSTOM_FIELDS = 'CustomFields'
     CAD_VENDOR_FIELDS = 'CADVendorFields'
-    CAD_VENDOR_FEATURES = 'CADVendorFeatures'
     SPATIAL_JOIN_FIELDS = 'SpatialJoinFields'
     SPATIAL_JOIN_FEATURES = 'SpatialJoinFeatures'
     VALIDATED_ADDRESSES = 'ValidatedAddresses'
@@ -74,6 +72,7 @@ class NG911Data(metaclass=Singleton):
         self.gdb_path = None
         self.nena_id_table = None
         self.new_nena_ids = Munch()
+        self.requiredTables = []
         self.setup()
         
     def setup(self):
