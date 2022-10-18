@@ -25,11 +25,17 @@ Here is a breakdown of all the tables:
   - `AddressFlags` - a point feature class that will be used to show the locations of any flagged address.  Addresses get flagged when there are issues found during the validation process.
   - `AgencyInfo` - this stores the agency info, namely the county and the agency identifier that is used for setting all `NENA` identifiers
 
-#### Create Schemas Tool (Optional)
+### Create Schemas Tool (Optional)
 
-#### Create Custom fields (Optional)
+### Create Custom fields (Optional)
 
-#### Create CAD Vendor Fields (Optional)
+These tools also include the ability to populate custom fields based on expressions when creating new 911 features. The `Create Custom Fields` tool can be used to store the expressions along with their corresponding fields. An expression can be defined using plain text and field tokens, where the field name is contained within curly braces `{FieldName}`. 
+
+![custom fields toolbox](/resources/images/custom-fields-toolbox.png)
+
+#### creating an expression
+
+### Create CAD Vendor Fields (Optional)
 
 ## Setup ArcGIS Pro Document
 
