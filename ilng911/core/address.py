@@ -206,6 +206,13 @@ def create_address_point(pg: arcpy.PointGeometry, centerlineOID: int, **kwargs):
     schema.calculate_custom_fields(ft)
     schema.calculate_vendor_fields(ft)
     schema.commit_features()
+
+    # run address validation
+    try:
+        validators = validate_address(ft, centerlineOID)
+        log(json.dumps(validators, indent=2))
+    except Exception as e:
+        log(f'failed to validate address: {e}', level='warn')
     return ft, schema
 
 def find_closest_centerlines(pg: Union[arcpy.Geometry, Feature]) -> Dict:
