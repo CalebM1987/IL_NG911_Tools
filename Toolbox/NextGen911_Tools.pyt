@@ -90,7 +90,28 @@ class CreateRoadCenterline(object):
 
     def getParameterInfo(self):
         """Define parameter definitions"""
-        params = table_to_params(DataSchema(DataType.ROAD_CENTERLINE))
+        # check for custom populated fields, add to filters
+        ng911_db = get_ng911_db()
+        custFieldsTab = ng911_db.get_table(ng911_db.schemaTables.CUSTOM_FIELDS)
+        overlayFieldsTab = ng911_db.get_table(ng911_db.schemaTables.SPATIAL_JOIN_FIELDS)
+        vendorFieldsTab = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FIELDS)
+        where = f"TargetTable = '{ng911_db.types.ROAD_CENTERLINE}'"
+
+        # custom fields
+        with arcpy.da.SearchCursor(custFieldsTab, ['TargetTable', 'FieldName'], where_clause=where) as rows:
+            custFields = [r[1] for r in rows]
+
+        # overlay attributes
+        with arcpy.da.SearchCursor(overlayFieldsTab, ['TargetTable', 'TargetField'], where_clause=where) as rows:
+            overlayFields = [r[1] for r in rows]
+
+        # overlay attributes
+        where = f"FeatureType = '{ng911_db.types.ROAD_CENTERLINE}'"
+        with arcpy.da.SearchCursor(vendorFieldsTab, ['FeatureType', 'FieldName'], where_clause=where) as rows:
+            vendorFields = [r[1] for r in rows]
+
+        filters = custFields + overlayFields + vendorFields
+        params = table_to_params(DataSchema(DataType.ROAD_CENTERLINE), filters=filters)
         return params
         
 
@@ -149,18 +170,23 @@ class CreateAddressPoint(object):
             displayName="Road Centerline",
             direction="Input",
             datatype="GPLong",
-            enabled=False
+            enabled=False,
+            parameterType='Required'
         )
+        roadOID = None
         try:
             with arcpy.da.SearchCursor("RoadCenterline", ['OID@']) as rows:
                 roadOID = [r[0] for r in rows][0]
                 # debug_window(f'oid is? {roadOID}')
                 log(f'fetched road oid from selection: {roadOID}')
         except IndexError:
-            roadOID = 208
             # debug_window(f'using hard coded oid: {roadOID}')
-            log('could not fetch road oid, defaulting to 208')
-        centerlineOID.value = roadOID
+            log('could not fetch road oid')
+        
+        if roadOID:
+            centerlineOID.value = roadOID
+        else:
+            centerlineOID.enabled = True
         
         # centerlineOID.enabled = False
         # centerline = DataSchema(DataType.ROAD_CENTERLINE)
@@ -172,6 +198,7 @@ class CreateAddressPoint(object):
         # check for custom populated fields, add to filters
         custFieldsTab = ng911_db.get_table(ng911_db.schemaTables.CUSTOM_FIELDS)
         overlayFieldsTab = ng911_db.get_table(ng911_db.schemaTables.SPATIAL_JOIN_FIELDS)
+        vendorFieldsTab = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FIELDS)
         where = f"TargetTable = '{ng911_db.types.ADDRESS_POINTS}'"
 
         # custom fields
@@ -182,7 +209,12 @@ class CreateAddressPoint(object):
         with arcpy.da.SearchCursor(overlayFieldsTab, ['TargetTable', 'TargetField'], where_clause=where) as rows:
             overlayFields = [r[1] for r in rows]
 
-        filters = STREET_ATTRIBUTES + custFields + overlayFields
+        # overlay attributes
+        where = f"FeatureType = '{ng911_db.types.ADDRESS_POINTS}'"
+        with arcpy.da.SearchCursor(vendorFieldsTab, ['FeatureType', 'FieldName'], where_clause=where) as rows:
+            vendorFields = [r[1] for r in rows]
+
+        filters = STREET_ATTRIBUTES + custFields + overlayFields + vendorFields
         params.extend(table_to_params(DataSchema(DataType.ADDRESS_POINTS), filters=filters))
         # for p in params[2:]:
         #     p.enabled = False
@@ -259,19 +291,11 @@ class CreateAddressPoint(object):
             fs.load(parameters[0].value)
             attrs = {p.name: p.valueAsText for p in parameters[2:]}
             roadOID = parameters[1].value
-            # roadOID = int(parameters[1].valueAsText.split(':')[0])
-            # try:
-            #     with arcpy.da.SearchCursor("RoadCenterline", ['OID@']) as rows:
-            #         roadOID = [r[0] for r in rows][0]
-            #         log(f'fetched road oid from selection: {roadOID}')
-            # except IndexError:
-            #     roadOID = 208
-            #     log('could not fetch road oid, defaulting to 208')
             fsJson = munchify(json.loads(fs.JSON))
             geomJson = fsJson.features[0].get('geometry')
             geomJson["spatialReference"] = {"wkid": 4326 }
             pt = arcpy.AsShape(geomJson, True)
-            ft, schema = create_address_point(pt, roadOID or 208, **attrs)
+            ft, schema = create_address_point(pt, roadOID, **attrs)
             ft.prettyPrint()
             try: 
                 # try to remove feature set layer
