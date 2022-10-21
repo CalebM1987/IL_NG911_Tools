@@ -117,7 +117,7 @@ class CreateAddressPoint(object):
         # desc = arcpy.Describe(points)
         # where = f"{desc.oidFieldName} IS NULL"
         ptJson = load_json(os.path.join(helpersDir, 'CreatePointJSON'))
-        renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'), True)
+        # renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'), True)
         # fs.load(points, where)#, None, json.dumps(renderer), True) # getting error renderer arguments??
         fs = arcpy.FeatureSet(ptJson)#, renderer=renderer)
 
