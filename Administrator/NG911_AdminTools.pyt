@@ -30,7 +30,7 @@ class Toolbox(object):
         self.tools = [
             CreateNG911SchemaGeoDatabase,
             CreateNG911SchemaTables,
-            AddOverlayAttributes,
+            # AddOverlayAttributes,
             AddCustomFields,
             AddCADVendorFields,
             AddPreConfiguredCADVendorFields

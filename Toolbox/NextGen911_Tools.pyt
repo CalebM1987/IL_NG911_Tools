@@ -275,12 +275,13 @@ class CreateAddressPoint(object):
         """Modify the messages created by internal validation for each tool
         parameter.  This method is called after internal validation."""
         addNum = [p for p in parameters if p.name == FIELDS.ADDRESS.NUMBER][0]
-        if addNum.value and parameters[1].value and parameters[0].altered and not addNum.hasBeenValidated:
+        centerlineOID = [p for p in parameters if p.name == 'centerlineOID'][0]
+        if addNum.value and centerlineOID.value and parameters[0].altered and not addNum.hasBeenValidated:
             # debug_window(f'Calling Address Number Validation NOw? {addNum.value}')
             with arcpy.da.SearchCursor(parameters[0].value, ['SHAPE@']) as rows:
                 geom = [r[0] for r in rows][0]
                 # debug_window(geom.JSON)
-            info = get_range_and_parity(geom, parameters[1].value)
+            info = get_range_and_parity(geom, centerlineOID.value)
             # debug_window(json.dumps(info))
             messages = []
             if addNum.value < info.from_address or addNum.value > info.to_address:
