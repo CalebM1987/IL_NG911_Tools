@@ -255,9 +255,7 @@ class NG911Data(metaclass=Singleton):
         # no new ids yet, need to read from nena identifiers table
         log(f'checking nena ids for: "{target}"')
         nenaTab = self.nena_id_table
-        desc = arcpy.Describe(nenaTab)
-        sql_clause=(None, f'ORDER BY {desc.oidFieldName} DESC')
-        with arcpy.da.SearchCursor(nenaTab, ['UniqueID'], sql_clause=sql_clause) as rows:
+        with arcpy.da.SearchCursor(nenaTab, [target]) as rows:
             for r in rows:
                 num = r[0]
                 if num:
