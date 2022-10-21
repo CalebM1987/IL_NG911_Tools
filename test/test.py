@@ -17,14 +17,16 @@ if __name__ == '__main__':
     schemas_dir = os.path.join(NG_911_DIR, 'admin', 'data_structures')
     tables = ['NG911_Tables', 'AgencyInfo', 'CustomFields', 'CustomFields']
     schemaPath = r'C:\Users\caleb.mackey\Documents\Testing\addressing\data'
+    schemaPath = r'C:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911'
     gdbPath = os.path.join(schemaPath, 'IL_NG911_Brown_Master_v3.2.5.gdb')
 
     testStr = 'this is a test with house number {Add_Number}, and street name {St_Name}'
 
     # use config file to create gdb
-    config = load_config()
-    gdbPath = config.ng911GDBPath
-    schemaPath = os.path.dirname(config.ng911GDBSchemasPath)
+    # config = load_config()
+    # print(json.dumps(config, indent=2))
+    # gdbPath = config.ng911GDBPath
+    # schemaPath = os.path.dirname(config.ng911GDBSchemasPath)
     gdb = os.path.join(schemaPath, 'NG911_Schemas.gdb')
     print('gdb???', gdb)
 
@@ -34,7 +36,8 @@ if __name__ == '__main__':
 
     with log_context() as lc:
         # gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'Brown')
-        # ng911_db = get_ng911_db()
+        ng911_db = get_ng911_db()
+        
         # log(f'setup is complete? {ng911_db.setupComplete}')
         # if not ng911_db.setupComplete:
         #     gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'BROWN')
@@ -97,13 +100,13 @@ if __name__ == '__main__':
             "Placement": null
         }
 
-        # ft, schema = create_address_point(pg, **kwargs)
-        schema = DataSchema(DataType.ADDRESS_POINTS)
+        ft, schema = create_address_point(pg, **kwargs)
+        # schema = DataSchema(DataType.ADDRESS_POINTS)
         # ft = schema.create_feature(pg, **kwargs)
         # schema.calculate_custom_fields(ft)
         # ft.calculate_custom_field('DemoField', testStr)
         # print('demo field: ', ft.get('DemoField'))
-        # ft.prettyPrint()
+        ft.prettyPrint()
 
         # ft = schema.find_feature_from_oid(3029)
        
@@ -116,21 +119,21 @@ if __name__ == '__main__':
         # tyler = r'L:\Users\caleb.mackey\Documents\GIS_Data\IL_NG911\Tyler_Test.gdb'
 
         # create testing vendor features
-        for vendor in ['Tyler']:
-            print('vendor: ', vendor)
-            config = load_vendor_config(vendor)
+        # for vendor in ['Tyler']:
+        #     print('vendor: ', vendor)
+        #     config = load_vendor_config(vendor)
 
-            # add fields
-            for schema in config.schemas:
-                print('checking schema type: ', schema.featureType)
-                # table = ng911_db.get_table(schema.featureType)
-                # existing = [f.name for f in arcpy.ListFields(table)]
-                # for fmap in schema.fieldMap:
-                #     if fmap.name not in existing:
-                #         arcpy.AddField_management(table, fmap.name, fmap.type, field_length=fmap.get('length'))
+        #     # add fields
+        #     for schema in config.schemas:
+        #         print('checking schema type: ', schema.featureType)
+        #         # table = ng911_db.get_table(schema.featureType)
+        #         # existing = [f.name for f in arcpy.ListFields(table)]
+        #         # for fmap in schema.fieldMap:
+        #         #     if fmap.name not in existing:
+        #         #         arcpy.AddField_management(table, fmap.name, fmap.type, field_length=fmap.get('length'))
 
-                # add pre-configured CAD Vendor Fields
-                add_preconfigured_cad_vendor_fields(schema.featureType,  vendor)
+        #         # add pre-configured CAD Vendor Fields
+        #         add_preconfigured_cad_vendor_fields(schema.featureType,  vendor)
 
         # roads = find_closest_centerlines(pg)
         # print(json.dumps(roads, indent=2))

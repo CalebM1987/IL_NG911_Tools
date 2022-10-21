@@ -234,20 +234,6 @@ class NG911Data(metaclass=Singleton):
             except:
                 return None
 
-    def get_nena_ids_table(self, target: str) -> str:
-        """fetches the nena ids table for the given target
-
-        Args:
-            target (str): the target type (ADDRESS_POINTS, ROAD_CENTERLINE, etc)
-
-        Returns:
-            str: full path to the nena ids table
-        """
-        nenaTab = os.path.join(self.gdb_path, f'NENA_ID_{target}')
-        print('nena tab is?', nenaTab)
-        if arcpy.Exists(nenaTab):
-            return nenaTab
-
     def get_next_nena_id(self, target: str) -> int:
         """creates a newly incremented integer number for the new nena feature
 
@@ -267,8 +253,8 @@ class NG911Data(metaclass=Singleton):
             return new_id
 
         # no new ids yet, need to read from nena identifiers table
-        log('checking table')
-        nenaTab = self.get_nena_ids_table(target)
+        log(f'checking nena ids for: "{target}"')
+        nenaTab = self.nena_id_table
         desc = arcpy.Describe(nenaTab)
         sql_clause=(None, f'ORDER BY {desc.oidFieldName} DESC')
         with arcpy.da.SearchCursor(nenaTab, ['UniqueID'], sql_clause=sql_clause) as rows:
