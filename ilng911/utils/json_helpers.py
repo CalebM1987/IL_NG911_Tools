@@ -3,11 +3,12 @@ from ..logging import log
 import json
 import os
 
-def load_json(json_file: str):
+def load_json(json_file: str, as_str: bool=False):
     """loads a json file into a Munch (dict)
 
     Args:
         json_file (str): the input json file
+        as_str (bool): option to return the json as a string. Default is False.
 
     Returns:
         Munch: the munchified dict of JSON data
@@ -16,6 +17,8 @@ def load_json(json_file: str):
         json_file += '.json'
     if os.path.exists(json_file):
         with open(json_file, 'r') as f:
+            if as_str:
+                return f.read()
             return munchify(json.load(f))
     raise IOError(f'JSON file "{json_file}" does not exist.')
 

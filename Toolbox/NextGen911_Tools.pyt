@@ -35,50 +35,6 @@ class Toolbox(object):
             # TestTool
         ]
 
-class TestTool(object):
-    def __init__(self):
-        self.label = "Test Tool"
-        self.description = ""
-        self.canRunInBackground = False
-    
-    def getParameterInfo(self):
-        path = arcpy.Parameter(
-            name="Path", 
-            displayName="Path",
-            datatype="DEFeatureClass"
-        )
-
-        fs = arcpy.Parameter(
-            name="Feature_Set",
-            displayName="Feature Set",
-            datatype='DEFeatureClass',#"GPFeatureRecordSetLayer"
-        )
-        return [ path, fs ]
-
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
-    def updateParameters(self, parameters):
-        """Modify the values and properties of parameters before internal
-        validation is performed.  This method is called whenever a parameter
-        has been changed."""
-        return
-
-    def updateMessages(self, parameters):
-        """Modify the messages created by internal validation for each tool
-        parameter.  This method is called after internal validation."""
-        return
-
-    def execute(self, parameters, messages):
-        """The source code of the tool."""
-        import json
-        log(f'path is: "{parameters[0].valueAsText}"')
-
-        with open(r"C:\Users\calebma\Documents\Temp\roadCenterline911.json", 'w') as f:
-            json.dump(parameters[1].valueAsText, indent=2)
-        return
-
 class CreateRoadCenterline(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
@@ -154,14 +110,16 @@ class CreateAddressPoint(object):
         # featureSet.schema.featureType
         # featureSet.schema.geometryType = 'Point'
 
-        fs = arcpy.FeatureSet()
+        # fs = arcpy.FeatureSet()
         # get ng911_db helper
         ng911_db = get_ng911_db()
         points = ng911_db.get_911_table(ng911_db.types.ADDRESS_POINTS)
-        desc = arcpy.Describe(points)
-        where = f"{desc.oidFieldName} IS NULL"
-        renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
-        fs.load(points, where)#, None, json.dumps(renderer), True) # getting error renderer arguments??
+        # desc = arcpy.Describe(points)
+        # where = f"{desc.oidFieldName} IS NULL"
+        ptJson = load_json(os.path.join(helpersDir, 'CreatePointJSON'))
+        renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'), True)
+        # fs.load(points, where)#, None, json.dumps(renderer), True) # getting error renderer arguments??
+        fs = arcpy.FeatureSet(ptJson, renderer=renderer)
 
         featureSet.value = fs
 
@@ -313,6 +271,7 @@ class CreateAddressPoint(object):
             log_params(parameters)
             fs = arcpy.FeatureSet()
             fs.load(parameters[0].value)
+            log(f'type of param0: {type(parameters[0].value)}')
             attrs = {p.name: p.valueAsText for p in parameters[3:]}
             roadOID = parameters[2].value
             fsJson = munchify(json.loads(fs.JSON))
@@ -320,7 +279,7 @@ class CreateAddressPoint(object):
             geomJson["spatialReference"] = {"wkid": 4326 }
             pt = arcpy.AsShape(geomJson, True)
             ft, schema = create_address_point(pt, roadOID, **attrs)
-            ft.prettyPrint()
+            # ft.prettyPrint()
             try: 
                 # try to remove feature set layer
                 aprx = arcpy.mp.ArcGISProject('current')

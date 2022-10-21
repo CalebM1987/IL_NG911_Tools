@@ -133,6 +133,11 @@ def log_params(parameters: List[arcpy.Parameter]):
                 params[p.name] = p.valueAsText
         else:
             params[p.name] = p.valueAsText
+
+    try:
+        params['user'] = os.getenv('username')
+    except:
+        pass
     log(f'Input Parameters:\n{json.dumps(params, indent=2)}\n')
 
 
