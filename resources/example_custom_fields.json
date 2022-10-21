@@ -9,7 +9,7 @@
            {
                "TargetTable": "ADDRESS_POINTS",
                "FieldName": "GC_Address_wMSAGCOMM",
-               "Expression": "{Add_Number} {St_Name} {St_PosType} {MSAGComm}"
+               "Expression": "{Add_Number} {St_Name} {St_PosTyp} {MSAGComm}"
            }
        ]
 }

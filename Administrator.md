@@ -35,6 +35,32 @@ These tools also include the ability to populate custom fields based on expressi
 
 #### creating an expression
 
+Custom expressions can be created by combining plain text and field tokens. The field tokens must be fields contained within the database table. The fields are calculated after the new point has been created and all other attributes have been pulled over from the street centerlines data. 
+
+In the following example, we will define two custom field expressions as shown below:
+
+![custom field expressions](/resources/images/custom-fields-tool.png)
+
+In this example, two fields are being calculated:
+
+* `GC_ADDRESS_wZIP` - a concatenation of the address and zip code
+  * the expression `{Add_Number} {St_Name} {St_PosTyp} {Post_Code}` is concatenating the `Add_Number`, `St_Name`, `St_PosTyp`, and `{Post_Code}`.  
+  
+  * This forms a value that looks like: `"142 MAIN STREET 62353"`
+  
+* `GC_Address_wMSAGCOMM` - concatenation of the address and MSAG community name
+  * this concatenates the same address fields, but the `MSAGComm` field instead of `Post_Code` 
+  * This forms a value that looks like: `"142 MAIN STREET MOUNT STERLING"`
+  
+This tool will also take care of trimming any extra white space between and around words. It is also possible to combine plain text with the field names. An example would be to calculate the address range for a segment in the `Road Centerlines`.  Setting an expression of `{FromAddr_L} to {ToAddr_L}` should yeild a value like `100 to 142`.
+
+#### special convenience tokens
+
+Aside from the available field tokens based on the schema, there are also some convenience tokens that can be used:
+
+* `PreDirectionAbbr` - prefix direction abbreviation (ex: `NORTHEAST` -> `NE`, `SOUTH` -> `S`, etc)
+* `PostDirectionAbbr` - prefix direction abbreviation (ex: `NORTHEAST` -> `NE`, `SOUTH` -> `S`, etc)
+
 ### Create CAD Vendor Fields (Optional)
 
 ## Setup ArcGIS Pro Document
