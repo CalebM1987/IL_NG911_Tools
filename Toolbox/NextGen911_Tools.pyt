@@ -232,7 +232,7 @@ class CreateAddressPoint(object):
             roadOID = None
             try:
                 # roadsLyr = ng911_db.get_911_layer(ng911_db.types.ROAD_CENTERLINE, check_map=True)
-                with arcpy.da.SearchCursor(roadsLyr, ['OID@']) as rows:
+                with arcpy.da.SearchCursor(roadsLyr.value, ['OID@']) as rows:
                     roadOID = [r[0] for r in rows][0]
                     debug_window(f'oid is? {roadOID}')
                     log(f'fetched road oid from selection: {roadOID}')
