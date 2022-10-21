@@ -165,6 +165,14 @@ class CreateAddressPoint(object):
 
         featureSet.value = fs
 
+        roadsLyr = arcpy.Parameter(
+            name='roadsLyr',
+            displayName="Roads Layer",
+            direction="Input",
+            datatype="GPFeatureLayer",
+            parameterType="Required"
+        )
+
         centerlineOID = arcpy.Parameter(
             name="centerlineOID",
             displayName="Road Centerline",
@@ -173,28 +181,6 @@ class CreateAddressPoint(object):
             enabled=False,
             parameterType='Required'
         )
-        roadOID = None
-        try:
-            roadLyr = ng911_db.get_911_layer(ng911_db.types.ROAD_CENTERLINE, check_map=True)
-            with arcpy.da.SearchCursor(roadLyr, ['OID@']) as rows:
-                roadOID = [r[0] for r in rows][0]
-                # debug_window(f'oid is? {roadOID}')
-                log(f'fetched road oid from selection: {roadOID}')
-        except IndexError:
-            # debug_window(f'using hard coded oid: {roadOID}')
-            log('could not fetch road oid')
-        
-        if roadOID:
-            centerlineOID.value = roadOID
-        else:
-            centerlineOID.enabled = True
-        
-        # centerlineOID.enabled = False
-        # centerline = DataSchema(DataType.ROAD_CENTERLINE)
-        # with arcpy.da.SearchCursor(centerline.table, ['OID@']) as rows:
-        #     centerlineOID.filter.list = [r[0] for r in rows]
-
-        params = [featureSet, centerlineOID]
 
         # check for custom populated fields, add to filters
         custFieldsTab = ng911_db.get_table(ng911_db.schemaTables.CUSTOM_FIELDS)
@@ -215,7 +201,13 @@ class CreateAddressPoint(object):
         with arcpy.da.SearchCursor(vendorFieldsTab, ['FeatureType', 'FieldName'], where_clause=where) as rows:
             vendorFields = [r[1] for r in rows]
 
+
         filters = STREET_ATTRIBUTES + custFields + overlayFields + vendorFields
+        params = [
+            featureSet, 
+            roadsLyr, 
+            centerlineOID
+        ]
         params.extend(table_to_params(DataSchema(DataType.ADDRESS_POINTS), filters=filters))
         # for p in params[2:]:
         #     p.enabled = False
@@ -230,6 +222,29 @@ class CreateAddressPoint(object):
         """Modify the values and properties of parameters before internal
         validation is performed.  This method is called whenever a parameter
         has been changed."""
+    
+        roadsLyr = [p for p in parameters if p.name == 'roadsLyr'][0]
+        centerlineOID = [p for p in parameters if p.name == 'centerlineOID'][0]
+        # debug_window(f'update params {roadsLyr.altered}, {bool(roadsLyr.value)}', 'udpate params')
+
+        if roadsLyr.value and (not centerlineOID.value or not centerlineOID.altered):
+       
+            roadOID = None
+            try:
+                # roadsLyr = ng911_db.get_911_layer(ng911_db.types.ROAD_CENTERLINE, check_map=True)
+                with arcpy.da.SearchCursor(roadsLyr, ['OID@']) as rows:
+                    roadOID = [r[0] for r in rows][0]
+                    debug_window(f'oid is? {roadOID}')
+                    log(f'fetched road oid from selection: {roadOID}')
+            except IndexError:
+                # debug_window(f'using hard coded oid: {roadOID}')
+                log('could not fetch road oid')
+            
+            if roadOID:
+                centerlineOID.value = roadOID
+            else:
+                centerlineOID.enabled = True
+
         # if parameters[0].altered and parameters[0].value and not parameters[1].value: #not parameters[1].altered:# and int(arcpy.GetCount_management(parameters[0].value).getOutput(0)):
             
         #     debug_window(parameters[0].valueAsText)
