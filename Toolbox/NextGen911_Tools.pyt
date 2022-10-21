@@ -29,7 +29,7 @@ class Toolbox(object):
 
         # List of tool classes associated with this toolbox
         self.tools = [
-            # CreateRoadCenterline,
+            CreateRoadCenterline,
             CreateAddressPoint,
             RunAddressValidation
             # TestTool
