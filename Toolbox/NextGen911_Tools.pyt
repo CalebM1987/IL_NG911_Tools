@@ -306,8 +306,8 @@ class CreateAddressPoint(object):
             log_params(parameters)
             fs = arcpy.FeatureSet()
             fs.load(parameters[0].value)
-            attrs = {p.name: p.valueAsText for p in parameters[2:]}
-            roadOID = parameters[1].value
+            attrs = {p.name: p.valueAsText for p in parameters[3:]}
+            roadOID = parameters[2].value
             fsJson = munchify(json.loads(fs.JSON))
             geomJson = fsJson.features[0].get('geometry')
             geomJson["spatialReference"] = {"wkid": 4326 }
