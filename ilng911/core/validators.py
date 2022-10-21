@@ -243,7 +243,7 @@ def validate_address(pt: Feature, road: Union[Feature, int]=None, addresses=None
 
         shortest = min(distances.keys())  
         road = roadSchema.fromRow(fields, distances.get(shortest))
-        road.prettyPrint()
+        # road.prettyPrint()
                 
     else:
         if isinstance(road, int):

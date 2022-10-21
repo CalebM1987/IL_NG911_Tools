@@ -99,5 +99,25 @@ It is strongly recommended to set up an ArcGIS Pro task to streamline the Addres
   
   ![create point](/resources/images/task-08-create-address.png)
   8. Under `Actions`, hit the record button and once recording open the `NextGen911_Tools.pyt` and hit the `Create Address Point` tool inside the `Create Features` toolset:
-  9.  Add another action for `When exiting the step` to `Clear Selection` so that once the task is finished it will clear the selection. The summary should look like this:
-  10.  That is all for the task setup. Be sure to save the Pro document to save the task changes. This task is now ready to be ran once you close the `Task Designer` pane.
+  
+  ![task-9](/resources/images/task-09-choose-tool.png)
+
+
+  9. Once the tool dialog opens you don't need to do anything. Switch back into the task editor and click the edit button next to the `Create Address Point` action:
+   
+  ![task-9b](/resources/images/task-09b-preset-params.png
+
+  10. This should open the tool dialog. The only thing we need to do here is select your Roads Centerline data from the `Roads Layer` dropdown. Hit `Done` when it is selected:
+   
+  ![task-10](/resources/images/task-10-select-layer-dropdown.png)
+  
+  11. The last thing to do is add another action for `When exiting the step` to `Clear Selection` so that once the task is finished it will clear the selection. Hit `Done`.
+  
+  ![task-11](/resources/images/task-11-clear-selection.png)
+
+  12. The task summary should look like this:
+  
+  ![task-12](/resources/images/task-12-summary.png)
+  
+  13. That is all for the task setup. **Be sure to save the Pro document to save the task changes**. This task is now ready to be ran once you close the `Task Designer` pane.
+  
