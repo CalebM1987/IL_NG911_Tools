@@ -227,7 +227,7 @@ class CreateAddressPoint(object):
         centerlineOID = [p for p in parameters if p.name == 'centerlineOID'][0]
         # debug_window(f'update params {roadsLyr.altered}, {bool(roadsLyr.value)}', 'udpate params')
 
-        if roadsLyr.value and (not centerlineOID.value or not centerlineOID.altered):
+        if roadsLyr.value:
        
             roadOID = None
             try:
@@ -275,7 +275,13 @@ class CreateAddressPoint(object):
         """Modify the messages created by internal validation for each tool
         parameter.  This method is called after internal validation."""
         addNum = [p for p in parameters if p.name == FIELDS.ADDRESS.NUMBER][0]
+        roadsLyr = [p for p in parameters if p.name == 'roadsLyr'][0]
         centerlineOID = [p for p in parameters if p.name == 'centerlineOID'][0]
+        if roadsLyr.value:
+            count = int(arcpy.management.GetCount(roadsLyr.value).getOutput(0))
+            if count != 1:
+                roadsLyr.setWarningMessage(f'please make sure only ONE feature is selected!')
+                
         if addNum.value and centerlineOID.value and parameters[0].altered and not addNum.hasBeenValidated:
             # debug_window(f'Calling Address Number Validation NOw? {addNum.value}')
             with arcpy.da.SearchCursor(parameters[0].value, ['SHAPE@']) as rows:
