@@ -13,7 +13,7 @@ from ilng911.geoprocessing import log_params, table_to_params, debug_window
 from ilng911.schemas import DataType, DataSchema
 from ilng911.support.munch import munchify
 from ilng911.core.address import STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES, create_address_point, get_range_and_parity, find_closest_centerlines
-from ilng911.core.fields import FIELDS
+from ilng911.core.fields import FIELDS, POINT_SIDE_MAPPING
 from ilng911.core.validators import run_address_validation
 from ilng911.utils.json_helpers import load_json
 from ilng911.logging import log, log_context
@@ -201,8 +201,9 @@ class CreateAddressPoint(object):
         with arcpy.da.SearchCursor(vendorFieldsTab, ['FeatureType', 'FieldName'], where_clause=where) as rows:
             vendorFields = [r[1] for r in rows]
 
+        parityFields = [p.get('pt') for p in POINT_SIDE_MAPPING]
 
-        filters = STREET_ATTRIBUTES + custFields + overlayFields + vendorFields
+        filters = STREET_ATTRIBUTES + custFields + overlayFields + vendorFields + parityFields
         params = [
             featureSet, 
             roadsLyr, 
@@ -281,7 +282,7 @@ class CreateAddressPoint(object):
             count = int(arcpy.management.GetCount(roadsLyr.value).getOutput(0))
             if count != 1:
                 roadsLyr.setWarningMessage(f'please make sure only ONE feature is selected!')
-                
+
         if addNum.value and centerlineOID.value and parameters[0].altered and not addNum.hasBeenValidated:
             # debug_window(f'Calling Address Number Validation NOw? {addNum.value}')
             with arcpy.da.SearchCursor(parameters[0].value, ['SHAPE@']) as rows:
