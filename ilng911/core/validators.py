@@ -312,8 +312,8 @@ def run_address_validation():
     ng911_db = get_ng911_db()
     desc = arcpy.Describe(ng911_db.addressPoints)
 
-    addresses = arcpy.management.MakeFeatureLayer(ng911_db.addressPoints, f'AddressPoints')
-    roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines,  f'RoadCenterlines')
+    addresses = arcpy.management.MakeFeatureLayer(ng911_db.addressPoints, f'Address_Points')
+    roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines,  f'Road_Centerlines')
 
     # get all checked nena identifiers
     with arcpy.da.SearchCursor(ng911_db.validatedAddresses, ['NENA_GUID']) as rows:
@@ -343,7 +343,7 @@ def run_address_validation():
         addressSchema = DataSchema(DataType.ADDRESS_POINTS)
         addrFields = [f.name for f in desc.fields if f.type not in ('OID', 'Geometry')] + ['OID@', 'SHAPE@']
         nenaIdx = addrFields.index(addressSchema.nenaIdentifier)
-        processes = min([chunkSize, os.cpu_count() * 2])
+        # processes = min([chunkSize, os.cpu_count() * 2])
         log(addrFields)
         log(nenaIdx)
 
