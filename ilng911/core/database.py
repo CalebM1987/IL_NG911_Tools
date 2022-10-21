@@ -381,7 +381,7 @@ class NG911Data(metaclass=Singleton):
             tab = self.get_table(name)
         else:
             tab = name
-        print('tab is::::', tab)
+       
         if not view_name:
             view_name = f'{os.path.basename(name)}_{date_to_mil()}'
 
@@ -390,7 +390,7 @@ class NG911Data(metaclass=Singleton):
     # def load_911_schema(self, name: str) -> Munch:
     #     return load_schema(name)      
 
-    def get_911_layer(self, name: str, check_map=False) -> arcpy._mp.Layer:
+    def get_911_layer(self, name: str, where=None, check_map=False) -> arcpy._mp.Layer:
         """gets a NG 911 feature class as a arcpy._mp.Layer
 
         Args:
@@ -413,7 +413,7 @@ class NG911Data(metaclass=Singleton):
                                     return lyr
                 except:
                     log(f"layer for {name} not found in map, or running standalone")
-            return arcpy.management.MakeFeatureLayer(fc).getOutput(0)
+            return arcpy.management.MakeFeatureLayer(fc, where_clause=where).getOutput(0)
         return None
 
     def get_domain(self, name: str, workspace=None) -> dict:

@@ -312,8 +312,10 @@ def run_address_validation():
     ng911_db = get_ng911_db()
     desc = arcpy.Describe(ng911_db.addressPoints)
 
-    addresses = arcpy.management.MakeFeatureLayer(ng911_db.addressPoints, f'Address_Points')
-    roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines,  f'Road_Centerlines')
+    # addresses = arcpy.management.MakeFeatureLayer(ng911_db.addressPoints, f'Address_Points')
+    # roads = arcpy.management.MakeFeatureLayer(ng911_db.roadCenterlines,  f'Road_Centerlines')
+    addresses = ng911_db.get_911_layer(ng911_db.types.ADDRESS_POINTS, check_map=True)
+    roads = ng911_db.get_911_layer(ng911_db.types.ROAD_CENTERLINE)
 
     # get all checked nena identifiers
     with arcpy.da.SearchCursor(ng911_db.validatedAddresses, ['NENA_GUID']) as rows:
@@ -321,9 +323,9 @@ def run_address_validation():
 
     count = int(arcpy.management.GetCount(ng911_db.addressPoints).getOutput(0))
     
-    if count > 1000:
+    if count > 1000: 
 
-        minMax = r'in_memory\minMaxOIDs'
+        minMax = r'memory\minMaxOIDs'
         arcpy.analysis.Statistics(ng911_db.addressPoints, minMax, [[desc.oidFieldName, 'MIN'], [desc.oidFieldName, 'MAX']])
 
         # get min and max OIDs
