@@ -26,11 +26,6 @@
             "name": "AddCADVendorFields", 
             "params": [
                 {
-                    "name": "cad_path",
-                    "displayName": "CAD Table Path",
-                    "datatype": "GPTableView"
-                },
-                {
                     "name": "featureType",
                     "displayName": "911 Feature Type",
                     "datatype": "GPString",

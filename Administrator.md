@@ -27,6 +27,10 @@ Here is a breakdown of all the tables:
 
 ### Create Schemas Tool (Optional)
 
+This tool only needs to be ran if the `NG911_Tables` has empty records after running the `Create NG911 Schema Geodatabase` tool. This tool will allow you to manually register the 911 layers with the schemas database. You can also update the `NENA` prefixes per feature type:
+
+![schemas tool](/resources/images/create-schemas-tool.png)
+
 ### Create Custom fields (Optional)
 
 These tools also include the ability to populate custom fields based on expressions when creating new 911 features. The `Create Custom Fields` tool can be used to store the expressions along with their corresponding fields. An expression can be defined using plain text and field tokens, where the field name is contained within curly braces `{FieldName}`. 
@@ -62,6 +66,10 @@ Aside from the available field tokens based on the schema, there are also some c
 * `PostDirectionAbbr` - prefix direction abbreviation (ex: `NORTHEAST` -> `NE`, `SOUTH` -> `S`, etc)
 
 ### Create CAD Vendor Fields (Optional)
+
+This tool is very similar to the `Create Custom Fields` tools, excpet these also register a `CAD Vendor` for each custom field.
+
+There is also a tool to add `PreConfigured CAD Vendor` fields based on a given vendor. For this, simply point to the feature type and select a pre-configured vendor from the list. This tool will take care of adding any necessary fields and registering the custom expressions.
 
 ## Setup ArcGIS Pro Document
 
