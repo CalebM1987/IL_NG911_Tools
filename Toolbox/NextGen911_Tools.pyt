@@ -110,16 +110,17 @@ class CreateAddressPoint(object):
         # featureSet.schema.featureType
         # featureSet.schema.geometryType = 'Point'
 
-        # fs = arcpy.FeatureSet()
+        fs = arcpy.FeatureSet()
         # get ng911_db helper
         ng911_db = get_ng911_db()
         points = ng911_db.get_911_table(ng911_db.types.ADDRESS_POINTS)
         # desc = arcpy.Describe(points)
         # where = f"{desc.oidFieldName} IS NULL"
         ptJson = load_json(os.path.join(helpersDir, 'CreatePointJSON'))
-        # renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'), True)
+        renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'), True)
         # fs.load(points, where)#, None, json.dumps(renderer), True) # getting error renderer arguments??
-        fs = arcpy.FeatureSet(ptJson)#, renderer=renderer)
+        # fs = arcpy.FeatureSet(ptJson)#, renderer=renderer)
+        fs.load(ptJson, None, None, renderer, True)
 
         featureSet.value = fs
 

@@ -1,6 +1,11 @@
 {
     "fields": [
         {
+          "name": "OBJECTID",
+          "alias": "OBJECTID",
+          "type": "esriFieldTypeOID"
+        },
+        {
             "name": "AgencyName",
             "alias": "Agency Name",
             "type": "esriFieldTypeString",

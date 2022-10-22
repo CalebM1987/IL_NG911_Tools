@@ -146,6 +146,17 @@ class InsertCursor(object):
             self.fields = self.args[1]
         self.indexLookup = {f: i for i,f in enumerate(self.fields or [])}
 
+    def teardown(self):
+        if not self.alreadyInEditSession and self.edit:
+            try:
+                self.edit.stopOperation()
+                self.edit.stopEditing(True)
+            except Exception as e:
+                warnings.warn("Exception On Insert Cursor! Records May Not Have Inserted: {}".format(e))
+                raise e
+    
+        self.edit = None
+
     def __enter__(self):
         ws = None
         if self.args:
@@ -167,18 +178,14 @@ class InsertCursor(object):
                 self.alreadyInEditSession = True
                 return self.cursor
             else:
-                raise e
+                # raise e
+                # errors with edit session, stop editing and try outside of edit session
+                self.teardown()
+                self.cursor = NGInsertCursor(*self.args, **self.kwargs)
+                return self.cursor
 
     def __exit__(self, type, value, traceback):
-        if not self.alreadyInEditSession:
-            try:
-                self.edit.stopOperation()
-                self.edit.stopEditing(True)
-            except Exception as e:
-                warnings.warn("Exception On Insert Cursor! Records May Not Have Inserted: {}".format(e))
-                raise e
-    
-        self.edit = None
+        self.teardown()
         try:
             del self.cursor
         except:
@@ -204,6 +211,15 @@ class UpdateCursor(object):
             self.fields = self.args[1]
         self.indexLookup = {f: i for i,f in enumerate(self.fields or [])}
 
+    def teardown(self):
+        if not self.alreadyInEditSession and self.edit:
+            try:
+                self.edit.stopOperation()
+                self.edit.stopEditing(True)
+            except Exception as e:
+                warnings.warn("Exception On Update Cursor! Records May Not Have Updated: {}".format(e))
+            
+        self.edit = None
 
     def __enter__(self):
         ws = None
@@ -226,17 +242,14 @@ class UpdateCursor(object):
                 self.alreadyInEditSession = True
                 return self.cursor
             else:
-                raise e
+                 # raise e
+                # errors with edit session, stop editing and try outside of edit session
+                self.teardown()
+                self.cursor = NGUpdateCursor(*self.args, **self.kwargs)
+                return self.cursor
 
     def __exit__(self, type, value, traceback):
-        if not self.alreadyInEditSession:
-            try:
-                self.edit.stopOperation()
-                self.edit.stopEditing(True)
-            except Exception as e:
-                warnings.warn("Exception On Update Cursor! Records May Not Have Updated: {}".format(e))
-            
-        self.edit = None
+        self.teardown()
         try:
             del self.cursor
         except:

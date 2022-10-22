@@ -1,6 +1,11 @@
 {
     "fields": [
       {
+        "name": "OBJECTID",
+        "alias": "OBJECTID",
+        "type": "esriFieldTypeOID"
+      },
+      {
         "name": "TableName",
         "alias": "Spatial Join Table Name",
         "type": "esriFieldTypeString",

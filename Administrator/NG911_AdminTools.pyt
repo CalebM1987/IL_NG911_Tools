@@ -72,7 +72,7 @@ class CreateNG911SchemaGeoDatabase(object):
 
         # set workspace filters
         ng911_gdb.filter.list = ['LocalDatabase', 'RemoteDatabase']
-        schemas_gdb_path.filter.list = ['FileSystem']
+        schemas_gdb_path.filter.list = ['FileSystem', 'RemoteDatabase']
 
         # get list of counties
         agency_file = os.path.join(NG_911_DIR, 'admin', 'agencyInfos')

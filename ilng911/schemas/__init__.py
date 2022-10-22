@@ -18,9 +18,6 @@ from ..utils.helpers import find_nena_guid_field
 
 schemasDir = os.path.join(os.path.dirname(__file__), '_schemas')
 
-# get ng911_db helper
-ng911_db = get_ng911_db()
-
 class DataType(PropIterator):
     ADDRESS_POINTS="AddressPoints"
     ROAD_CENTERLINE="RoadCenterline"
@@ -74,7 +71,8 @@ class DataSchema(FeatureBase):
 
     def __init__(self, name: str):
         self._schema = load_schema(name)
-        self.table = ng911_db.get_911_table(name)
+        self.ng911_db = get_ng911_db()
+        self.table = self.ng911_db.get_911_table(name)
         self._features = []
         self._commited = []
 
@@ -110,7 +108,7 @@ class DataSchema(FeatureBase):
     def vendorFields(self):
         where = f"FeatureType = '{self.name}'"
         print('vendor fields where: ', where)
-        table = ng911_db.get_table(ng911_db.schemaTables.CAD_VENDOR_FIELDS)
+        table = self.ng911_db.get_table(self.ng911_db.schemaTables.CAD_VENDOR_FIELDS)
 
         feats = {}
         with arcpy.da.SearchCursor(table, ['FeatureType', 'FieldName', 'Expression'], where) as rows:
@@ -129,7 +127,7 @@ class DataSchema(FeatureBase):
 
     @lazyprop
     def customFields(self):
-        table = ng911_db.get_table(ng911_db.schemaTables.CUSTOM_FIELDS)
+        table = self.ng911_db.get_table(self.ng911_db.schemaTables.CUSTOM_FIELDS)
         log(f'table for custom fields is: {table}')
         where = f"TargetTable = '{self._schema.featureType}'"
         # fieldNames = [f.name for f in arcpy.ListFields(table)]
@@ -163,7 +161,7 @@ class DataSchema(FeatureBase):
     def agencyPrefix(self): 
         where = f"Basename = '{self._schema.layer}'"
         prefix = ''
-        table = ng911_db.get_table(ng911_db.schemaTables.NG911_TABLES)
+        table = self.ng911_db.get_table(self.ng911_db.schemaTables.NG911_TABLES)
         with arcpy.da.SearchCursor(table, ['NENA_Prefix', 'Basename'], where) as rows:
             try:
                 prefix = [r[0] for r in rows][0]
@@ -182,8 +180,8 @@ class DataSchema(FeatureBase):
         Returns:
             str: the NENA identifier
         """
-        new_id = ng911_db.get_next_nena_id(self.name) 
-        return f'{self.agencyPrefix}{new_id}@{ng911_db.agencyID}'
+        new_id = self.ng911_db.get_next_nena_id(self.name) 
+        return f'{self.agencyPrefix}{new_id}@{self.ng911_db.agencyID}'
         
 
     def calculate_custom_fields(self, ft: Feature):
@@ -222,7 +220,7 @@ class DataSchema(FeatureBase):
         Returns:
             arcpy._mp.Layer: the feature layer
         """
-        return ng911_db.get_911_layer(self._schema.layer)
+        return self.ng911_db.get_911_layer(self._schema.layer)
 
     def create_feature(self, geometry: arcpy.Geometry=None, **kwargs) -> Feature:
         """create a new feature
@@ -235,9 +233,9 @@ class DataSchema(FeatureBase):
         """
         if self._schema.layer == DataType.ADDRESS_POINTS:
             kwargs.update({
-                LOCATION_FIELDS.STATE: ng911_db.state,
-                LOCATION_FIELDS.COUNTRY: ng911_db.country,
-                LOCATION_FIELDS.COUNTY: f'{ng911_db.county} COUNTY'
+                LOCATION_FIELDS.STATE: self.ng911_db.state,
+                LOCATION_FIELDS.COUNTRY: self.ng911_db.country,
+                LOCATION_FIELDS.COUNTY: f'{self.ng911_db.county} COUNTY'
             })
     
         if self.nenaIdentifier not in kwargs:
@@ -358,6 +356,6 @@ class DataSchema(FeatureBase):
             log(f"Created NENA Identifier for {count} features in {self._schema.layer} table.")
 
         # now register new nena highest id with identifiers table
-        ng911_db.save_nena_id(self.name)
-        log(f'registered new NENA Identifier in "{self.name}" table for numeric id {ng911_db.new_nena_ids.get(self.name)}')
+        self.ng911_db.save_nena_id(self.name)
+        log(f'registered new NENA Identifier in "{self.name}" table for numeric id {self.ng911_db.new_nena_ids.get(self.name)}')
         return count

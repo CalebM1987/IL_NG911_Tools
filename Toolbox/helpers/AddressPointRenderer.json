@@ -1,4 +1,5 @@
 {
+  "renderer": {
     "type": "simple",
     "symbol": {
       "type": "esriSMS",
@@ -25,4 +26,7 @@
         "style": "esriSLSSolid"
       }
     }
-  }
+  },
+  "label": "",
+  "description": ""
+}

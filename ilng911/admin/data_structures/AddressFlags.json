@@ -5,6 +5,11 @@
     },
     "fields": [
       {
+        "name": "OBJECTID",
+        "alias": "OBJECTID",
+        "type": "esriFieldTypeOID"
+      },
+      {
         "name": "NENA_GUID",
         "alias": "NENA GUID",
         "type": "esriFieldTypeString",

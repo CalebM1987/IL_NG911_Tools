@@ -1,6 +1,11 @@
 {
     "fields": [
       {
+        "name": "OBJECTID",
+        "alias": "OBJECTID",
+        "type": "esriFieldTypeOID"
+      },
+      {
         "name": "TargetTable",
         "alias": "911 Feature Table Type",
         "type": "esriFieldTypeString",

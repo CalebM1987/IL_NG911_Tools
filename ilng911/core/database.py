@@ -75,9 +75,9 @@ class NG911Data(metaclass=Singleton):
         self.requiredTables = []
         self.setup()
         
-    def setup(self):
+    def setup(self, force=False):
         """setup feature class registration"""
-        if self.setupComplete:
+        if self.setupComplete and not force:
             return 
         
         log('ng911 database setup initializing')

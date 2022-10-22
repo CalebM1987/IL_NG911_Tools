@@ -12,8 +12,8 @@
     "type": "esriFieldTypeOID"
    },
    {
-    "name": "centerlinOID",
-    "alias": "Centerline OID",
+    "name": "TargetOID",
+    "alias": "Target OID",
     "type": "esriFieldTypeInteger"
    }
   ],
