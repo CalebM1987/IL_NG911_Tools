@@ -245,8 +245,10 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
        
         # find max id
         # where = f'{guid_field} is not null'
+        desc = arcpy.Describe(path)
+        oidField = desc.oidFieldName
         if guid_field:
-            sql_clause = ('TOP 1', f'ORDER BY {guid_field} DESC')
+            sql_clause = ('TOP 1', f'ORDER BY {oidField} DESC')
             with arcpy.da.SearchCursor(path, [guid_field], sql_clause=sql_clause) as rows:
                 for r in rows:
                     try:
