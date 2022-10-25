@@ -248,7 +248,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
         desc = arcpy.Describe(path)
         oidField = desc.oidFieldName
         if guid_field:
-            sql_clause = ('TOP 1', f'ORDER BY {oidField} DESC')
+            sql_clause = (None, f'ORDER BY {oidField} DESC')
             with arcpy.da.SearchCursor(path, [guid_field], sql_clause=sql_clause) as rows:
                 for r in rows:
                     try:
@@ -261,6 +261,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
                         uid = guid
                         nena_ids[target]['uid'] = guid
                         log(f'found MAX NENA Identifier for "{target}": {uid}')
+                    break
 
     # populate guids
     fields = list(nena_ids.keys())
