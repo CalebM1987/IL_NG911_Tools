@@ -261,7 +261,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
                         uid = guid
                         nena_ids[target]['uid'] = guid
                         log(f'found MAX NENA Identifier for "{target}": {uid}')
-                    break
+                        break
 
     # populate guids
     fields = list(nena_ids.keys())
