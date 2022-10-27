@@ -183,3 +183,8 @@ because the bugs can be easily tracked and fixed with Github.
 > Note: Each time a tool runs, a log file will also be created in the
 > `Logs` folder inside the `IL_NG911_Tools` folder. It may be useful to
 > include the log file when submitting the issue.
+
+
+### Issues and Enhancements
+
+if you run into an issue running these tools, please be sure to submit an issue to the GitHub page. Include as much information as you can including any error messages as that makes it easier to fix bugs.
