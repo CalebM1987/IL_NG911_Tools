@@ -202,7 +202,9 @@ def get_drawing_featureset(target: str=NG911LayerTypes.ADDRESS_POINTS) -> arcpy.
     #     renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
 
     # create a temp feature class
-    fc = arcpy.management.CreateFeatureclass('in_memory', timestamp(f'{target}', suffix=''), shapeType.upper()).getOutput(0)
+    name = timestamp(f'{target}', suffix='')
+    sr = arcpy.SpatialReference(4326)
+    fc = arcpy.management.CreateFeatureclass('in_memory', name, shapeType.upper(), spatial_reference=sr).getOutput(0)
     arcpy.management.AddField(fc, 'Target_OID', 'LONG')
 
 
