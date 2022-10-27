@@ -282,7 +282,6 @@ class NG911Data(metaclass=Singleton):
         if fields:
             count = int(arcpy.management.GetCount(nenaTab).getOutput(0))
             row = [nena_ids.get(f, {}).get('uid', 1) or 1 for f in fields]
-            print(row)
             self.new_nena_ids = munchify(dict(zip(fields, row)))
             if not count:
                 with InsertCursor(nenaTab, fields) as irows:
