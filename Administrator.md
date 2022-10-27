@@ -1,17 +1,17 @@
 -   [Administrator
-    Setup](#administrator-setup){#toc-administrator-setup}
+    Setup](#administrator-setup)
     -   [Run the `1. Create NG911 Schema Geodatabase`
-        Tool](#run-the-1.-create-ng911-schema-geodatabase-tool){#toc-run-the-1.-create-ng911-schema-geodatabase-tool}
+        Tool](#run-the-1.-create-ng911-schema-geodatabase-tool)
     -   [Create Schemas Tool
-        (Optional)](#create-schemas-tool-optional){#toc-create-schemas-tool-optional}
+        (Optional)](#create-schemas-tool-optional)
     -   [Create Custom fields
-        (Optional)](#create-custom-fields-optional){#toc-create-custom-fields-optional}
+        (Optional)](#create-custom-fields-optional)
     -   [Create CAD Vendor Fields
-        (Optional)](#create-cad-vendor-fields-optional){#toc-create-cad-vendor-fields-optional}
+        (Optional)](#create-cad-vendor-fields-optional)
 -   [Setup ArcGIS Pro
-    Document](#setup-arcgis-pro-document){#toc-setup-arcgis-pro-document}
+    Document](#setup-arcgis-pro-document)
     -   [Setup ArcGIS Pro
-        Task](#setup-arcgis-pro-task){#toc-setup-arcgis-pro-task}
+        Task](#setup-arcgis-pro-task)
 
 ## Administrator Setup
 
@@ -236,3 +236,5 @@ the `Create Features` toolset:
 13. That is all for the task setup. **Be sure to save the Pro document
     to save the task changes**. This task is now ready to be ran once
     you close the `Task Designer` pane.
+
+Instructions for running the task can be found on the [README](./README.md#running-the-create-address-point-arcgis-pro-task)
