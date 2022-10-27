@@ -251,10 +251,10 @@ class NG911Data(metaclass=Singleton):
             nena_ids = {r[0]: { 'path': r[1], 'guid_field': r[2], 'uid': None} for r in rows}
 
         for target, info in nena_ids.items():
-            if not self.new_nena_ids.get(target, {}).get('uid'):
+            if not info.get('uid'):
                 path = info.get('path')
                 guid_field = info.get('guid_field')
-                uid = info.get('uid') or 1
+                uid = 1
                 if target not in nena_fields:
                     arcpy.mangement.AddField(self.nena_id_table, target, 'LONG')
                     log(f'added NENA Identifier field: "{target}"')
@@ -281,7 +281,9 @@ class NG911Data(metaclass=Singleton):
         fields = list(nena_ids.keys())
         if fields:
             count = int(arcpy.management.GetCount(nenaTab).getOutput(0))
-            row = [nena_ids.get(f, {}).get('uid') for f in fields]
+            row = [nena_ids.get(f, {}).get('uid', 1) or 1 for f in fields]
+            print(row)
+            self.new_nena_ids = munchify(dict(zip(fields, row)))
             if not count:
                 with InsertCursor(nenaTab, fields) as irows:
                     irows.insertRow(row)
@@ -298,14 +300,6 @@ class NG911Data(metaclass=Singleton):
                             log(f'removed NENA IDs row at index: {i}')
             
         log('registered nena ids')
-
-        # update dict
-        if arcpy.Exists(self.nena_id_table):
-            fields = [f.name for f in arcpy.ListFields(self.nena_id_table) if f.name in self.types.__props__]
-            with arcpy.da.SearchCursor(self.nena_id_table, fields) as rows:
-                for r in rows:
-                    self.new_nena_ids = munchify(dict(zip(fields, r)))
-                    break
 
 
     def get_next_nena_id(self, target: str) -> int:

@@ -190,7 +190,7 @@ def get_drawing_featureset(target: str=NG911LayerTypes.ADDRESS_POINTS) -> arcpy.
     """
     ng911_db = get_ng911_db()
     desc = arcpy.Describe(ng911_db.get_911_table(target))
-    debug_window(ng911_db.get_911_table(target))
+    # debug_window(ng911_db.get_911_table(target))
     shapeType = desc.shapeType
     # helpersDir = os.path.join(os.path.dirname(NG_911_DIR), 'Toolbox', 'helpers')
     # json_file = os.path.join(helpersDir, 'DrawingFeatureSet.json')
@@ -202,8 +202,8 @@ def get_drawing_featureset(target: str=NG911LayerTypes.ADDRESS_POINTS) -> arcpy.
     #     renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
 
     # create a temp feature class
-    fc = arcpy.CreateFeatureclass_management('in_memory', timestamp(f'{target}', suffix=''), shapeType.upper()).getOutput(0)
-    arcpy.mangement.AddField(fc, 'Target_OID', 'LONG')
+    fc = arcpy.management.CreateFeatureclass('in_memory', timestamp(f'{target}', suffix=''), shapeType.upper()).getOutput(0)
+    arcpy.management.AddField(fc, 'Target_OID', 'LONG')
 
 
     fs = arcpy.FeatureSet()
