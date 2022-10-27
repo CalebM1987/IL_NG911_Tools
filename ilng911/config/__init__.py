@@ -19,9 +19,7 @@ def load_config(file_name='config.json') -> Munch:
     config_file = os.path.join(thisDir, file_name)
     if not os.path.exists(config_file):
         try:
-            config_file = glob.glob(os.path.join(thisDir, '*.json'))[0]
-            if os.path.basename(config_file) == 'config.example.json':
-                return None
+            config_file = [f for f in glob.glob(os.path.join(thisDir, '*.json')) if os.path.basename(f) not in ('config.example.json', 'config.dev.json')][0]
         except IndexError:
             return None
 

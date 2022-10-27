@@ -26,8 +26,8 @@ class DataType(PropIterator):
     PSAP="PSAP"
     ESB="ESB"
     ESB_EMS="ESB_EMS"
-    ESB_FIRE="ESB_Fire"
-    ESB_LAW="ESB_Law"
+    ESB_FIRE="ESB_FIRE"
+    ESB_LAW="ESB_LAW"
     INCORPORATED_MUNICIPAL="IncorporatedMunicipal"
     UNINCORPORATED_MUNICIPAL="UnincorporatedMunicipal"
 

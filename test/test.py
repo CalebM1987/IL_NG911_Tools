@@ -23,14 +23,14 @@ if __name__ == '__main__':
 
     testStr = 'this is a test with house number {Add_Number}, and street name {St_Name}'
 
-    arcpy.env.workspace = schemaPath
-    for tab in arcpy.ListTables():
-        arcpy.management.Delete(tab)
-        print('removed table: ', tab)
+    # arcpy.env.workspace = schemaPath
+    # for tab in arcpy.ListTables():
+    #     arcpy.management.Delete(tab)
+    #     print('removed table: ', tab)
 
-    for fc in arcpy.ListFeatureClasses():
-        arcpy.management.Delete(fc)
-        print('removed fc: ', fc)
+    # for fc in arcpy.ListFeatureClasses():
+    #     arcpy.management.Delete(fc)
+    #     print('removed fc: ', fc)
 
     # use config file to create gdb
     # config = load_config()
@@ -44,8 +44,13 @@ if __name__ == '__main__':
     #     print('deleted gdb')
 
     with log_context() as lc:
-        gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'Brown')
-        # ng911_db = get_ng911_db()
+        # gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'Brown')
+        ng911_db = get_ng911_db()
+        print(ng911_db.new_nena_ids)
+
+        ng911_db.register_nena_ids()
+        print(ng911_db.new_nena_ids)
+
         
         # log(f'setup is complete? {ng911_db.setupComplete}')
         # if not ng911_db.setupComplete:

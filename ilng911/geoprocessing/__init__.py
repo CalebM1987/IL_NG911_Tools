@@ -9,7 +9,7 @@ from ..utils.cursors import find_ws, UpdateCursor
 from ..support.munch import munchify
 from ..core.address import SKIP_NAMES, STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES
 from ..core.database import NG911LayerTypes
-from ..logging import log
+from ..logging import log, timestamp
 from typing import List
 import ctypes
 try:
@@ -192,17 +192,23 @@ def get_drawing_featureset(target: str=NG911LayerTypes.ADDRESS_POINTS) -> arcpy.
     desc = arcpy.Describe(ng911_db.get_911_table(target))
     debug_window(ng911_db.get_911_table(target))
     shapeType = desc.shapeType
-    helpersDir = os.path.join(os.path.dirname(NG_911_DIR), 'Toolbox', 'helpers')
-    json_file = os.path.join(helpersDir, 'DrawingFeatureSet.json')
-    fs_json = load_json(json_file, True)
-    if shapeType != 'Point':
-        fs_json = fs_json.replace('esriGeometryPoint', f'esriGeometry{shapeType}')
-        renderer = None
-    else:
-        renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
+    # helpersDir = os.path.join(os.path.dirname(NG_911_DIR), 'Toolbox', 'helpers')
+    # json_file = os.path.join(helpersDir, 'DrawingFeatureSet.json')
+    # fs_json = load_json(json_file, True)
+    # if shapeType != 'Point':
+    #     fs_json = fs_json.replace('esriGeometryPoint', f'esriGeometry{shapeType}')
+    #     renderer = None
+    # else:
+    #     renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
+
+    # create a temp feature class
+    fc = arcpy.CreateFeatureclass_management('in_memory', timestamp(f'{target}', suffix=''), shapeType.upper()).getOutput(0)
+    arcpy.mangement.AddField(fc, 'Target_OID', 'LONG')
+
 
     fs = arcpy.FeatureSet()
     # debug_window(fs_json)
-    print(type(fs_json))
-    fs.load(fs_json)#, None, None, renderer, renderer is not None)
+    # print(type(fs_json))
+    # fs.load(fs_json)#, None, None, renderer, renderer is not None)
+    fs.load(fc)
     return fs
