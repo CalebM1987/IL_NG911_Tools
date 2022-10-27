@@ -1,4 +1,7 @@
--   [ilng911](#ilng911)
+
+# Illinois Next Gen 911 Tools
+
+-   [Illinois Next Gen 911 Tools](#ilng911)
     -   [Installation](#installation)
         -   [method 1 - use download
             script](#method-1---use-download-script)
@@ -11,9 +14,8 @@
         -   [Running the `Create Address Point` ArcGIS Pro
             Task](#running-the-create-address-point-arcgis-pro-task)
 
-# ilng911
 
-This package contains NextGen 911 Tools for Illinois Counties. This has
+The `ilng911` package contains NextGen 911 Tools for Illinois Counties. This has
 been designed to run in ArcGIS Pro and tools are provided through a
 [Python
 Toolbox](https://pro.arcgis.com/en/pro-app/2.8/arcpy/geoprocessing_and_python/a-quick-tour-of-python-toolboxes.htm).
