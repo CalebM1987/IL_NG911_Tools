@@ -228,7 +228,11 @@ class CreateNG911SchemaTables(object):
                             rows.insertRow((basename, full_path, target, row[2] or DEFAULT_NENA_PREFIXES.get(target), guid_field))
                             log(f'Found Schema for "{target}" -> "{basename}"')
 
-            # add custom fields
+            # register nena identifiers
+            try:
+                ng911_db.register_nena_ids()
+            except Exception as e:
+                log(f'failed to register NENA identifiers')
             
         return
 
