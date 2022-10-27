@@ -11,6 +11,8 @@ from typing import List
 
 from attr import field
 
+esb_pattern = re.compile('(esb?_*)')
+
 from ilng911.vendors import load_vendor_config
 from ..env import NG_911_DIR, get_ng911_db
 from ..logging import log, timeit
@@ -19,7 +21,7 @@ from ..utils.json_helpers import load_json
 from ..utils.helpers import field_types, find_nena_guid_field
 from ..support.munch import munchify
 from ..config import write_config
-from ..core.database import NG911SchemaTables
+from ..core.database import NG911LayerTypes, NG911SchemaTables
 from ..schemas import DATA_TYPES, DATA_TYPES_LOOKUP, DEFAULT_NENA_PREFIXES
 
 def features_from_json(json_file: str, out_path: str, registerAsVersioned: bool=False):
@@ -78,7 +80,7 @@ def features_from_json(json_file: str, out_path: str, registerAsVersioned: bool=
         if base in ['AddressFlags', 'ValidatedAddresses']:
             arcpy.conversion.FeatureClassToFeatureClass(temp, *os.path.split(out_path))
         else:
-            arcpy.TableToTable_conversion(temp, *os.path.split(out_path))
+            arcpy.conversion.TableToTable(temp, *os.path.split(out_path))
         arcpy.management.Delete(temp)
     else:
         arcpy.conversion.JSONToFeatures(json_file, out_path)
@@ -221,10 +223,14 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
 
     # walk through gdb
     with InsertCursor(schemaTable, ['Basename', 'Path', 'FeatureType', 'NENA_Prefix', 'GUID_Field']) as rows:
-        for root, fds, tables in arcpy.da.Walk(ng911_gdb):
+        for root, fds, tables in arcpy.da.Walk(ng911_gdb, datatype=['FeatureDataset', 'FeatureClass']):
             for tab in tables:
                 tab_base = tab.split('.')[-1]
+                if esb_pattern.match(tab_base):
+                    tab_base = tab_base.upper()
+                
                 target = DATA_TYPES_LOOKUP.get(tab_base)
+
                 full_path = os.path.join(root, tab)
                 guid_field = find_nena_guid_field(full_path)
                 if target and target in toAdd:
@@ -249,7 +255,11 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
         oidField = desc.oidFieldName
         if guid_field:
             sql_clause = (None, f'ORDER BY {oidField} DESC')
+<<<<<<< HEAD
             with arcpy.da.SearchCursor(path, [guid_field], sql_clause=sql_clause) as rows:
+=======
+            with arcpy.da.SearchCursor(path, [guid_field, 'OID@'], sql_clause=sql_clause) as rows:
+>>>>>>> dev-tb
                 for r in rows:
                     try:
                         guid = int(''.join([t for t in r[0].split('@')[0] if t.isdigit()]))
@@ -265,22 +275,24 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
 
     # populate guids
     fields = list(nena_ids.keys())
-    count = int(arcpy.management.GetCount(nenaTab).getOutput(0))
-    row = [nena_ids.get(f, {}).get('uid') for f in fields]
-    if not count:
-        with InsertCursor(nenaTab, fields) as irows:
-            irows.insertRow(row)
-            log(f'added MAX NENA Identifier row')
-    else:
-        # record already exists, just update it
-        with UpdateCursor(nenaTab, fields) as rows:
-            for i, r in enumerate(rows):
-                if i == 0:
-                    rows.updateRow(row)
-                    log('updated NENA IDs table')
-                else:
-                    rows.deleteRow()
-                    log(f'removed NENA IDs row at index: {i}')
+    if fields:
+        count = int(arcpy.management.GetCount(nenaTab).getOutput(0))
+        row = [nena_ids.get(f, {}).get('uid') for f in fields]
+        if not count:
+            with InsertCursor(nenaTab, fields) as irows:
+                irows.insertRow(row)
+                log(f'added MAX NENA Identifier row')
+        else:
+            # record already exists, just update it
+            with UpdateCursor(nenaTab, fields) as rows:
+                for i, r in enumerate(rows):
+                    if i == 0:
+                        rows.updateRow(row)
+                        log('updated NENA IDs table')
+                    else:
+                        rows.deleteRow()
+                        log(f'removed NENA IDs row at index: {i}')
+
         
     log('completed NextGen911 Admin database setup')
 

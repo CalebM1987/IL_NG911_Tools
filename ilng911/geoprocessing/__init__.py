@@ -3,11 +3,13 @@ import os
 import re
 import json
 from ..schemas import DataSchema
-from ..env import get_ng911_db
+from ..env import get_ng911_db, NG_911_DIR
+from ..utils.json_helpers import load_json
 from ..utils.cursors import find_ws, UpdateCursor
 from ..support.munch import munchify
 from ..core.address import SKIP_NAMES, STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES
-from ..logging import log
+from ..core.database import NG911LayerTypes
+from ..logging import log, timestamp
 from typing import List
 import ctypes
 try:
@@ -176,3 +178,39 @@ def check_for_scratch_gdb(clearRecords=False) -> str:
         log('removed all records from "sketch_points"')
 
     return edits_gdb
+
+def get_drawing_featureset(target: str=NG911LayerTypes.ADDRESS_POINTS) -> arcpy.FeatureSet:
+    """fetches a drawing feature set that can be used for an input parameter
+
+    Args:
+        target (str, optional): the target layer for the feature set. Defaults to NG911LayerTypes.ADDRESS_POINTS.
+
+    Returns:
+        arcpy.FeatureSet: the output feature set
+    """
+    ng911_db = get_ng911_db()
+    desc = arcpy.Describe(ng911_db.get_911_table(target))
+    # debug_window(ng911_db.get_911_table(target))
+    shapeType = desc.shapeType
+    # helpersDir = os.path.join(os.path.dirname(NG_911_DIR), 'Toolbox', 'helpers')
+    # json_file = os.path.join(helpersDir, 'DrawingFeatureSet.json')
+    # fs_json = load_json(json_file, True)
+    # if shapeType != 'Point':
+    #     fs_json = fs_json.replace('esriGeometryPoint', f'esriGeometry{shapeType}')
+    #     renderer = None
+    # else:
+    #     renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
+
+    # create a temp feature class
+    name = timestamp(f'{target}', suffix='')
+    sr = arcpy.SpatialReference(4326)
+    fc = arcpy.management.CreateFeatureclass('in_memory', name, shapeType.upper(), spatial_reference=sr).getOutput(0)
+    arcpy.management.AddField(fc, 'Target_OID', 'LONG')
+
+
+    fs = arcpy.FeatureSet()
+    # debug_window(fs_json)
+    # print(type(fs_json))
+    # fs.load(fs_json)#, None, None, renderer, renderer is not None)
+    fs.load(fc)
+    return fs

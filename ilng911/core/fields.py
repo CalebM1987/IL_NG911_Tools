@@ -1,4 +1,5 @@
 from ..support.munch import munchify
+from typing import List
 # from decimal import Decimal
 import datetime
 
@@ -141,6 +142,15 @@ POINT_SIDE_MAPPING = [
         'ln': 'AddCode',
     },
 ]
+
+def get_road_side_attrs() -> List[str]:
+    other = ['FromAddr', 'ToAddr', 'Parity', 'County', 'State']
+    return [
+        f'{attr}_{side}'  for attr in other + [p.get('ln') for p in POINT_SIDE_MAPPING] 
+        for side in ['L', 'R']
+    ]
+
+ROAD_SIDE_ATTRS = get_road_side_attrs()
 
 # important fields
 class FIELDS:

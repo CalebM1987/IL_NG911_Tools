@@ -106,12 +106,13 @@ class NG911Data(metaclass=Singleton):
 
             self.nena_id_table = os.path.join(self.gdb_path, 'NENA_IDs')
             if arcpy.Exists(self.nena_id_table):
-                fields = self.types.__props__
+                fields = [f.name for f in arcpy.ListFields(self.nena_id_table) if f.name in self.types.__props__]
                 with arcpy.da.SearchCursor(self.nena_id_table, fields) as rows:
                     for r in rows:
                         self.new_nena_ids = munchify(dict(zip(fields, r)))
                         break
             else:
+                self.register_nena_ids()
                 log('NENA IDs table does not exist, make sure to run the register_nena_identifiers() function', level='warn')
 
             if schemaExists and agencyTabExists and self.agencyID and self.requiredTables:
@@ -233,6 +234,72 @@ class NG911Data(metaclass=Singleton):
                 return [r[1] for r in rows if r[index] == name][0]
             except:
                 return None
+
+    def register_nena_ids(self):
+        """populates the nena identifiers table and updates the registry dictionary"""
+        log('attempting to register NENA IDs')
+        schemasTab = self.get_table()
+        nenaTab = self.nena_id_table
+        if not nenaTab:
+            self.nena_id_table = os.path.join(self.gdb_path, 'NENA_IDs')
+            if not arcpy.Exists(self.nena_id_table):
+                self.nena_id_table = arcpy.management.CreateTable(*os.path.split(self.nena_id_table)).getOutput(0)
+                log(f'Created "NENA_Identifiers" table"')
+
+        nena_fields = [f.name for f in arcpy.ListFields(self.nena_id_table)]
+        with arcpy.da.SearchCursor(schemasTab, ['FeatureType', 'Path', 'GUID_Field']) as rows:
+            nena_ids = {r[0]: { 'path': r[1], 'guid_field': r[2], 'uid': None} for r in rows}
+
+        for target, info in nena_ids.items():
+            if not info.get('uid'):
+                path = info.get('path')
+                guid_field = info.get('guid_field')
+                uid = 1
+                if target not in nena_fields:
+                    arcpy.mangement.AddField(self.nena_id_table, target, 'LONG')
+                    log(f'added NENA Identifier field: "{target}"')
+
+                # read max id from table
+                if arcpy.Exists(path) and guid_field:
+                    desc = arcpy.Describe(path)
+                    sql_clause = (None, f'ORDER BY {desc.oidFieldName} DESC')
+                    with arcpy.da.SearchCursor(path, [guid_field, 'OID@'], sql_clause=sql_clause) as rows:
+                        for r in rows:
+                            try:
+                                guid = int(''.join([t for t in r[0].split('@')[0] if t.isdigit()]))
+                            except:
+                                guid = None
+                                log(f'failed to parse nena identifier: "{r[0]}"')
+
+                            if guid and guid > uid:
+                                uid = guid
+                                nena_ids[target]['uid'] = guid
+                                log(f'found MAX NENA Identifier for "{target}": {uid}')
+                                continue
+
+        # populate guids
+        fields = list(nena_ids.keys())
+        if fields:
+            count = int(arcpy.management.GetCount(nenaTab).getOutput(0))
+            row = [nena_ids.get(f, {}).get('uid', 1) or 1 for f in fields]
+            self.new_nena_ids = munchify(dict(zip(fields, row)))
+            if not count:
+                with InsertCursor(nenaTab, fields) as irows:
+                    irows.insertRow(row)
+                    log(f'added MAX NENA Identifier row')
+            else:
+                # record already exists, just update it
+                with UpdateCursor(nenaTab, fields) as rows:
+                    for i, r in enumerate(rows):
+                        if i == 0:
+                            rows.updateRow(row)
+                            log('updated NENA IDs table')
+                        else:
+                            rows.deleteRow()
+                            log(f'removed NENA IDs row at index: {i}')
+            
+        log('registered nena ids')
+
 
     def get_next_nena_id(self, target: str) -> int:
         """creates a newly incremented integer number for the new nena feature
