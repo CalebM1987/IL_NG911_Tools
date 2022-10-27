@@ -255,11 +255,7 @@ def create_ng911_admin_gdb(ng911_gdb: str, schemas_gdb_path: str, agency: str, c
         oidField = desc.oidFieldName
         if guid_field:
             sql_clause = (None, f'ORDER BY {oidField} DESC')
-<<<<<<< HEAD
-            with arcpy.da.SearchCursor(path, [guid_field], sql_clause=sql_clause) as rows:
-=======
             with arcpy.da.SearchCursor(path, [guid_field, 'OID@'], sql_clause=sql_clause) as rows:
->>>>>>> dev-tb
                 for r in rows:
                     try:
                         guid = int(''.join([t for t in r[0].split('@')[0] if t.isdigit()]))
