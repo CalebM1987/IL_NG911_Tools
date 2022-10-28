@@ -164,7 +164,7 @@ this process ahead of running the `Create Address Point` tool.
     under the `General` Tab. ![new
     task](/resources/images/task-01-create-task.png)
 
-3.  Under the `Tasks` content menu, hit the `New Task` button and name
+3.  Under the `Tasks` content menu, hit the `New Step` button and name
     it `Select Road Centerline` and give it a description. Be sure to
     set this as a `Manual` step.\
     ![create step](/resources/images/task-02-create-step.png)
