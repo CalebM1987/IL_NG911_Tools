@@ -179,6 +179,10 @@ class DataSchema(FeatureBase):
                 pass
         return prefix
 
+    @lazyprop
+    def isPSAPLike(self):
+        return self.name == 'PSAP' or esb_pattern.match(self.name) != None
+
     def create_identifier(self) -> str:
         """form a unique NENA compliant identifier
 
@@ -246,6 +250,13 @@ class DataSchema(FeatureBase):
                 LOCATION_FIELDS.STATE: self.ng911_db.state,
                 LOCATION_FIELDS.COUNTRY: self.ng911_db.country,
                 LOCATION_FIELDS.COUNTY: f'{self.ng911_db.county} COUNTY'
+            })
+
+        if self.isPSAPLike:
+            kwargs.update({
+                LOCATION_FIELDS.STATE: self.ng911_db.state,
+                LOCATION_FIELDS.COUNTRY: self.ng911_db.country,
+                'Agency_ID': '@' + self.ng911_db.agencyID
             })
     
         if self.nenaIdentifier not in kwargs:

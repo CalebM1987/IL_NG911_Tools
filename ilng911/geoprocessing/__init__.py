@@ -63,7 +63,7 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
     # get ng911_db helper
     ng911_db = get_ng911_db()
     
-    fields = [f for f in arcpy.ListFields(table) if f.type not in SKIP_TYPES and f.name not in SKIP_NAMES]
+    fields = [f for f in arcpy.ListFields(table) if f.type not in SKIP_TYPES and f.name not in SKIP_NAMES and 'NGUID' not in f.name]
     # filters.extend(f.name for f in schema.customFields)
     for field in fields:
         if not SHAPE_FIELD_REGEX.match(field.name) and field.name not in filters:
@@ -87,6 +87,12 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
 
             if field.defaultValue:
                 param.value = field.defaultValue
+
+            elif field.name == 'Agency_ID':
+                param.value = '@' + ng911_db.agencyID
+
+            elif field.name == 'State':
+                param.value = ng911_db.state
 
             params.append(
                 param

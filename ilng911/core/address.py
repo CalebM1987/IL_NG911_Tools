@@ -58,6 +58,9 @@ SKIP_NAMES = [
     "DiscrpAgID",
     "RCL_NGUID",
     "Site_NGUID",
+    'Agency_ID',
+    'ES_NUGID',
+    'PB_NGUID',
     'Uninc_Comm',   
     # COMMUNITY NAMES
     'Inc_Muni', 

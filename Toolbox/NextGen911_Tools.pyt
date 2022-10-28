@@ -30,17 +30,74 @@ class Toolbox(object):
 
         # List of tool classes associated with this toolbox
         self.tools = [
-            Create911Feature,
+            CreateProvisioningBoundary,
+            CreatePSAPOrESBFeature,
             CreateRoadCenterline,
             CreateAddressPoint,
             RunAddressValidation
             # TestTool
         ]
 
-class Create911Feature:
+class CreateProvisioningBoundary:
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "Create 911 Feature"
+        self.label = "Create Provisioning Boundary"
+        self.description = ""
+        self.canRunInBackground = False
+        self.category = 'Create Features'
+        self.paramLookup = {}
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    
+    def getParameterInfo(self):
+
+        # create road feature set
+        featureSet = arcpy.Parameter(
+            name="featureSet",
+            displayName="Draw Point",
+            direction="Input",
+            datatype="GPFeatureRecordSetLayer",
+        )
+
+        featureSet.value = get_drawing_featureset(NG911LayerTypes.PROVISIONING_BOUNDARY)
+        
+        return [  featureSet ]
+        
+
+    def updateParameters(self, parameters):
+        pass
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        with log_context(self.__class__.__name__ + '_') as lc:
+            log_params(parameters)
+            fs = arcpy.FeatureSet()
+            fs.load(parameters[0].value)
+            log(f'type of param0: {type(parameters[0].value)}')
+            attrs = {p.name: p.valueAsText for p in parameters[1:]}
+            fsJson = munchify(json.loads(fs.JSON))
+            geomJson = fsJson.features[0].get('geometry')
+            geomJson["spatialReference"] = {"wkid": 4326 }
+            ln = arcpy.AsShape(geomJson, True)
+            schema = DataSchema(NG911LayerTypes.PROVISIONING_BOUNDARY)
+            ft = schema.create_feature(ln)
+            ft.update(**attrs)
+            schema.calculate_custom_fields(ft)
+            schema.calculate_vendor_fields(ft)
+            schema.commit_features()
+
+class CreatePSAPOrESBFeature:
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Create PSAP or ESB Feature"
         self.description = ""
         self.canRunInBackground = False
         self.category = 'Create Features'
@@ -71,9 +128,11 @@ class Create911Feature:
         ng911_db = get_ng911_db()
         schemas = ng911_db.get_table()
         with arcpy.da.SearchCursor(schemas, ['FeatureType']) as rows:
-            featureType.filter.list = [r[0] for r in rows if r[0] not in ('ADDRESS_POINTS', 'ROAD_CENTERLINE')] + ['Test']
+            featureType.filter.list = [r[0] for r in rows if r[0] not in ('ADDRESS_POINTS', 'ROAD_CENTERLINE', 'PROVISIONING_BOUNDARY')]
+
+        params = table_to_params(DataSchema(DataType.PSAP))
         
-        return [ featureType, featureSet ]
+        return [ featureType, featureSet ] + params
         
 
     def updateParameters(self, parameters):
