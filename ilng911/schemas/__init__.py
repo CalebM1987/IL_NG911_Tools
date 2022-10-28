@@ -17,6 +17,7 @@ from ..logging import log
 from ..utils.helpers import find_nena_guid_field
 
 schemasDir = os.path.join(os.path.dirname(__file__), '_schemas')
+esb_pattern = re.compile('(esb?_*)', re.I)
 
 class DataType(PropIterator):
     ADDRESS_POINTS="AddressPoints"
@@ -62,9 +63,18 @@ def load_schema(name: str) -> Munch:
     """
     if hasattr(DataType, name):
         name = getattr(DataType, name)
-    fl = os.path.join(schemasDir, name + '.json')
+    isESB = esb_pattern.match(name) is not None
+    fl = os.path.join(schemasDir, ('PSAP' if isESB else name) + '.json')
     if os.path.exists(fl):
-        return load_json(fl)
+        _schema = load_json(fl)
+    if isESB:
+        _schema.featureType = name
+        _schema.layer = name
+        for fld in _schema.featureSet.fields:
+            if fld.name == 'PB_NGUID':
+                fld.name = 'ES_NGUID'
+    return _schema
+        
 
 class DataSchema(FeatureBase):
     totalCount = 0

@@ -46,10 +46,16 @@ if __name__ == '__main__':
     with log_context() as lc:
         # gdb = create_ng911_admin_gdb(gdbPath, schemaPath, 'Brown')
         ng911_db = get_ng911_db()
+        # print(ng911_db.new_nena_ids)
+
+        # ng911_db.register_nena_ids()
         print(ng911_db.new_nena_ids)
 
-        ng911_db.register_nena_ids()
-        print(ng911_db.new_nena_ids)
+        schema = DataSchema('ESB_EMS')
+        print('SCHEMA NAME: ', schema.name)
+        print(schema.table)
+        print(schema._schema)
+        print('next id: ', schema.create_identifier())
 
         
         # log(f'setup is complete? {ng911_db.setupComplete}')
