@@ -12,6 +12,7 @@ from ilng911.env import get_ng911_db
 from ilng911.geoprocessing import get_drawing_featureset, log_params, table_to_params, debug_window
 from ilng911.schemas import DataType, DataSchema
 from ilng911.support.munch import munchify
+from ilng911.core.database import NG911LayerTypes
 from ilng911.core.address import STREET_ATTRIBUTES, ADDRESS_ATTRIBUTES, create_address_point, get_range_and_parity, find_closest_centerlines
 from ilng911.core.fields import FIELDS, POINT_SIDE_MAPPING
 from ilng911.core.validators import run_address_validation
@@ -29,11 +30,83 @@ class Toolbox(object):
 
         # List of tool classes associated with this toolbox
         self.tools = [
+            Create911Feature,
             CreateRoadCenterline,
             CreateAddressPoint,
             RunAddressValidation
             # TestTool
         ]
+
+class Create911Feature:
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Create 911 Feature"
+        self.description = ""
+        self.canRunInBackground = False
+        self.category = 'Create Features'
+        self.paramLookup = {}
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    
+    def getParameterInfo(self):
+        featureType = arcpy.Parameter(
+            name="featureType",
+            displayName="Feature Type",
+            direction="Input",
+            datatype="GPString"
+        )
+
+        # create road feature set
+        featureSet = arcpy.Parameter(
+            name="featureSet",
+            displayName="Draw Point",
+            direction="Input",
+            datatype="GPFeatureRecordSetLayer",
+            enabled=False
+        )
+
+        ng911_db = get_ng911_db()
+        schemas = ng911_db.get_table()
+        with arcpy.da.SearchCursor(schemas, ['FeatureType']) as rows:
+            featureType.filter.list = [r[0] for r in rows if r[0] not in ('ADDRESS_POINTS', 'ROAD_CENTERLINE')] + ['Test']
+        
+        return [ featureType, featureSet ]
+        
+
+    def updateParameters(self, parameters):
+
+        if parameters[0].altered:
+            featureSet = parameters[1]
+            featureSet.enabled = True
+            
+            featureSet.value = get_drawing_featureset(parameters[0].valueAsText)
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        with log_context(self.__class__.__name__ + '_') as lc:
+            log_params(parameters)
+            fs = arcpy.FeatureSet()
+            fs.load(parameters[0].value)
+            log(f'type of param0: {type(parameters[0].value)}')
+            attrs = {p.name: p.valueAsText for p in parameters[1:]}
+            fsJson = munchify(json.loads(fs.JSON))
+            geomJson = fsJson.features[0].get('geometry')
+            geomJson["spatialReference"] = {"wkid": 4326 }
+            ln = arcpy.AsShape(geomJson, True)
+            schema = DataSchema(parameters[0].valueAsText)
+            ft = schema.create_feature(ln)
+            ft.update(**attrs)
+            schema.calculate_custom_fields(ft)
+            schema.calculate_vendor_fields(ft)
+            schema.commit_features()
 
 class CreateRoadCenterline(object):
     def __init__(self):

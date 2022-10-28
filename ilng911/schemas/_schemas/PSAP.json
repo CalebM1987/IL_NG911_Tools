@@ -1,6 +1,7 @@
 {
   "scope": "ng911",
   "layer": "PSAP",
+  "featureType": "PSAP",
   "fieldInfos": [
     {
       "name": "DiscrpAgID",

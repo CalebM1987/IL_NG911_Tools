@@ -11,7 +11,7 @@ from typing import List
 
 from attr import field
 
-esb_pattern = re.compile('(esb?_*)')
+esb_pattern = re.compile('(esb?_*)', re.I)
 
 from ilng911.vendors import load_vendor_config
 from ..env import NG_911_DIR, get_ng911_db
