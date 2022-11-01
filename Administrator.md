@@ -166,7 +166,7 @@ this process ahead of running the `Create Address Point` tool.
 
 3.  Under the `Tasks` content menu, hit the `New Step` button and name
     it `Select Road Centerline` and give it a description. Be sure to
-    set this as a `Manual` step.\
+    set this as a `Manual` step.
     ![create step](/resources/images/task-02-create-step.png)
     ![manual](/resources/images/task-03-select-task.png)
 
@@ -215,7 +215,7 @@ the `Create Features` toolset:
     back into the task editor and click the edit button next to the
     `Create Address Point` action:
 
-\[task-9b\](/resources/images/task-09b-preset-params.png
+![task-9b](/resources/images/task-09b-preset-params.png)
 
 10. This should open the tool dialog. The only thing we need to do here
     is select your Roads Centerline data from the `Roads Layer`
