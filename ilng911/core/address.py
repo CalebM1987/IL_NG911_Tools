@@ -145,10 +145,12 @@ def get_zip_code(pt: arcpy.PointGeometry) -> Dict[str, str]:
         str: the intersecting zip code used by the USPS
     """
     # get ng911_db helper
+    count = 0
     ng911_db = get_ng911_db()
     zipLyr = ng911_db.get_911_layer(DataType.ZIP_CODES)
-    arcpy.management.SelectLayerByLocation(zipLyr, 'INTERSECT', pt)
-    count = arcpy.management.GetCount(zipLyr).getOutput(0)
+    if zipLyr:
+        arcpy.management.SelectLayerByLocation(zipLyr, 'INTERSECT', pt)
+        count = arcpy.management.GetCount(zipLyr).getOutput(0)
     if count:
         # get zip code and zip code 4
         with arcpy.da.SearchCursor(zipLyr, ['ZipCode', 'ZipCode4']) as rows:
@@ -202,10 +204,15 @@ def create_address_point(pg: arcpy.PointGeometry, centerlineOID: int, **kwargs):
         centerlineOID (int): [description]
     """
     schema = DataSchema(DataType.ADDRESS_POINTS)
-    kwargs.update(**get_zip_code(pg))
     # kwargs.update(**get_city_limits(pg))
     ft = schema.create_feature(pg, **kwargs)
     merge_street_segment_attributes(ft, centerlineOID)
+    if not ft.get(FIELDS.ADDRESS.POST_CODE):
+        log('no postal code found after merging segment attributes, attempting spatial zip code search.')
+        try:
+            ft.update(**get_zip_code(pg))
+        except Exception as e:
+            log(f'faield to get zip code from spatial search: {e}')
     schema.calculate_custom_fields(ft)
     schema.calculate_vendor_fields(ft)
     schema.commit_features()
