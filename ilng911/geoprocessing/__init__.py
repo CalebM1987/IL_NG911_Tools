@@ -135,9 +135,11 @@ def log_params(parameters: List[arcpy.Parameter]):
     for p in parameters:
         if p.datatype in ('GPFeatureRecordSetLayer', 'Feature Set', 'GPRecordSet', 'Record Set'):
             try:
-                params[p.name] = json.loads(p.value.JSON)
+                fs = arcpy.FeatureSet()
+                fs.load(p.value)
+                params[p.name] = json.loads(fs.JSON)
             except Exception as e:
-                log(f'failed to get feature set value: ', e)
+                log(f'failed to get feature set value: ', p.datatype, e)
                 params[p.name] = p.valueAsText
         else:
             params[p.name] = p.valueAsText
@@ -208,15 +210,35 @@ def get_drawing_featureset(target: str=NG911LayerTypes.ADDRESS_POINTS) -> arcpy.
     #     renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'))
 
     # create a temp feature class
-    name = timestamp(f'{target}', suffix='')
-    sr = arcpy.SpatialReference(4326)
-    fc = arcpy.management.CreateFeatureclass('in_memory', name, shapeType.upper(), spatial_reference=sr).getOutput(0)
-    arcpy.management.AddField(fc, 'Target_OID', 'LONG')
+    # name = timestamp(f'{target}', suffix='')
+    sr = desc.spatialReference
+    # fc = arcpy.management.CreateFeatureclass('in_memory', name, shapeType.upper(), spatial_reference=sr).getOutput(0)
+    # arcpy.management.AddField(fc, 'Target_OID', 'LONG')
 
 
     fs = arcpy.FeatureSet()
     # debug_window(fs_json)
     # print(type(fs_json))
     # fs.load(fs_json)#, None, None, renderer, renderer is not None)
-    fs.load(fc)
+    fsJson = dict(
+        objectIdFieldName='OBJECTID',
+        geometryType=f'esriGeometry{shapeType}',
+        spatialReference=dict(
+            wkid=sr.factoryCode
+        ),
+        fields=[
+            dict(
+                name='OBJECTID',
+                alias='OBJECTID',
+                type="esriFieldTypeOID"
+            ),
+            dict(
+                name='TargetOID',
+                alias='Target OID',
+                type='esriFieldTypeInteger'
+            )
+        ],
+        features=[]
+    )
+    fs.load(json.dumps(fsJson))
     return fs
