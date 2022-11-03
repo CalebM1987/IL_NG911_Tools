@@ -4,10 +4,13 @@ import arcpy
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+from ilng911.env import get_ng911_db
 from ilng911.schemas import DataSchema, DataType
 # from ilng911.core.parser
 
-schema = DataSchema(DataType.ADDRESS_POINTS)
+ng911_db = get_ng911_db()
+
+addressSchema = DataSchema(DataType.ADDRESS_POINTS)
 roadSchema = DataSchema(DataType.ROAD_CENTERLINE)
 
 # # sample: 142 main
@@ -44,5 +47,4 @@ roadSchema = DataSchema(DataType.ROAD_CENTERLINE)
 
 # ft = schema.create_feature(pg, **kwargs)
 
-ft = schema.find_feature_from_oid(2995)
-road = roadSchema.find_feature_from_oid(238)
+
