@@ -218,11 +218,12 @@ def create_address_point(pg: arcpy.PointGeometry, centerlineOID: int, **kwargs):
     schema.commit_features()
 
     # run address validation
-    try:
-        validators = validate_address(ft, centerlineOID)
-        log(json.dumps(validators, indent=2))
-    except Exception as e:
-        log(f'failed to validate address: {e}', level='warn')
+    # skipping this, the address points layer keeps getting removed for some reason
+    # try:
+    #     validators = validate_address(ft, centerlineOID)
+    #     log(json.dumps(validators, indent=2))
+    # except Exception as e:
+    #     log(f'failed to validate address: {e}', level='warn')
     return ft, schema
 
 def find_closest_centerlines(pg: Union[arcpy.Geometry, Feature]) -> Dict:
