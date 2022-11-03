@@ -157,10 +157,11 @@ the Address Point creation team. The Address Point tool is designed to
 grab attributes from a selected Road Centerline, so the task can string
 this process ahead of running the `Create Address Point` tool.
 
-1.  Click on the `View` tab in ArcGIS Pro and hit the `Tasks` Ribbon.
-    This should open the Task Designer in the right content pane.
+1.  Click on the `View` tab in ArcGIS Pro and hit the `Tasks` button in the Windows Group. This should open the Task Designer in the right content pane.
 
-2.  Click `New Task Item`. Give it a name of `Create Address Point`
+    ![tasks button](resources/images/tasks-button.png)
+
+2.  Click on the `New Task Item` button in the Tasks Pane; this will open the Task Designer pane in one of the side panels. Give it a name of `Create Address Point`
     under the `General` Tab. ![new
     task](/resources/images/task-01-create-task.png)
 

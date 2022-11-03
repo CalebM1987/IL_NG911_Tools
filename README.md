@@ -13,6 +13,9 @@
         Tools](#running-the-ng911-tools)
         -   [Running the `Create Address Point` ArcGIS Pro
             Task](#running-the-create-address-point-arcgis-pro-task)
+    - [Encountering Issues with tools](#encountering-errors-with-these-tools)
+    - [Issues and Enhancements](#issues-and-enhancements)
+    - [Running the tests](#running-the-tests)
 
 
 The `ilng911` package contains NextGen 911 Tools for Illinois Counties. This has
@@ -188,3 +191,14 @@ because the bugs can be easily tracked and fixed with Github.
 ### Issues and Enhancements
 
 if you run into an issue running these tools, please be sure to submit an issue to the GitHub page. Include as much information as you can including any error messages as that makes it easier to fix bugs.
+
+### running the tests
+
+Once setup has been completed, it is important to run the unit tests to make sure everything is working. To run the tests, open `Git Bash` in the folder for these tools and run the following command in the terminal (right click and paste):
+
+```sh
+"c:/Program Files/ArcGIS/Pro/bin/Python/envs/arcgispro-py3/python.exe" -m unittest -v test/unit_tests.py
+```
+
+If all is well, the tests should all pass:
+![unit tests](resources/images/unit-tests.png)
