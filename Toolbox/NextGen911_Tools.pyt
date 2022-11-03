@@ -31,7 +31,7 @@ class Toolbox(object):
         # List of tool classes associated with this toolbox
         self.tools = [
             CreateProvisioningBoundary,
-            CreatePSAPOrESBFeature,
+            CreateESBFeature,
             CreateRoadCenterline,
             CreateAddressPoint,
             RunAddressValidation
@@ -85,19 +85,20 @@ class CreateProvisioningBoundary:
             attrs = {p.name: p.valueAsText for p in parameters[1:]}
             fsJson = munchify(json.loads(fs.JSON))
             geomJson = fsJson.features[0].get('geometry')
-            geomJson["spatialReference"] = {"wkid": 4326 }
-            ln = arcpy.AsShape(geomJson, True)
             schema = DataSchema(NG911LayerTypes.PROVISIONING_BOUNDARY)
+            desc = arcpy.Describe(schema.table)
+            geomJson["spatialReference"] = {"wkid": desc.spatialReference.factoryCode }
+            ln = arcpy.AsShape(geomJson, True)
             ft = schema.create_feature(ln)
             ft.update(**attrs)
             schema.calculate_custom_fields(ft)
             schema.calculate_vendor_fields(ft)
             schema.commit_features()
 
-class CreatePSAPOrESBFeature:
+class CreateESBFeature:
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "Create PSAP or ESB Feature"
+        self.label = "Create ESB Feature"
         self.description = ""
         self.canRunInBackground = False
         self.category = 'Create Features'
@@ -106,7 +107,6 @@ class CreatePSAPOrESBFeature:
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
         return True
-
     
     def getParameterInfo(self):
         featureType = arcpy.Parameter(
@@ -157,10 +157,12 @@ class CreatePSAPOrESBFeature:
             log(f'type of param0: {type(parameters[0].value)}')
             attrs = {p.name: p.valueAsText for p in parameters[1:]}
             fsJson = munchify(json.loads(fs.JSON))
-            geomJson = fsJson.features[0].get('geometry')
-            geomJson["spatialReference"] = {"wkid": 4326 }
-            ln = arcpy.AsShape(geomJson, True)
             schema = DataSchema(parameters[0].valueAsText)
+            desc = arcpy.Describe(schema.table)
+            geomJson = fsJson.features[0].get('geometry')
+            geomJson["spatialReference"] = {"wkid": desc.spatialReference.factoryCode }
+            ln = arcpy.AsShape(geomJson, True)
+            
             ft = schema.create_feature(ln)
             ft.update(**attrs)
             schema.calculate_custom_fields(ft)
@@ -204,7 +206,7 @@ class CreateRoadCenterline(object):
         # create road feature set
         featureSet = arcpy.Parameter(
             name="featureSet",
-            displayName="Draw Point",
+            displayName="Draw Road Centerline",
             direction="Input",
             datatype="GPFeatureRecordSetLayer"
         )
@@ -248,9 +250,10 @@ class CreateRoadCenterline(object):
             attrs = {p.name: p.valueAsText for p in parameters[1:]}
             fsJson = munchify(json.loads(fs.JSON))
             geomJson = fsJson.features[0].get('geometry')
-            geomJson["spatialReference"] = {"wkid": 4326 }
-            ln = arcpy.AsShape(geomJson, True)
             roadSchema = DataSchema(DataType.ROAD_CENTERLINE)
+            desc = arcpy.Describe(roadSchema.table)
+            geomJson["spatialReference"] = {"wkid": desc.spatialReference.factoryCode  }
+            ln = arcpy.AsShape(geomJson, True)
             ft = roadSchema.create_feature(ln)
             ft.update(**attrs)
             roadSchema.calculate_custom_fields(ft)
@@ -288,25 +291,11 @@ class CreateAddressPoint(object):
             direction="Input",
             datatype="GPFeatureRecordSetLayer"
         )
-        # featureSet.value = r'L:\Users\caleb.mackey\Documents\gitProjects\IL_NG911_Tools\Toolbox\helpers\AddressPoints.lyrx'
-        # featureSet.schema.featureType
-        # featureSet.schema.geometryType = 'Point'
 
         ng911_db = get_ng911_db()
-        fs = arcpy.FeatureSet()
-        # # get ng911_db helper
-        # points = ng911_db.get_911_table(ng911_db.types.ADDRESS_POINTS)
-        # desc = arcpy.Describe(points)
-        # where = f"{desc.oidFieldName} IS NULL"
-        ptJson = load_json(os.path.join(helpersDir, 'DrawingFeatureSet.json'), True)
-        # renderer = load_json(os.path.join(helpersDir, 'AddressPointRenderer.json'), True)
-        # # fs.load(points, where)#, None, json.dumps(renderer), True) # getting error renderer arguments??
-        # # fs = arcpy.FeatureSet(ptJson)#, renderer=renderer)
-        fs.load(ptJson)#, None, None, renderer, True)
-        # fs = get_drawing_featureset(ng911_db.types.ADDRESS_POINTS)
-
-        featureSet.value = fs
-
+       
+        featureSet.value = get_drawing_featureset(ng911_db.types.ADDRESS_POINTS)
+        
         roadsLyr = arcpy.Parameter(
             name='roadsLyr',
             displayName="Roads Layer",
@@ -323,6 +312,18 @@ class CreateAddressPoint(object):
             enabled=False,
             parameterType='Required'
         )
+
+        # try and set road centerline data
+        try:
+            aprx = arcpy.mp.ArcGISProject('current')
+            for lyr in aprx.activeMap.listLayers():
+                if lyr.supports('DATASOURCE'):
+                    if lyr.dataSource == ng911_db.roadCenterlines:
+                        roadsLyr.value = lyr
+                        break
+        except:
+            pass
+
 
         # check for custom populated fields, add to filters
         custFieldsTab = ng911_db.get_table(ng911_db.schemaTables.CUSTOM_FIELDS)
@@ -374,7 +375,6 @@ class CreateAddressPoint(object):
        
             roadOID = None
             try:
-                # roadsLyr = ng911_db.get_911_layer(ng911_db.types.ROAD_CENTERLINE, check_map=True)
                 with arcpy.da.SearchCursor(roadsLyr.value, ['OID@']) as rows:
                     roadOID = [r[0] for r in rows][0]
                     # debug_window(f'oid is? {roadOID}')
@@ -434,10 +434,13 @@ class CreateAddressPoint(object):
             log(f'type of param0: {type(parameters[0].value)}')
             attrs = {p.name: p.valueAsText for p in parameters[3:]}
             roadOID = parameters[2].value
+            ng911_db = get_ng911_db()
             fsJson = munchify(json.loads(fs.JSON))
             geomJson = fsJson.features[0].get('geometry')
-            geomJson["spatialReference"] = {"wkid": 4326 }
+            geomJson["spatialReference"] = fsJson.get('spatialReference')
             pt = arcpy.AsShape(geomJson, True)
+            # with arcpy.da.SearchCursor(parameters[0].value, ['SHAPE@']) as rows:
+            #     pt = [r[0] for r in rows][0]
             ft, schema = create_address_point(pt, roadOID, **attrs)
             # ft.prettyPrint()
             try: 
