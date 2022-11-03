@@ -1,6 +1,7 @@
 {
   "scope": "ng911",
   "layer": "RoadCenterline",
+  "featureType": "ROAD_CENTERLINE",
   "fieldInfos": [
     {
       "name": "DiscrpAgID",

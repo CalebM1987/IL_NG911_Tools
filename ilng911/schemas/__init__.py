@@ -181,6 +181,8 @@ class DataSchema(FeatureBase):
 
     @lazyprop
     def isPSAPLike(self):
+        if not self.name:
+            return False
         return self.name == 'PSAP' or esb_pattern.match(self.name) != None
 
     def create_identifier(self) -> str:

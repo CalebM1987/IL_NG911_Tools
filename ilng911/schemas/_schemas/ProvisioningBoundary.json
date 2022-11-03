@@ -1,6 +1,7 @@
 {
   "scope": "ng911",
   "layer": "ProvisioningBoundary",
+  "featureType": "PROVISIONING_BOUNDARY",
   "fieldInfos": [
     {
       "name": "DiscrpAgID",
