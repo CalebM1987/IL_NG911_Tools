@@ -6,6 +6,20 @@ from ..utils import lazyprop, PropIterator, Singleton, date_to_mil
 from ..utils.cursors import InsertCursor, UpdateCursor
 from ..logging import log
 from ..config import load_config
+try:
+    from typing import List, TypedDict
+
+    class NG911TableInfo(TypedDict):
+        Path: str
+        FeatureType: str
+        Basename: str
+        GUID_Field: str
+        NENA_Prefix: str
+
+
+except:
+    from typing import List, Dict
+    NG911TableInfo = Dict[str, str]
 
 class NG911LayerTypes(PropIterator):
     __props__ = [
@@ -181,6 +195,7 @@ class NG911Data(metaclass=Singleton):
         except IndexError:
             return None
 
+
     @property
     def addressFlags(self) -> str:
         return os.path.join(self.gdb_path, 'AddressFlags') if self.gdb_path else None
@@ -200,6 +215,16 @@ class NG911Data(metaclass=Singleton):
             str: the basename
         """
         return os.path.basename(path or '').split('.')[-1]
+
+    def get_911_features(self) -> List[NG911TableInfo]:
+        """fetches the 911 feature infos"""
+        schema = self.get_table(self.schemaTables.NG911_TABLES)
+        schemaExists = arcpy.Exists(schema)
+        if schemaExists:
+            fields = ['Path', 'FeatureType', 'Basename', 'GUID_Field', 'NENA_PREFIX']
+            with arcpy.da.SearchCursor(schema, fields) as rows:
+                return munchify([dict(zip(fields, r)) for r in rows])
+        return []
 
     def has_911_type(self, name: str) -> bool:
         """returns a boolean for whether there is a 911 type
