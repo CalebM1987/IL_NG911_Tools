@@ -194,11 +194,17 @@ if you run into an issue running these tools, please be sure to submit an issue 
 
 ### running the tests
 
-Once setup has been completed, it is important to run the unit tests to make sure everything is working. To run the tests, open `Git Bash` in the folder for these tools and run the following command in the terminal (right click and paste):
+Once setup has been completed, it is important to run the unit tests to make sure everything is working. 
+
+The unit tests can be ran by either right clicking on the `runTests.ps1` script and selecting `Run with Powershell`, or double clicking on the `runTests.sh` to run from the git bash.
+
+
+#### manually running unit tests in Git Bash
+To run the tests, open `Git Bash` in the folder for these tools and run the following command in the terminal (right click and paste):
 
 ```sh
 "c:/Program Files/ArcGIS/Pro/bin/Python/envs/arcgispro-py3/python.exe" -m unittest -v test/unit_tests.py
 ```
 
-If all is well, the tests should all pass:
+If all is well, the tests should all pass (the number of tests could change based on updates to this repo):
 ![unit tests](resources/images/unit-tests.png)
