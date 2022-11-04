@@ -258,13 +258,15 @@ class DataSchema(FeatureBase):
             kwargs.update({
                 LOCATION_FIELDS.STATE: self.ng911_db.state,
                 LOCATION_FIELDS.COUNTRY: self.ng911_db.country,
-                'Agency_ID': '@' + self.ng911_db.agencyID
             })
     
         if self.nenaIdentifier not in kwargs:
             kwargs[self.nenaIdentifier] = self.create_identifier()
         if not 'DateUpdate' in kwargs:
             kwargs['DateUpdate'] = datetime.datetime.now().date()
+
+        if 'Agency_ID' in self.fieldNames:
+            kwargs['Agency_ID'] = self.ng911_db.agencyID
 
         ft = Feature(self.fields, geometry, **kwargs)
         self._features.append(ft)

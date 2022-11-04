@@ -27,6 +27,11 @@
       "name": "ES_NGUID",
       "category": "M",
       "domain": null
+    },
+    {
+      "name": "DisplayName",
+      "category": "M",
+      "domain": null
     }
   ],
   "featureSet": {
@@ -64,6 +69,12 @@
         "alias": "Provisioning Boundary NENA Globally Unique ID",
         "type": "esriFieldTypeString",
         "length": 254
+      },
+      {
+        "name": "DisplayName",
+        "alias": "DisplayName",
+        "type": "esriFieldTypeString",
+        "length": 60
       }
     ],
     "features": []

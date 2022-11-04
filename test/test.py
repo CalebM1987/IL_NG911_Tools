@@ -12,6 +12,7 @@ from ilng911.env import NG_911_DIR, get_ng911_db
 from ilng911.logging import log_context, log
 from ilng911.core.validators import validate_address, run_address_validation
 from ilng911.vendors import load_vendor_config
+from ilng911.core.centerline import mixin_road_properties
 
 if __name__ == '__main__':
     schemas_dir = os.path.join(NG_911_DIR, 'admin', 'data_structures')
@@ -49,13 +50,13 @@ if __name__ == '__main__':
         # print(ng911_db.new_nena_ids)
 
         # ng911_db.register_nena_ids()
-        print(ng911_db.new_nena_ids)
+        # print(ng911_db.new_nena_ids)
 
-        schema = DataSchema('ESB_EMS')
-        print('SCHEMA NAME: ', schema.name)
-        print(schema.table)
-        print(schema._schema)
-        print('next id: ', schema.create_identifier())
+        # schema = DataSchema('ESB_EMS')
+        # print('SCHEMA NAME: ', schema.name)
+        # print(schema.table)
+        # print(schema._schema)
+        # print('next id: ', schema.create_identifier())
 
         
         # log(f'setup is complete? {ng911_db.setupComplete}')
@@ -78,7 +79,7 @@ if __name__ == '__main__':
         #     if os.path.exists(json_file) and not arcpy.Exists(table):
         #         features_from_json(json_file, table)
 
-        # centerlineSchema = DataSchema(DataType.ROAD_CENTERLINE)
+        centerlineSchema = DataSchema(DataType.ROAD_CENTERLINE)
 
         # feature = centerlineSchema.find_feature_from_oid(238)
         # feature.prettyPrint()
@@ -157,6 +158,13 @@ if __name__ == '__main__':
 
         # roads = find_closest_centerlines(pg)
         # print(json.dumps(roads, indent=2))
+
+        # test finding nearest matching segment
+        ln_json = {"paths":[[[-90.146680899999978,40.052779741000052],[-90.146277121999958,40.05331129700005]]],"spatialReference":{"wkid":4326,"latestWkid":4326}}
+        lg = arcpy.AsShape(ln_json, True)
+        line = centerlineSchema.create_feature(lg)
+        mixin_road_properties(line)
+        line.prettyPrint()
         log('done??')
 
         

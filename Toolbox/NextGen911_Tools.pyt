@@ -57,14 +57,14 @@ class CreateProvisioningBoundary:
         # create road feature set
         featureSet = arcpy.Parameter(
             name="featureSet",
-            displayName="Draw Point",
+            displayName="Draw Polygon",
             direction="Input",
             datatype="GPFeatureRecordSetLayer",
         )
 
         featureSet.value = get_drawing_featureset(NG911LayerTypes.PROVISIONING_BOUNDARY)
         
-        return [  featureSet ]
+        return [ featureSet ]
         
 
     def updateParameters(self, parameters):
@@ -122,13 +122,13 @@ class CreateESBFeature:
             displayName="Draw Point",
             direction="Input",
             datatype="GPFeatureRecordSetLayer",
-            enabled=False
         )
+        featureSet.value = get_drawing_featureset(NG911LayerTypes.PSAP)
 
         ng911_db = get_ng911_db()
         schemas = ng911_db.get_table()
         with arcpy.da.SearchCursor(schemas, ['FeatureType']) as rows:
-            featureType.filter.list = [r[0] for r in rows if r[0] not in ('ADDRESS_POINTS', 'ROAD_CENTERLINE', 'PROVISIONING_BOUNDARY')]
+            featureType.filter.list = [r[0] for r in rows if r[0].startswith('ESB')]
 
         params = table_to_params(DataSchema(DataType.PSAP))
         
@@ -136,12 +136,8 @@ class CreateESBFeature:
         
 
     def updateParameters(self, parameters):
-
-        if parameters[0].altered:
-            featureSet = parameters[1]
-            featureSet.enabled = True
-            
-            featureSet.value = get_drawing_featureset(parameters[0].valueAsText)
+        pass
+               
 
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
@@ -153,8 +149,8 @@ class CreateESBFeature:
         with log_context(self.__class__.__name__ + '_') as lc:
             log_params(parameters)
             fs = arcpy.FeatureSet()
-            fs.load(parameters[0].value)
-            log(f'type of param0: {type(parameters[0].value)}')
+            fsParam = [p for p in parameters if p.name == 'featureSet'][0]
+            fs.load(fsParam.value)
             attrs = {p.name: p.valueAsText for p in parameters[1:]}
             fsJson = munchify(json.loads(fs.JSON))
             schema = DataSchema(parameters[0].valueAsText)
@@ -434,13 +430,10 @@ class CreateAddressPoint(object):
             log(f'type of param0: {type(parameters[0].value)}')
             attrs = {p.name: p.valueAsText for p in parameters[3:]}
             roadOID = parameters[2].value
-            ng911_db = get_ng911_db()
             fsJson = munchify(json.loads(fs.JSON))
             geomJson = fsJson.features[0].get('geometry')
             geomJson["spatialReference"] = fsJson.get('spatialReference')
             pt = arcpy.AsShape(geomJson, True)
-            # with arcpy.da.SearchCursor(parameters[0].value, ['SHAPE@']) as rows:
-            #     pt = [r[0] for r in rows][0]
             ft, schema = create_address_point(pt, roadOID, **attrs)
             # ft.prettyPrint()
             try: 
