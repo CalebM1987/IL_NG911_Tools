@@ -34,7 +34,7 @@ SKIP_TYPES = ('OID', 'Geometry', 'Blob', 'GUID', 'Raster')
 SHAPE_FIELD_REGEX = re.compile('^(shape)[.|_]', re.IGNORECASE)
 
 
-def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[]):
+def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[], **defaults):
     """creates tool parameters for fields from a given table
 
     Args:
@@ -62,8 +62,9 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
     ]
     # get ng911_db helper
     ng911_db = get_ng911_db()
-    
-    fields = [f for f in arcpy.ListFields(table) if f.type not in SKIP_TYPES and f.name not in SKIP_NAMES and 'NGUID' not in f.name]
+    all_fields = arcpy.ListFields(table)
+    required_fields = [f.name for f in all_fields if not f.required]
+    fields = [f for f in all_fields if f.type not in SKIP_TYPES and f.name not in SKIP_NAMES and 'NGUID' not in f.name]
     # filters.extend(f.name for f in schema.customFields)
     for field in fields:
         if not SHAPE_FIELD_REGEX.match(field.name) and field.name not in filters:
@@ -85,8 +86,9 @@ def table_to_params(schema: DataSchema, category: str=None, filters: List[str]=[
                     param.filter.list = sorted(list(domain.keys()))
                     # log(f'set filter list: {param.filter.list}')
 
+            defaultVal = defaults.get(field.name) or field.defaultValue
             if field.defaultValue:
-                param.value = field.defaultValue
+                param.value = defaultVal
 
             elif field.name == 'Agency_ID':
                 param.value = '@' + ng911_db.agencyID
