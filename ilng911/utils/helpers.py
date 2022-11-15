@@ -2,7 +2,7 @@ import os
 import re
 import arcpy
 import json
-from typing import Optional, List, Any, Dict#,  Literal, TypedDict # not supported until ^3.8
+from typing import Optional, List, Any, Dict, Union#,  Literal, TypedDict # not supported until ^3.8
 from ilng911.utils.json_helpers import load_json
 from ilng911.support.munch import munchify, Munch
 from ilng911.logging import log, log_exception
@@ -150,5 +150,39 @@ def find_nena_guid_field(table: str) -> str:
     guid_pat = re.compile('\S*(_?nguid)$', re.I)
     try:
         return [f.name for f in arcpy.ListFields(table) if guid_pat.match(f.name)][0]
+    except:
+        return None
+
+def get_next_nena_id(path, sample_size=5) -> Union[int, None]:
+    """fetches next highest nena identifier
+
+    Args:
+        path (_type_): _description_
+        sample_size (int, optional): _description_. Defaults to 5.
+
+    Returns:
+        Union[int, None]: _description_
+    """
+    ids = []
+    guid_field = find_nena_guid_field(path)
+    # read max id from table
+    if guid_field:
+        log(f'found NENA GUID field "{guid_field}" in table: "{path}"')
+        desc = arcpy.Describe(path)
+        sql_clause = (None, f'ORDER BY {desc.oidFieldName} DESC')
+        with arcpy.da.SearchCursor(path, [guid_field, 'OID@'], sql_clause=sql_clause) as rows:
+            for i, r in enumerate(rows):
+                try:
+                    ids.append(int(''.join([t for t in r[0].split('@')[0] if t.isdigit()])))
+                except:
+                    ids.append(r[1])
+                    log(f'failed to parse nena identifier: "{r[0]}"')
+                if i > sample_size:
+                    break
+
+    try: 
+        guid = max(ids)
+        log(f'found MAX NENA Identifier for "{path}": {guid}')
+        return guid
     except:
         return None
