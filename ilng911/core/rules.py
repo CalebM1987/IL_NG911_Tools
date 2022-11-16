@@ -9,6 +9,11 @@ return `SITE${id}@casscomm.com`;"""
 def add_attribute_rules(path, nena_prefix='SITE'):
     desc = arcpy.Describe(path)
     if not desc.hasGlobalID:
+        log('no global IDs detected, attempting to add now')
+        try:
+            arcpy.management.AddGlobalIDs(path)
+        except Exception as e:
+            log(f'failed to add global IDs: {e}')
         raise RuntimeError('the table does not have a GlobalID field, please add GlobalIDs before running this tool')
 
     field_names = [f.name for f in desc.fields]
